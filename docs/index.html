@@ -1,0 +1,623 @@
+<!doctype html>
+<!--[if IE 6 ]>
+<html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>
+<html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>
+<html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <title>Artifact Flow - Workflow building, deploying, configuring artifacts</title>
+
+    <meta name="description"
+          content="Workflow for building, deploying, configuring artifacts on Drupal platform. Please feel free to email via my user page contact form here. Thanks so much!">
+    <link rel="stylesheet" href="css/documenter_style.css" media="all">
+    <script src="js/jquery.1.6.4.js"></script>
+    <script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+    <script src="js/jquery.easing.js"></script>
+    <link rel="stylesheet" href="css/shDocumenter.css" media="screen">
+    <script src="js/shCore.js"></script>
+    <script src="js/shBrushCss.js"></script>
+    <script src="js/shBrushJScript.js"></script>
+    <script>SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();</script>
+    <script>document.createElement('section');
+    var duration = 500, easing = 'swing';</script>
+    <script src="js/script.js"></script>
+    <style>
+        html {
+            background-color: #FFFFFF;
+            color: #383838;
+        }
+
+        ::-moz-selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        ::selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        hr {
+            border-top: 1px solid #E1B568;
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        #documenter_sidebar, #documenter_sidebar ol a {
+            background-color: #ffffff;
+            /*background-color: #E1B568;*/
+            /*color: #222222;*/
+            color: #373737;
+        }
+
+        #documenter_sidebar ol a {
+            -webkit-text-shadow: 1px 1px 0px #EEEEEE;
+            -moz-text-shadow: 1px 1px 0px #EEEEEE;
+            text-shadow: 1px 1px 0px #EEEEEE;
+        }
+
+        #documenter_sidebar ol {
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a {
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #E1B568;
+            color: #444444;
+        }
+
+        #documenter_sidebar ol a:hover {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a.current {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_copyright {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        #logo #textual span {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #cc9833;
+            font-style: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #logo #textual {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #373737;
+            font-style: normal;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 40px;
+            margin-left: 10px;
+            /*margin-bottom: 12px;*/
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+    </style>
+
+</head>
+<body>
+<div id="documenter_sidebar">
+    <div id="logo" class="group">
+        <a id="textual" href="http://designssquare.com" target="_blank" title="Design Square">
+            Designs <span class="title-highlight">Square</span>
+        </a>
+        <p id='tagline'>Inspiration Designs. Practical Widgets</p>
+    </div>
+    <ol id="documenter_nav">
+        <li><a class="current" href="#documenter_cover">Start</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#menus">Menus</a></li>
+        <li><a href="#theme_settings">Theme Settings</a></li>
+        <li><a href="#regions">Regions</a></li>
+        <li><a href="#depenencies">Drupal Dependencies</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#backlog">Future Releases</a></li>
+        <li><a href="#releases">Release History</a></li>
+    </ol>
+    <div id="documenter_copyright">Copyright DesignsSquare.com 2014
+    </div>
+</div>
+<div id="documenter_content">
+    <section id="documenter_cover">
+        <h1>Artifact WorkFlow - Drupal Tool Documentation</h1>
+
+        <h2>Effective Drupal tool</h2>
+        <hr>
+        <ul>
+            <li>Last Updated: Aug 24, 2014</li>
+            <li>Developed By: DesignsSquare.com</li>
+            <li><a href="">
+            </a>
+            </li>
+            <li>Email: <a href="mailto:contact@designssquare.com">contact@designssquare.com</a></li>
+        </ul>
+    </section>
+    <section id="about">
+        <h3>About</h3>
+        <hr>
+        <h4>Overall</h4>
+        <p>Aftifact WorkFlow Drupal tool is used to build, deploy, configure artifacts such as themes and modules</p>
+        <p>It currently support types of module, theme, site type of widgets, but is not limited to only those. You can add any type by
+            specifying the type in the artifact configurations and then adding appropriate make file</p>
+        <h4>Whats included?</h4>
+        <p>
+            <ul>
+                <li>Documentation at the 'docs/index.html' </li>
+                <li>Samples at /samples directory</li>
+            </ul>
+        </p>
+
+        <h4>Requirements</h4>
+        <ul>
+            <li>Drush</li>
+            <li>GitHub(code needs to be hosted in github)</li>
+            <li>Linux/Unix platform(Windows in future, perhaps)</li>
+        </ul>
+    </section>
+    <section id="installation">
+        <h3>Installation</h3>
+        <h4>How To Install?</h4>
+
+        <p>In the following are the steps to install Artifact WorkFlow Drupal tool</p>
+        <ol>
+            <li>
+                <b>Download</b><br>Clone the tool from github repo - ???
+            </li>
+            <li>
+                <b>Incorporate With Drush</b><br>
+                Update $options['include'] to include path to the tool with '/commands' in  Drush configuration file drushrc.php (usually in $HOME/.drush dir)
+                <code>
+                    $options['include'] = array('/path/to/Artifact Workflow tool/commands');
+                </code>
+            </li>
+            <li>
+                <b>Configure Your Environment</b><br>
+                Specify your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place it in to DRUSH_ROOT dir as described in 'Configuration' section
+            </li>
+        </ol>
+    </section>
+    <section id="terminology">
+        <h3>Terminology</h3><hr>
+        <h4>Terminology Terms described</h4>
+        <ul>
+            <li><b>Artifact</b><br>
+                The artifact is theme, or widget or site all that can be products separatley packaged to be delivered to client
+            </li>
+            <li><b>Theme</b><br>
+                This is an artifact that contains one or more themes(base theme plus the extenended one) from sites/all/themes directory often times
+                with a custom module from (sites/all/modules) all of which to host one Drupal Theme
+            </li>
+            <li><b>Widget</b><br>
+                This is an artifact that contains one or more modules from sites/all/modules directory to provide some functionality such as map, blog, slider, etc.
+                It can be also referred as plug-in or add-on
+            </li>
+            <li><b>Site</b><br>
+                This is an artifact that contains artifacts Theme(usually on) and Widgets all of which to host one fully functional site. To keep site specific
+                development apart from the artifacts of theme and widgets there is an addition custom module for that purpose
+            </li>
+
+        </ul>
+        <p>The 'prefix' is configured in the Tool configurations. See section "Configurations"</p>
+        <p>Depending if the flags '--min', '--ver', '--branch' is provided, the package name is going to be constructed in the order from more specific to general as demostrated above</p>
+    </section>
+    <section id="package_naming">
+        <h3>Package Naming</h3>
+        <h4>How To Install?</h4>
+
+        <p>The final name of package is combined with the prefix, type of artifact, name of artifact, branch name if present, min if present and version </p>
+        <ol>
+            <li>prefix-type-name-branch-min-ver</li>
+            <li>prefix-type-name-branch-ver</li>
+            <li>prefix-type-name-min-ver</li>
+            <li>prefix-type-name-ver</li>
+            <li>prefix-type-name</li>
+        </ol>
+        <p>The 'prefix' is configured in the Tool configurations. See section "Configurations"</p>
+        <p>Depending if the flags '--min', '--ver', '--branch' is provided, the package name is going to be constructed in the order from more specific to general as demostrated above</p>
+    </section>
+    <section id="blueprint">
+        <h3>Blueprint</h3>
+        <h4>About Blueprint</h4>
+        <p>every artifact such as widget or theme has its own make file defining all dependencies, configuration that is used to build, deploy,etc</p>
+        <h4>Where is Make file located?</h4>
+<p>The make files is located in dir specified by environment configuration 'make_root' plus '/' plus 'type' of the artifact. The name of the make file is the same as the widget package or less specific </p>
+    </section>
+    <section id="alias_config">
+        <h3>Alias - Site Configurations</h3><hr>
+        <h4>Alias Extended</h4>
+        <p>The alias configurations are extended with the following configurations options:</p>
+        <ul>
+            <li><b>db-user:</b>
+                The database username for the current drupal installation
+            </li>
+            <li><b>db-pwd</b>
+                The database user password for the current drupal installation
+            </li>
+            <li><b>db-name</b>
+                The database name for current drupal installation
+            </li>
+            <li><b>db-url</b>
+                the database url for current drupal installation. If specified, than it will be used instead of db-user,db-pwd,db-name
+                (i.e. $db_url = 'mysql://user-name:pass@127.0.0.1/db_name)
+            </li>
+            <li><b>make-file</b>
+                full path to the make file used for initial installation of Drupal if one is not provided at the time of execution 'site-install' command
+            </li>
+        </ul>
+        <p>Important to note, that alias configurations - db-name, db-user, db-pwd will be overritten with ones user specifies at
+            the time of execution if any</p>
+
+    </section>
+    <section id="artifacts">
+        <h3>Artifacts</h3><hr>
+        <h4>About Artifacts</h4>
+        <p>The artifacts is what this is about. The WorkFlow tool builds packages from artifacts, deploys them, configures artifacts on instances and more.
+           By default, there are two artifacts - widget and theme, but is not limited to only two. You can declare others(see Configurations section)</p>
+        <p>In the following is artifact attributes:</p>
+        <ul>
+            <li><b>name:</b>
+                The name of the artifact. It has to be unique and the same across all declarations(aliases can be configured)
+            </li>
+            <li><b>type</b>
+                The type of the artifact such as widget, theme, etc. All artifacts without type declared is of type 'widget'
+            </li>
+            <li><b>repo</b>
+                The url of github account containing the repository of an artifact
+            </li>
+            <li><b>repo_name</b>
+                the repository name in GitHub storing an artifact. The 'repo'/'repo_nam' combains full path to clone artifact
+            </li>
+            <li><b>branch</b>
+                for developers its the branch in the GitHub repo. For business people, it may be the package of the deliverable(i.e. BASIC, PLUS, ULTIMATE)
+            </li>
+            <li><b>ver</b>
+                The tag name of the git repository. This is used to version each artifact.
+            </li>
+            <li><b>final_name</b>
+                the final name of artifacts as it is stored in the 'site/all/modules','sites/all/themes' directories or in devliveralbe package
+            </li>
+            <li><b>work_dir</b>
+                the path to local working dir of the artifacts. It overrides the general 'work_dir' specified in environment configuration
+            </li>
+            <li><b>work_dir_name</b>
+                the dir name of artifact in the local working directory.
+            </li>
+        </ul>
+        <p>Important to note, that one artifact will contain multiple dependencies that are other artifacts(with their own blueprints - make files). They all need to be declared the same way in the blueprint - make file of that main artifact being build, deployed or configured</p>
+        <h4>Declaring In Blueprint</h4>
+        <p>Each artifact can be declared in the make file as following:</p>
+        <code>
+            widget[commerce][name]=commerce
+            widget[commerce][order]=1
+            widget[commerce][final_name]=designssquare_com_widget_commerce
+            widget[commerce][repo]=https://github.com/kapasoft-drupal-modules/
+            widget[commerce][repo_name]=commerce
+            widget[commerce][ver]=v.0.1
+            widget[commerce][work_dir]=/path/to/local/work/dir
+            widget[commerce][work_dir_name]=commerce_widget
+            ...
+            theme[bazar][name]=bazar
+            theme[bazar][order]=0
+            theme[bazar][final_name]=bazar
+            theme[bazar][repo]=https://github.com/kapasoft-drupal-modules/
+            theme[bazar][repo_name]=bazar-theme
+            theme[bazar][ver]=v.0.3.1
+            theme[bazar][work_dir_name]=bazar
+            ...
+            YOUR-TYPE[index][name]=name
+            YOUR-TYPE[index][order]=0
+            ...
+        </code>
+        <p>Here, we have declared two different type of artifacts. One is widget - commerce and another is theme - Bazar. When declaring artifacts in the make file there additional attribute 'order'
+        that provides order of processing the artifacts, because some may depend on another.</p>
+        <p>Important to note. The index of the artifact has to be the name</p>
+        <p>You may notice that not all attributes are declared. Some attributes like 'work_dir' is declared in the environment configurations. Unless its different for specific artifact, you don't have to re-declare it in make file.
+            All other attributes of artifact can be declared in the external artifact configuration once and only referred in the make file</p>
+        <h4>Declaring In External Configurations</h4>
+        <p>After a while, you will get tired re-declaring the artifacts in the make file, so to avoid this redundant task, there is available artifact external configurations
+        to declare each artifact once and then reference in make file by name instead. In the make file you can also override any of the attribute such as 'ver',etc, since any attributes specified in make file
+        will mask out ones declared in the external artifact configurations</p>
+        <p>To declare artifacts externally, create a file 'artifacts.drushrc.php' and place it any path Drush searches for. Here is the sample format of 'artifacts.drushrc.php':</p>
+        <code>
+            //declaring artifacts
+            $artifacts = array();
+            $artifacts['lib'] = array(
+            'name' => 'lib',
+            'repo' => /path/to/repo,
+            'repo_name' => 'designssquare-utils',
+            'final_name' => 'designssquare_com_lib',
+            'work_dir_name' => 'designssquare_lib',
+            );
+            $artifacts['sample_data'] = array(
+            ...
+            );
+        </code>
+    </section>
+    <section id="configurations">
+        <h3>Configurations</h3><hr>
+        <h4>Location of Configurations</h4>
+        <p>The configurations are externalized into workflow.drush.inc in DRUSH_ROOT dir($HOME/.drush/ dir) or any location DRUSH searches</p>
+        <h4>Available Environment Configurations</h4>
+        <ol>
+            <li><b>work_dir</b><br>
+                full path of working directory that contains all of your widgets such as themes, modules, sites, etc categorized into dir 'themes', 'modules','sites',etc. This is where you do the
+                the development. The packaging is done from the working directory. We recommend each of the widgets keep in its own git repository. If not specified, then defaults to directory - $HOME/workflow/work-dir
+            </li>
+            <li><b>make_root</b><br>
+                full path to directory that contains the Blueprints - make files for each of the artifacts such as theme, module, site, etc. Just like working dir
+                this directory is categorized into directories per widget type such as themes, modules, sites, etc. So, for example, all make files for modules are in dir 'make_root/modules' and make files for themes
+                are in dir 'make_root/themes' and so on per artifact type. If 'make_root' is not specified in environment configurations, then it defaults to location - $HOME/workflow/blueprints
+            </li>
+            <li><b>dist</b><br>
+                full path to directory that contains packages built & deliverable to client ready to be imported in another instance. For each artifact there is a separate dir. The artifact dir name is combined
+                with 'prefix'-'artifact type'-'artifact name'. The artifact directory contains all of the packages versioned that are build so far.
+            </li>
+            <li><b>package_prefix</b><br>
+                The package_prefix specifies the prefix added to the package name. For example, all pacakge at designssquare.com is prefixed with 'designssquare-com-'
+            </li>
+            <li><b>db_user</b><br>
+                the database user used for site installation, etc if not specified at site alias configurations or at the time of execution
+            </li>
+            <li><b>db_pwd</b><br>
+                the database user password used for site installation, etc if not specified at site alias configurations or at the time of execution
+            </li>
+            <li><b>make_file</b><br>
+                the default make file for site installations, for shared actions,etc. If not specified in environment external configurations with 'make_file', then it defaults to make_root/build-drupal-core.make
+            </li>
+        </ol>
+        <h4>Formatting Environment Configurations</h4>
+        <p>The configurations need to be formatted as array of name '$workflow_config' as following:</p>
+        <code>
+            $workflow_config = array();
+            $workflow_config['work_dir'] = '/path/to/work/dir';
+            $workflow_config['make_root'] = '/path/to/blueprints';
+            $workflow_config['dist'] = '/path/to/distribution/dir';
+            $workflow_config['package_prefix'] = 'designssquare-com-';
+            $workflow_config['make_file'] = 'path/to/default-make-file.make';
+            $workflow_config['db_user'] = 'username';
+            $workflow_config['db_pwd'] = 'password';
+        </code>
+        <h4>Available Artifact Configurations</h4>
+        <ol>
+            <li><b>type</b><br>
+                declare the available types of artifacts. By default, it declares - theme, widget types.
+            </li>
+
+        </ol>
+        <h4>Formatting Artifact Configurations</h4>
+        <p>The artifact configuration is an array of name $artifact_types containing all available artifact types</p>
+        <code>
+            $artifact_types = array();
+            $artifact_types[] = 'widget';
+            $artifact_types[] = 'theme';
+        </code>
+    </section>
+    <section id="conventional">
+        <h3>Conventions</h3><hr>
+        <h4>Documentation</h4>
+        <p>its assumed that each widget has its own documentation located at '/doc' dir. It is included in the package and moved into Drupal instance at the deployment</p>
+        <h4>Package Naming</h4>
+        <p>Package naming is combined with 'prefix'-'type'-'name'-'branch'-'min'-'ver'. Each widget also has its own make file and it is named the same as package name or if not present, then
+           it looks up next less specific name in the following order:
+          <ul>
+                <li>'prefix'-'type'-'name'-'branch'-'min'-'ver'</li>
+                <li>'prefix'-'type'-'name'-'branch'-'min'</li>
+                <li>'prefix'-'type'-'name'-'branch'</li>
+                <li>'prefix'-'type'-'name'</li>
+        </ul>
+        <p>So, you have to have at least one general make file 'prefix'-'type'-'name' for each widget in order to process widget</p>
+
+        <h4>Working Dir</h4>
+        <p>In your environment configurations, you would specify the working directory of all artifacts such as themes, widgets, sites or any type of artifact you like to develop.
+        It is a convention that each of type of artifact is in its own directory in the working directory, so widgets will be in 'work_dir/widgets' and themes are in 'work_dir/themes' and so on for any other type. You can overwrite
+            this by specifying different work dir for each artifact in the make file with attribute 'work_dir'. If work_dir is not specified in the environment configurations, then defaults to location - $HOME/workflow/work-dir</p>
+
+        <h4>Distribution Dir</h4>
+        <p>
+            This directory contains packages build and deliverable to client ready to be imported in another instance. Just like work directory, for each artifact there is a separate dir (i.e. themes, widgets,etc). The specific artifact dir name is combined
+            with 'prefix'-'artifact type'-'artifact name'. The artifact directory contains all of the packages versioned that are build so far. Note, prefix can be configured in external env configurations(please, see configurations section)
+            If 'dist' is not specified in environment configurations, then it defaults to location - $HOME/workflow/dist
+        </p>
+      <h4>Blueprints Dir</h4>
+        <p>
+            This directory contains blueprints for all artifacts. Just like work directory, for each artifact there is a separate dir (i.e. themes, widgets,etc). The specific artifact name is combined
+            with 'prefix'-'artifact type'-'artifact name'. Note, prefix can be configured in external environment configurations(please, see configurations section). In environment configurations, you
+             can specify the blueprint root dir via 'make_root'. If 'make_root' is not specified in environment configurations, then it defaults to location - $HOME/workflow/blueprints</p>
+    </section>
+    <section id="actions_overview">
+    <h3>Actions Overview</h3>
+    <hr>
+     <h4>About Actions</h4>
+        <p>actions are some tasks that was created with intention to reuse. The WorkFlow comes with several already supported actions
+            such as conifg-editor, config-audio,etc. Actions can be any drush command as well. Actions can be declared and reused in the make file
+        The actions declared in the default make file(see external env configurations) are shared for all artifacts </p>
+    <h4>Declaring Actions</h4>
+        <p>The actions are declared in the blueprint(make file) as following</p>
+        <code>
+            action[load][name]=enable_artifact
+            action[load][order]=0
+            action[load][tag]=init
+            action[load][param][]=designssquare_lib
+            action[load][param][]=designssquare_lib_sample_data
+            action[load][param][]=espresso
+
+            action[default_theme][name]=set_default_theme
+            action[default_theme][order]=3
+            action[default_theme][tag]=init
+            action[default_theme][param][]=espresso
+        </code>
+        Here, action named 'load' enables two modules - designssquare_lib, designssquare_lib_sample_data and theme "espresso". Afterwards, the action
+        named 'default_theme' sets the default theme to be 'espresso'
+
+        <h4>Solo Action</h4>
+     <p>
+         one way to execute actions is via drush command 'execute-action'[ea]. This executes one action at the time. Another way, to call single
+         action is via drush command 'configure-artifact'[ca] and specify flag '--action=NAME-OF-ACTION' as described in the blueprint(make file)
+     </p>
+    <h4>Multiple Actions</h4>
+        <p>
+            The best way to call multiple actions is using 'tags'. When declaring actions, add tag, so, afterwards, you can call all actions with certain
+            tag as following
+            <code>
+                drush ca ARTIFACT @ALIAS --tag=dev,init
+            </code>
+            This will call all actions with tag 'dev' and 'init'.
+        </p>
+        <p>
+            In case, you like to call more than one but without tag mechanism, then you can specify list of actions to execute via flag 'action' as following:
+            <code>
+                drush ca ARTIFACT @ALIAS --action=ACTION-NAME1,ACTION-NAME2
+            </code>
+        </p>
+    <h4>Actions Overview</h4>
+        <p>list of available actions</p>
+    <table>
+        <tr><th>Name</th><th>Params</th><th>Description</th></tr>
+        <tr><td>install-site</td><td>alias</td><td>install Drupal instance per make file provided in the destination of the alias or at the root/deploys/env_alias</td></tr>
+        <tr>@ToDo...needs update</tr>
+    </table>
+
+        <h4>Passing Variables</h4>
+        <p>You may have an action which takes an argument that is, perhaps, return of another action. Than you can declare it as variable with 'result'
+            index and access it via '@' as following:</p>
+        <code>
+            action[get_make][name]=get_make_file
+            action[get_make][order]=0
+            action[get_make][tag]=config
+            action[get_make][result]=make_file
+
+            action[config_depend][name]=configure_all_dependencies
+            action[config_depend][order]=1
+            action[config_depend][tag]=config
+            action[config_depend][param][]=@make_file
+        </code>
+        <p>Here, the action 'get_make' retrieves the make file and than store it in the variable "make_file" that is later reused as an argument in the action - "config_depend"</p>
+        <h4>Add Your Own Actions</h4>
+        <p>Comming soon...</p>
+    </section>
+    <section id="commands_overview">
+        <h3>Commands Overview</h3>
+        <hr>
+        <p>
+            List of available commands:
+        </p>
+        <table>
+            <tr><th>Name</th><th>Alias</th><th>Params</th><td>Flags</td><th>Description</th></tr>
+            <tr><td>install-site</td><td>is</td><td>alias</td><td>env,su,su-pw,db-user,db-pwd,db-name,make-file, dest</td><td>installes Drupal instance per make file provided in the destination of the alias or at the root/deploys/env_alias</td></tr>
+            <tr><td>build-artifact</td><td>ba</td><td>name, type</td><td>min,ver,branch</td><td>builds artifact per make file and stores it into distribution dir</td></tr>
+            <tr><td>deploy-artifact</td><td>da</td><td>name, alias</td><td>env,ver,min,branch</td><td>downloads and installs artifacts per make file in site with provided alias in one of the 3 modes - DEV, TEST, STAGE. Be default, artifacts are deployed in STAGE mode </td></tr>
+            <tr><td>destroy-instance</td><td>di</td><td>alias</td><td></td><td>drops tables and removes directory of site specified by alias</td></tr>
+            <tr><td>execute-action</td><td>ea</td><td>action-name, alias</td><td>param</td><td>executes action. The action can also be any drush command. The param flag contains arguments fro the action/drush-command. </td></tr>
+        </table>
+    </section>
+    <section id="deployments">
+        <h3>Deployment Cycles</h3><hr>
+        <h4>DEV (development)</h4>
+        <p>When deploying artifacts in DEV mode, it will link the artifacts to its appropriate repositories in the working directory, so changes you make are updated in the
+            working directory. By convention, the location of working version of the artifact is located at 'work_dir'/'artifact type'/'artifact name'. This can be overwritten by 'work_dir', 'work_dir_name' attributes
+        of artifact in blue print or artifact external configurations</p>
+        <h4>TEST</h4>
+        <p>When deploying artifacts in TEST mode, it will copy the artifacts from the appropriate package located in your local distribution directory, so before delivering to client
+            the package is tested. The distribution dir is configured in the 'dist' variable in external tool configurations. By convention, the packages are stored in 'dist'/'artifact type'/'package name'</p>
+        <h4>STAGE</h4>
+        <p>When deploying artifacts in STAGE mode, it will clone the artifacts from external git hub repository per blue print(i.e make file) provided. This may be alternative method to deliver your artifacts. Instead of sending the package,
+            you can only provide the blue print(i.e. make file) and your client can deploy it in STAGE mode that way retrieving all of your artifacts from git hub repository.
+        </p>
+    </section>
+    <section id="arguments_api">
+        <h3>Command Arguments API</h3>
+        <hr>
+        <p>All command arguments are parsed and processed into following variables available to retrieve any time via drush_get_context('VAR_NAME');
+        </p>
+        <ul>
+            <li>FLOW_WIDGET_NAME: the name of artifact taken from first arg</li>
+            <li>FLOW_WIDGET_TYPE: the type of artifact taken form second arg</li>
+            <li>FLOW_PROFILE_NAME: the name of the profile make file</li>
+            <li>FLOW_WIDGET_VER: the version of package taken from flag '--ver'</li>
+            <li>FLOW_WIDGET_MIN: whether the dependencies are included taken from flag '--min'</li>
+            <li>FLOW_WIDGET_BRANCH: the branch of the package taken from flag '--branch'</li>
+            <li>FLOW_WIDGET_ALIAS: the alias record all loaded by name specified by user input with '@'</li>
+            <li>FLOW_PACKAGE_DIR: the path to the directory of package specified by flag --package. It defaults to DIST/package dir or current dir/package </li>
+        </ul>
+
+    </section>
+    <section id="variable_api">
+        <h3>Variable API</h3>
+        <hr>
+        <p>Here are list of available env variables that are initiated at the bootstrap time read from external configurations
+        </p>
+        <ul>
+            <li><b>FLOW_CONFIG_WORK_DIR:</b> This is location of all artifact repositories where the development takes place and is specified in the environment configurations with 'work_dir'. If not specified, then defaults to $HOME/workflow/work-dir </li>
+            <li><b>FLOW_CONFIG_MAKE_ROOT:</b> This is location of all artifact blueprints reside and is specified in the environment configurations with 'make_root'. If not specified, then defaults to $HOME/workflow/blueprints </li>
+            <li><b>FLOW_CONFIG_DIST:</b> This is location where all the built packages are kept. It is specified in the environment configurations with 'dist'. If not specified, then defaults to $HOME/workflow/dist </li>
+            <li><b>FLOW_CONFIG_DEFAULT_MAKE:</b> This is blueprint(make file) for site installs as well as any shared actions, artifact info. It is specified in the environment configurations with 'make_file'. If not specified, then defaults to make_root/build-drupal-core.make </li>
+            <li><b>FLOW_DB_USER:</b> This database username used for site installs. It is specified in the environment configurations with 'db_user'. If not specified, then defaults it defaults to "root"</li>
+            <li><b>FLOW_DB_PWD:</b> This database user password for site installations. It is specified in the environment configurations with 'db_pwd'. If not specified, then defaults to "password" </li>
+            <li><b>FLOW_ARTIFACTS_TYPES:</b> Array of different artifact types - widget, theme, etc that can be specified in external environment configurations via '$artifact_types'. If not specified, then defaults to two types - "widget","theme" </li>
+        </ul>
+    </section>
+    <section id="depenencies">
+        <h3>Dependent Modules - @ToDo ...</h3>
+        <hr>
+        <ul>
+            <li>menu_html : to allow html in menu items</li>
+            <li>context : to reuse blocks such as search block,etc</li>
+        </ul>
+    </section>
+    <section id="troubleshooting">
+        <h3>Troubleshooting</h3>
+
+        <h6>TIP: Turn on logging</h6>
+        <p>When troubleshooting issue, its helpful to turn on logging. There are two levels important to mention</p>
+        <ul>
+            <li>notice: To turn on add flag '--verbose' to the Drush command. This will print all messages of progress as the execution takes place</li>
+            <li>debug: To turn on add flag '--debug' to the Drush command. Besides 'notice' message, this will print all messages including ones associated with Drush execution </li>
+        </ul>
+
+    </section>
+    <section id="backlog">
+        <h3>Things In Progress</h3>
+        <hr>
+        <ul>
+            <li>make one entrance with interactive input for user to specify task and then dispatch to appropriate command </li>
+            <li>make UI to run the tool</li>
+            <li>make it possible to upload make file via UI</li>
+            <li>build common installer for UI</li>
+            <li>make so that client only needs the blueprint - makefile to install all artifacts(themes, widgets) from remote location</li>
+            <li>make to fetch make file from remote repository</li>
+            <li>introduce profiling a specific Drupal instance setup all declared in the makefile</li>
+            <li>make it possible to store general configurations in shell env variables to mask out ones from workflow.drushcrc.php</li>
+        </ul>
+    </section>
+    <section id="releases">
+        <h3>Release History - @ToDo ...</h3>
+        <hr>
+        <h5>Release 0.2</h5>
+        <ul>
+            <li>Menu fix to expand in any page not only defined Node instances</li>
+
+        </ul>
+    </section>
+</div>
+<!--end of documenter_content-->
+</body>
+</html>
