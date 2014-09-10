@@ -138,7 +138,7 @@
 </div>
 <div id="documenter_content">
     <section id="documenter_cover">
-        <h1>Artifact WorkFlow - Drupal Tool Documentation</h1>
+        <h1>WorkFlow - Drupal Tool Documentation</h1>
 
         <h2>Effective Drupal tool</h2>
         <hr>
@@ -155,9 +155,29 @@
         <h3>About</h3>
         <hr>
         <h4>Overall</h4>
-        <p>Aftifact WorkFlow Drupal tool is used to build, deploy, configure artifacts such as themes and modules</p>
-        <p>It currently support types of module, theme, site type of widgets, but is not limited to only those. You can add any type by
-            specifying the type in the artifact configurations and then adding appropriate make file</p>
+        <p>WorkFlow Drupal tool is used to build assets from artifacts, deploy and configure these assets into other drupal instances among other things</p>
+        <p>Each asset contains any number of artifacts with one of the two types - widget and theme, but is not limited to only those two types. You can add any type at any given type</p>
+        <h4>Blueprint is the DNA</h4>
+        <p>Each asset has a blueprint or also knowned as make file. The blueprint specifies all the artifacts to include in the asset, the action to apply and dependencies to download among other things for whatever you do - build, deploay, configure,etc. There are 3 main ways to
+        supply the blueprint from command line:
+        <ol>
+        <li><b>--asset:</b> by providing a name of asset, WorkFlow will locate the blueprint following conventions(see 'conventions' section) and environment configurations (see 'External Environment Configurations' section)</li>
+        <li><b>--package:</b> by providing dir of a package or compressed tar/zip file, it will take the make file located in the package directory</li>
+        <li><b>--make:</b> by specifying directly the make file is another way</li>
+        </ol>
+        You only need to do one of the above to provide blueprint for tool to execute
+        </p>
+        <h4>Deployment Modes</h4>
+        <p>When deploying asset, you have a choice to deploy in one of the 3 forms - dev, test or stage. Each of the forms differ in how assets are downloaded and setup into your Drupal instance. In the
+        following, is quick overview:
+        <ul>
+        <li><b>DEV:</b> artifacts are linked to from the working directory into the drupal instance for quick easy changes</li>
+        <li><b>TEST:</b> artifacts are copied from package provided. This is perfect for testing before shipping asset</li>
+        <li><b>STAGE:</b> artifacts are cloned from github. Besides deploying in productions, this is great method for delivering
+            assets as well. Instead of transferring large package, its enough to provide the blueprint(make file) to the client that they can deploy
+            in 'STAGE' mode and the tool will download all from github based on version, branch specified in the blurprint of asset</li>
+        </ul>
+        </p>
         <h4>Whats included?</h4>
         <p>
             <ul>
@@ -197,33 +217,39 @@
     </section>
     <section id="terminology">
         <h3>Terminology</h3><hr>
-        <h4>Terminology Terms described</h4>
+        <h4>Terminology Terms </h4>
         <ul>
+            <li><b>Asset</b><br>
+                Asset is the product that combines together different artifacts and actions to provide some functionality, solve some problem. It is the deliverable you ship.
+                Some examples of assets are theme, slider, blog, newsletter etc. or combined multiple of the items solving different problems into one asset deliverable and deployable on another Drupal instance.
+                It's typical to have one main artifact and rest of them are dependent artifacts in one asset. Based on this main artifact type, we assign the artifact type to an asset be more descriptive
+            </li>
             <li><b>Artifact</b><br>
-                The artifact is theme, or widget or site all that can be products separatley packaged to be delivered to client
+                There are two types of artifacts - theme, widget that are all combined together to form an asset to provide one or many functionality such as slider, blog, calendar, etc.
             </li>
             <li><b>Theme</b><br>
-                This is an artifact that contains one or more themes(base theme plus the extenended one) from sites/all/themes directory often times
-                with a custom module from (sites/all/modules) all of which to host one Drupal Theme
+                Theme is an artifact located at sites/all/themes directory by default. There is usually a dependent a custom module another artifact to provide functionality for a theme. There may else be base theme another artifact. All of these combined
+                create asset of type theme
             </li>
             <li><b>Widget</b><br>
-                This is an artifact that contains one or more modules from sites/all/modules directory to provide some functionality such as map, blog, slider, etc.
-                It can be also referred as plug-in or add-on
+                Widget is an artifact that contains one or more modules to provide some functionality such as calendar, blog, slider, etc. By default, all widgets are stored in sites/all/modules dir
+                It can also be referred as plug-in or add-on
             </li>
-            <li><b>Site</b><br>
-                This is an artifact that contains artifacts Theme(usually on) and Widgets all of which to host one fully functional site. To keep site specific
-                development apart from the artifacts of theme and widgets there is an addition custom module for that purpose
+            <li><b>Action</b><br>
+                Actions can be tasks such us configure video, install dependencies, etc. that are applied to Drupal instance during deployment/configuration stage. The tasks can also be individual actions
+                such as check the uncommitted changes in working directory, scrap email addresses from file,etc. Actions are also any Drush command. The purpose of actions is to automate repetitive tasks that can be reused by
+                declaring in blueprint(make file) and executing them all at once or per requirements. Actions can also be shared among assets and imported into deliverable package at the build process. See "Actions" section for details
             </li>
 
         </ul>
         <p>The 'prefix' is configured in the Tool configurations. See section "Configurations"</p>
         <p>Depending if the flags '--min', '--ver', '--branch' is provided, the package name is going to be constructed in the order from more specific to general as demostrated above</p>
     </section>
-    <section id="package_naming">
-        <h3>Package Naming</h3>
+    <section id="asset_naming">
+        <h3>Asset Naming</h3>
         <h4>How To Install?</h4>
 
-        <p>The final name of package is combined with the prefix, type of artifact, name of artifact, branch name if present, min if present and version </p>
+        <p>The final name of asset is combined with the prefix, type of artifact, name of artifact, branch name if present, min if present and version </p>
         <ol>
             <li>prefix-type-name-branch-min-ver</li>
             <li>prefix-type-name-branch-ver</li>
@@ -244,7 +270,7 @@
     <section id="alias_config">
         <h3>Alias - Site Configurations</h3><hr>
         <h4>Alias Extended</h4>
-        <p>The alias configurations are extended with the following configurations options:</p>
+        <p>The alias configurations are extended with the following configuration options:</p>
         <ul>
             <li><b>db-user:</b>
                 The database username for the current drupal installation
@@ -424,7 +450,7 @@
                 <li>'prefix'-'type'-'name'-'branch'</li>
                 <li>'prefix'-'type'-'name'</li>
         </ul>
-        <p>So, you have to have at least one general make file 'prefix'-'type'-'name' for each widget in order to process widget</p>
+        <p>So, you have to have at least one general make file 'prefix'-'type'-'name' for each artifact in order to process artifact</p>
 
         <h4>Working Dir</h4>
         <p>In your environment configurations, you would specify the working directory of all artifacts such as themes, widgets, sites or any type of artifact you like to develop.
@@ -464,6 +490,7 @@
             action[default_theme][order]=3
             action[default_theme][tag]=init
             action[default_theme][param][]=espresso
+
         </code>
         Here, action named 'load' enables two modules - designssquare_lib, designssquare_lib_sample_data and theme "espresso". Afterwards, the action
         named 'default_theme' sets the default theme to be 'espresso'
@@ -483,7 +510,7 @@
             This will call all actions with tag 'dev' and 'init'.
         </p>
         <p>
-            In case, you like to call more than one but without tag mechanism, then you can specify list of actions to execute via flag 'action' as following:
+            In case, you like to call more than one but without tag mechanism, then you can specify list of actions themselves to execute via flag 'action' as following:
             <code>
                 drush ca ARTIFACT @ALIAS --action=ACTION-NAME1,ACTION-NAME2
             </code>
@@ -496,6 +523,11 @@
         <tr>@ToDo...needs update</tr>
     </table>
 
+        <h4>Sharing Actions</h4>
+        <p>there may be actions that you like to share among the artifacts. So, you don't have to re-declare those actions for each artifact, you can put them in the default
+        make file as declared with 'make_file' at external environment configuration. To ensure these shared actions are imported in the final make file part of the package, place their
+            declarations within text tokens - ";WF_START", ";WF_END"
+      </p>
         <h4>Passing Variables</h4>
         <p>You may have an action which takes an argument that is, perhaps, return of another action. Than you can declare it as variable with 'result'
             index and access it via '@' as following:</p>
@@ -511,6 +543,7 @@
             action[config_depend][param][]=@make_file
         </code>
         <p>Here, the action 'get_make' retrieves the make file and than store it in the variable "make_file" that is later reused as an argument in the action - "config_depend"</p>
+        <p>Note: sharing variables are only supported for command - execute-action</p>
         <h4>Add Your Own Actions</h4>
         <p>Comming soon...</p>
     </section>
@@ -524,9 +557,10 @@
             <tr><th>Name</th><th>Alias</th><th>Params</th><td>Flags</td><th>Description</th></tr>
             <tr><td>install-site</td><td>is</td><td>alias</td><td>env,su,su-pw,db-user,db-pwd,db-name,make-file, dest</td><td>installes Drupal instance per make file provided in the destination of the alias or at the root/deploys/env_alias</td></tr>
             <tr><td>build-artifact</td><td>ba</td><td>name, type</td><td>min,ver,branch</td><td>builds artifact per make file and stores it into distribution dir</td></tr>
-            <tr><td>deploy-artifact</td><td>da</td><td>name, alias</td><td>env,ver,min,branch</td><td>downloads and installs artifacts per make file in site with provided alias in one of the 3 modes - DEV, TEST, STAGE. Be default, artifacts are deployed in STAGE mode </td></tr>
+            <tr><td>deploy-artifact</td><td>da</td><td>alias</td><td>artifact,package,make,env,ver,min,branch</td><td>downloads and installs artifacts per make file in site with provided alias in one of the 3 modes - DEV, TEST, STAGE. Be default, artifacts are deployed in STAGE mode </td></tr>
             <tr><td>destroy-instance</td><td>di</td><td>alias</td><td></td><td>drops tables and removes directory of site specified by alias</td></tr>
             <tr><td>execute-action</td><td>ea</td><td>action-name, alias</td><td>param</td><td>executes action. The action can also be any drush command. The param flag contains arguments fro the action/drush-command. </td></tr>
+            <tr><td>configure-artifact</td><td>ca</td><td>alias</td><td>tag,actions,package,make,artifact</td><td>configures artifact by applying actions from make file provided(--make), in the package(--package) or configured for artifact(--artifact).</td></tr>
         </table>
     </section>
     <section id="deployments">
@@ -549,14 +583,19 @@
         <p>All command arguments are parsed and processed into following variables available to retrieve any time via drush_get_context('VAR_NAME');
         </p>
         <ul>
-            <li>FLOW_WIDGET_NAME: the name of artifact taken from first arg</li>
-            <li>FLOW_WIDGET_TYPE: the type of artifact taken form second arg</li>
-            <li>FLOW_PROFILE_NAME: the name of the profile make file</li>
-            <li>FLOW_WIDGET_VER: the version of package taken from flag '--ver'</li>
-            <li>FLOW_WIDGET_MIN: whether the dependencies are included taken from flag '--min'</li>
-            <li>FLOW_WIDGET_BRANCH: the branch of the package taken from flag '--branch'</li>
-            <li>FLOW_WIDGET_ALIAS: the alias record all loaded by name specified by user input with '@'</li>
-            <li>FLOW_PACKAGE_DIR: the path to the directory of package specified by flag --package. It defaults to DIST/package dir or current dir/package </li>
+            <li>WF_ASSET_NAME: the name of artifact taken from first arg. This can also be set with tag --artifact</li>
+            <li>WF_ASSET_TYPE: the type of artifact taken form second arg</li>
+            <li>WF_PROFILE_NAME: the name of the profile make file</li>
+            <li>WF_ASSET_VER: the version of package taken from flag '--ver'</li>
+            <li>WF_ASSET_MIN: whether the dependencies are included taken from flag '--min'</li>
+            <li>WF_ASSET_BRANCH: the branch of the asset taken from flag '--branch'</li>
+            <li>WF_ASSET_ENV:  the deployment mode for asset such as dev, stage, test,etc</li>
+            <li>WF_ASSET_MAKE: make file of asset provided by user via flag '--make'.</li>
+            <li>WF_ASSET_PACKAGE: the path to the package directory or compressed package of asset specified by flag --package. It defaults to DIST/"package dir" or "current dir"/package </li>
+            <li>WF_ALIAS: the alias record all loaded by name specified by user input with '@'</li>
+            <li>WF_INPUT_PARAM: list of arguments to pass into action if called dynamically from execute-action DRUSH command</li>
+            <li>WF_INPUT_TAG: list of tags assigned to actions to be executed via DRUSH command - configure-asset</li>
+            <li>WF_INPUT_ACTION:list of action to execute via DRUSH command - configure-asset</li>
         </ul>
 
     </section>
@@ -566,23 +605,66 @@
         <p>Here are list of available env variables that are initiated at the bootstrap time read from external configurations
         </p>
         <ul>
-            <li><b>FLOW_CONFIG_WORK_DIR:</b> This is location of all artifact repositories where the development takes place and is specified in the environment configurations with 'work_dir'. If not specified, then defaults to $HOME/workflow/work-dir </li>
-            <li><b>FLOW_CONFIG_MAKE_ROOT:</b> This is location of all artifact blueprints reside and is specified in the environment configurations with 'make_root'. If not specified, then defaults to $HOME/workflow/blueprints </li>
-            <li><b>FLOW_CONFIG_DIST:</b> This is location where all the built packages are kept. It is specified in the environment configurations with 'dist'. If not specified, then defaults to $HOME/workflow/dist </li>
-            <li><b>FLOW_CONFIG_DEFAULT_MAKE:</b> This is blueprint(make file) for site installs as well as any shared actions, artifact info. It is specified in the environment configurations with 'make_file'. If not specified, then defaults to make_root/build-drupal-core.make </li>
-            <li><b>FLOW_DB_USER:</b> This database username used for site installs. It is specified in the environment configurations with 'db_user'. If not specified, then defaults it defaults to "root"</li>
-            <li><b>FLOW_DB_PWD:</b> This database user password for site installations. It is specified in the environment configurations with 'db_pwd'. If not specified, then defaults to "password" </li>
-            <li><b>FLOW_ARTIFACTS_TYPES:</b> Array of different artifact types - widget, theme, etc that can be specified in external environment configurations via '$artifact_types'. If not specified, then defaults to two types - "widget","theme" </li>
+            <li><b>WF_ROOT:</b> This is location of WorkFlow root. It is used for cache as well as default location for blueprints, distributions, etc if not specified other location. The default dir for root of WorkFlow tool is $HOME/workflow </li>
+            <li><b>WF_WORK_DIR:</b> This is location of all artifact repositories where the development takes place and is specified in the environment configurations with 'work_dir'. If not specified, then defaults to $HOME/workflow/work-dir </li>
+            <li><b>WF_MAKE_ROOT:</b> This is location of all artifact blueprints reside and is specified in the environment configurations with 'make_root'. If not specified, then defaults to $HOME/workflow/blueprints </li>
+            <li><b>WF_CACHED_MAKE:</b> the make file gets cached in this location</li>
+            <li><b>WF_DIST:</b> This is location where all the built packages are kept. It is specified in the environment configurations with 'dist'. If not specified, then defaults to $HOME/workflow/dist </li>
+            <li><b>WF_DEFAULT_MAKE:</b> This is blueprint(make file) for site installs as well as any shared actions, artifact info. It is specified in the environment configurations with 'make_file'. If not specified, then defaults to make_root/build-drupal-core.make </li>
+            <li><b>WF_DB_USER:</b> This database username used for site installs. It is specified in the environment configurations with 'db_user'. If not specified, then defaults it defaults to "root"</li>
+            <li><b>WF_DB_PWD:</b> This database user password for site installations. It is specified in the environment configurations with 'db_pwd'. If not specified, then defaults to "password" </li>
+            <li><b>WF_PACKAGE_PREFIX:</b> The prefix added to the package name of asset configurable at the external environment configuration at build process</li>
+            <li><b>WF_ARTIFACTS:</b>List of artifacts as declared in the artifacts.drushrc.php that is merged with artifact declarations in the make file before storing into this variable </li>
+            <li><b>WF_ARTIFACTS_TYPES:</b> Array of different artifact types - widget, theme, etc that can be specified in external environment configurations via '$artifact_types'. If not specified, then defaults to two types - "widget","theme" </li>
         </ul>
     </section>
-    <section id="depenencies">
-        <h3>Dependent Modules - @ToDo ...</h3>
-        <hr>
+    <section id="profiler">
+        <h3>Profiler</h3><hr>
+        <h4>About Profiler</h4>
+
+        <h4>Profiles Overview</h4>
         <ul>
             <li>menu_html : to allow html in menu items</li>
             <li>context : to reuse blocks such as search block,etc</li>
         </ul>
     </section>
+    <section id="developers">
+        <h3>Developers Section</h3><hr>
+        <h4>Handy Commands</h4>
+        <p>You may find following commands handy when developing assets(we recommend creating shell alias)</p>
+        <table>
+            <tr><th>Command</th><th>Description</th></tr>
+            <tr><td>ea get_artifact_info --asset=ASSET-NAME</td><td>Compares versions of each artifact in asset between the make file and working directory</td></tr>
+            <tr><td>ea list_updated_artifacts --asset=ASSET-NAME</td><td>goes through working directory for each artifact in the asset and displays ones changed(those that have uncommitted changes)</td></tr>
+            <tr><td>ea see_diff --param=ARTIFACT-NAME</td><td>it shows uncommitted changes in the working directory of the artifact. This is handy quick look what changed after running status and seeing with artifacts have been updated before commiting anything</td></tr>
+            <tr><td>ea update_work_dir --param=ARTIFACT-NAME1,ARTIFACT-NAME2</td><td>updates verions in .info and commits,push,tags changes for the ARTIFACTS specified in the working directory</td></tr>
+        </table>
+    </section>
+    <section id="tags">
+        <h3>Tags</h3><hr>
+        <h4>Tags Overview</h4>
+        <p>WorkFlow has actions that are tasks to do something such as configure audio, enable editor, etc. A larger task such as configure video may take many smaller tasks(i.e download lib, enable modules, link library,etc), so to better handle this we have tags.
+            You can assign one or many tags to each action in that way grouping common tasks together that can be triggered based on one tag. In another words,
+            you can DRush command 'execute-action'[ea] and provide a tag which will take and execute all actions associated with this tag.
+            </p>
+         <p>Actions are also declarative and are declared in blueprint(make file). This provides a way for you repeat actions whenever you wish. It also provides
+             way for you to share actions. In WorkFlow, the shared actions are imported at the build process into all packages, so you can reuse them. Here is
+        how you can call them</p>
+        <code>
+            drush ca @ALIAS --tag=TAG-NAME --asset=ASSET-NAME
+            drush ca @ALIAS --tag=TAG-NAME --make=path/to/make/file
+            drush ca @ALIAS --tag=TAG-NAME --package=path/to/package
+        </code>
+        <p>So, by providing tag, you would call different tasks</p>
+        <h4>Tags Overview</h4>
+        <p>In the following is overview of available task out of box from WorkFlow</p>
+        <table>
+            <tr><th>Tag</th>><th>Description</th></tr>
+            <tr><td>editor</td><td>enable editor currently set to CKEditor. We have also included 25 most popular CKEditor plugins</td></tr>
+            <tr><td>dev</td><td>this installs developer modules such as admin_menu,module_filter,coffee</td></tr>
+        </table>
+    </section>
+
     <section id="troubleshooting">
         <h3>Troubleshooting</h3>
 

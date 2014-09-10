@@ -49,18 +49,18 @@ function configure_video_action($module_name, $video_player = 'video-js')
 
 function configure_editor_action($module_name, $editor = 'ckeditor')
 {
-    $alias_record = drush_get_context('FLOW_WIDGET_ALIAS');
-    define('DRUPAL_ROOT', $alias_record['root']);
+    $alias_record = drush_get_context('WF_ALIAS');
+//    define('DRUPAL_ROOT', $alias_record['root']);
 
     $editor_dest = $alias_record['root'] . '/sites/all/libraries/ckeditor';
     $path = drupal_get_path('module', $module_name);
 
     //enabling module
-    drush_log('enabling module - ' . $module_name . '....', 'notice');
+    drush_log('enabling module - ' . $module_name . '....', 'ok');
     enable_artifact_action($module_name);
 
     //enabling module
-    drush_log('enabling module - ' . $editor . '....', 'notice');
+    drush_log('enabling module - ' . $editor . '....', 'ok');
     enable_artifact_action($editor);
 
     //enabling module
@@ -68,7 +68,7 @@ function configure_editor_action($module_name, $editor = 'ckeditor')
     enable_artifact_action('imce');
 
     //link CKeditor
-    drush_log('linking ' . $editor . ' library....', 'notice');
+    drush_log('linking ' . $editor . ' library....', 'ok');
 
     if (!file_exists('sites/all/libraries')) {
         drush_log('sites/all/libraries directory does not exist...creating one', 'notice');
@@ -126,52 +126,85 @@ function configure_audio_action($module_name, $audio_player = "wpaudioplayer")
  */
 function get_make_file_action($name = NULL)
 {
-    $name = (isset($name)) ? $name : drush_get_context('FLOW_WIDGET_NAME');
+    $name = (isset($name)) ? $name : drush_get_context('WF_ASSET_NAME');
     $make_file = get_make_file($name);
     return $make_file;
 }
 
 /*
  * reads all the 'widget' modules and 'project' modules from make file. Then downloads all missing dependencies. Afterwards,
- * it enables all the dependencies except the ones specified as 'widgets' in the make file
+ * it enables all inactive dependencies except modules with prefix as defined in workflow external environment configurations
  *
  */
 function configure_all_dependencies_action()
 {
+    $alias = drush_get_context('WF_ALIAS');
     $make_file = get_make_file_action();
-    $alias = drush_get_context('FLOW_WIDGET_ALIAS');
 
     //grab all dependencies from make file
     $widget_dependencies = get_widget_dependencies_action($make_file);
     $project_dependencies = get_project_dependencies_action($make_file);
     $all_dependent_modules = (isset($project_dependencies) && is_array($project_dependencies)) ? array_unique(array_merge($widget_dependencies, $project_dependencies)) : $widget_dependencies;
+    drush_log(dt('ALL DEPENDENT: @modules', array('@modules' => "\n" . implode(',' . "\n", $all_dependent_modules))) . "\n", 'notice');
+
     //make only the ones disabled or uninstalled to be enabled
     $cur_enabled = array_keys(drush_module_list());
-//    $all_not_enabled = array_diff($all_dependent_modules, $cur_enabled);
-    $all_not_enabled = array_udiff($all_dependent_modules, $cur_enabled, 'compare_module_names');
-    $depenencies_not_enabled = array_intersect($all_dependent_modules, $all_not_enabled);
+    drush_log(dt('ALL ENABLED: @modules', array('@modules' => "\n" . implode(',' . "\n", $cur_enabled))) . "\n", 'notice');
 
-    if(empty($depenencies_not_enabled)){
-        drush_log('all dependencies are already installed & enabled','ok');
-    }else{
-        drush_log(dt('inactive dependencies:'."\n".' @modules', array('@modules' => implode(',' . "\n", $depenencies_not_enabled))), 'ok');
+    //@ToDo make array_udiff execute accordingly...
+    //    $all_not_enabled = array_udiff($all_dependent_modules, $cur_enabled, 'compare_module_names');
+
+    //remove artifacts of the package themselves ...those are handled separately
+    $declared_artifacts = get_artifacts_from_blueprint('widget');
+    $artifact_modules = get_widget_module_names(_array_column($declared_artifacts, 'name'));
+
+    $depenencies_not_enabled = array();
+    foreach ($all_dependent_modules as $key => $dependent) {
+        if (!in_array(strip_ver($dependent), $cur_enabled) && !in_array($dependent, $artifact_modules)) {
+            $depenencies_not_enabled[] = $dependent;
+        }
     }
 
-    //enable inactive dependencies
-    foreach ($depenencies_not_enabled as $key => $dependent_module) {
+    //filter out workflow modules
+    $filtered_inactive_dependencies = array_filter($depenencies_not_enabled, 'not_workflow_module');
+    //version map
+    $version_map = array(); //for keeping vesions for download later
+    $striped_dependencies = array_unique(striped_dependencies($filtered_inactive_dependencies, $version_map));
 
-        //@ToDo fix the bug for 'features_extra' break
-        if ($dependent_module != 'features_extra') {
-            //download first if module with different version than stable
-            $name_tockens = explode('-', $dependent_module);
-            if (count($name_tockens) > 1) {
-                //
-                drush_log('module ' . $dependent_module . ((drush_invoke_process($alias, "pm-download", array($dependent_module)) ? ' WAS ' : ' WAS NOT')) . ' downloaded', 'ok');
-                //strip version, so it can be enabled
-                $dependent_module = array_shift($name_tockens);
+//    print('***version map***');
+//    print_r($version_map);
+
+
+    if (empty($striped_dependencies)) {
+        drush_log('all dependencies are already installed & enabled', 'ok');
+    } else {
+        drush_log(dt('inactive dependencies:' . "\n" . ' @modules', array('@modules' => implode(',' . "\n", $striped_dependencies))), 'ok');
+
+        //enable inactive dependencies
+        foreach ($striped_dependencies as $key => $dependent_module) {
+            /***Download***/
+            //@ToDo fix the bug for 'features_extra' break
+            //download first if module is not present or it is with different version than stable
+            $target_module = (isset($version_map[$dependent_module])) ? $dependent_module . '-' . $version_map[$dependent_module] : $dependent_module;
+//            $name_tokens = explode('-', $target_module);
+
+            //checks to see if module isn't present already or it has been different version than the stable version
+            if (!is_module_present(strip_ver($dependent_module)) || $target_module !=$dependent_module ) {
+                drush_log('module ' . $target_module . ((drush_invoke_process($alias, "pm-download", array($target_module)) ? ' WAS ' : ' WAS NOT')) . ' downloaded', 'ok');
+            } else {
+                drush_log("\n".'module - ' . $dependent_module . ' is already present...skip downloading', 'ok');
             }
 
-            drush_log('module ' . $dependent_module . ((drush_invoke_process($alias, "pm-enable", array($dependent_module)) ? ' WAS ' : ' WAS NOT')) . ' enabled', 'ok');
+            /***Enable***/
+            //strip version, so it can be enabled
+//            $dependent_module = array_shift($name_tokens);
+            $target = _fix_dependency($dependent_module);
+            if (!module_exists($target)) {
+                drush_log('module ' . $target . ((drush_invoke_process($alias, "pm-enable", array($target)) ? ' WAS ' : ' WAS NOT')) . ' enabled', 'ok');
+            } else {
+                drush_log('module - ' . $target . ' is already enabled...skip enabling', 'ok');
+            }
+
         }
     }
 }
@@ -190,7 +223,7 @@ function download_widget_dependencies_action($make_file)
 {
     //download all projects specified in the .make file
     $widget_modules = get_widget_dependencies_action($make_file);
-    $alias = drush_get_context('FLOW_WIDGET_ALIAS');
+    $alias = drush_get_context('WF_ALIAS');
 
     foreach ($widget_modules as $key => $module) {
         //download
@@ -198,6 +231,19 @@ function download_widget_dependencies_action($make_file)
         drush_log('module ' . $module . ((drush_invoke_process($alias, "pm-download", array($module)) ? ' WAS ' : ' WAS NOT')) . ' downloaded', 'ok');
     }
 }
+
+/**
+ * Downloads one or many modules
+ * @param $name
+ *      the name of module to download one by one
+ */
+function download_module_action($name)
+{
+    $args = func_get_args();
+    $site_record = drush_get_context('WF_ALIAS', '@self');
+    drush_log('module ' . $name . ((drush_invoke_process($site_record, "pm-download", $args) ? ' WAS ' : ' WAS NOT')) . ' downloaded', 'notice');
+}
+
 
 /*
  * Reads make file and downloads all the dependencies specified with 'project'
@@ -208,15 +254,19 @@ function download_widget_dependencies_action($make_file)
  * @return: array
  *     module names declared in make file with 'project' tag
  */
-function download_project_dependencies_action($make_file)
+function dl_project_dependencies_action($make_file = '')
 {
+    $make = (!empty($make_file)) ? $make_file : get_make_file();
     //download all projects specified in the .make file
-    $project_modules = get_project_dependencies_action($make_file);
+    $project_modules = get_project_dependencies_action($make);
 
     foreach ($project_modules as $key => $module) {
         //download
-        drush_log('about do download ' . $module . "...", 'notice');
-        drush_log('module ' . $module . ((drush_invoke_process("@self", "pm-download", array($module)) ? ' WAS ' : ' WAS NOT')) . ' downloaded', 'ok');
+        if (!module_exists($module)) {
+            drush_log('module ' . $module . ((drush_invoke_process("@self", "pm-download", array($module)) ? ' WAS ' : ' WAS NOT')) . ' downloaded', 'ok');
+        } else {
+            drush_log('module - ' . $module . ' already present...skip downloading', 'notice');
+        }
     }
 }
 
@@ -305,12 +355,10 @@ function link_action($src_dir, $dest_dir)
 }
 
 /*
- * Enables module or theme by name on instance specified by alias
+ * Enables one or many modules or themes by name on instance specified by alias
  *
  * @param $name
- *      the name of module
- * @param $alias
- *      the alias of instance module to enable
+ *      the names of modules to be enabled
  *
  * action[en-context][name] = enable_artifact
  * action[en-context][order] = 1
@@ -320,7 +368,7 @@ function link_action($src_dir, $dest_dir)
 function enable_artifact_action($name)
 {
     $args = func_get_args();
-    $site_record = drush_get_context('FLOW_WIDGET_ALIAS', '@self');
+    $site_record = drush_get_context('WF_ALIAS', '@self');
     //@ToDo implement check if artifact is not present, then download
     drush_log('artifact ' . $name . ((drush_invoke_process($site_record, "pm-enable", $args) ? ' WAS ' : ' WAS NOT')) . ' enabled', 'notice');
 }
@@ -328,7 +376,7 @@ function enable_artifact_action($name)
 function revert_feature_action($name)
 {
     $args = func_get_args();
-    $site_record = drush_get_context('FLOW_WIDGET_ALIAS', '@self');
+    $site_record = drush_get_context('WF_ALIAS', '@self');
     foreach ($args as $key => $feature) {
         drush_log('artifact ' . $feature . ((drush_invoke_process($site_record, 'features-revert', array($feature))) ? ' WAS ' : ' WAS NOT') . ' reverted', 'notice');
     }
@@ -407,3 +455,115 @@ function configure_jquery_action($ver = "1.10", $compression = "min")
     set_action('jquery_update_jquery_admin_version', "1.10");
     set_action('jquery_update_jquery_version', "1.10");
 }
+
+/*
+ * Enable permissions to the public directory
+ */
+function permit_public_dir_action($permissions = '777', $dir = 'sites/default/files')
+{
+    $alias = drush_get_context('WF_ALIAS');
+    $pub_dir = (isset($alias) && isset($alias['root'])) ? $alias['root'] . '/sites/default/files' : '';
+
+    execute_command('sudo chmod -R ' . $permissions . ' ' . $pub_dir);
+}
+
+/**
+ * list info about each artifact
+ *
+ */
+function get_artifact_info_action()
+{
+    $make = get_make_file();
+
+    if (!file_exists($make)) {
+        drush_die(dt('ERROR: the blueprint(make file) not provided'), 0);
+    }
+    $all_artifacts = get_artifacts_from_blueprint();
+    $table = array();
+    $header = array('Name', 'Blueprint (ver)', 'Work Dir (ver)', 'Status');
+    foreach ($all_artifacts as $key => $artifact) {
+        $blueprint_ver = get_artifact_blueprint_ver($artifact['name']);
+        $table[] = array($artifact['name'], $artifact['ver'], $blueprint_ver, ($blueprint_ver == $artifact['ver']) ? 'newest' : 'NOT NEWEST');
+    }
+    array_unshift($table, $header);
+    drush_print_table($table, TRUE);
+}
+
+
+/**
+ * list artifacts that have been changed but not commited yet in working dir
+ * @return
+ *      prints artifact names
+ */
+
+function list_updated_artifacts_action()
+{
+    $updated_artifacts = get_uncommitted_artifacts();
+    if (empty($updated_artifacts)) {
+        drush_log('all artifact\'s working directories are up to date', 'ok');
+    } else {
+        foreach ($updated_artifacts as $key => $artifact) {
+            drush_log($artifact['name'] . ' been updated and is not committed', 'ok');
+        }
+    }
+}
+
+/**
+ * update each artifact's working directory in blueprint if anything changed for particular package/artifact
+ *
+ */
+function update_all_work_dir_action($message = 'updated work dir')
+{
+    $updated_artifacts = get_uncommitted_artifacts();
+    foreach ($updated_artifacts as $key => $artifact) {
+//        print('name: ' . $artifact['name']);
+        update_work_dir_action($artifact['name'], $message);
+    }
+}
+
+/**
+ * updates artifact's working directory if anything changed for particular package/artifact
+ *
+ */
+function update_work_dir_action($artifact_name, $message = 'updated work dir')
+{
+    $work_dir = get_artifact_work_dir($artifact_name);
+    $artifact = get_artifact_by_name($artifact_name);
+    $new_ver = increment_blueprint_ver($work_dir);
+    chdir($work_dir);
+    drush_shell_exec('git add .');
+    drush_log('OUTPUT[git add .]:' . implode(',', drush_shell_exec_output()), 'notice');
+    drush_shell_exec('git commit -m "' . $message . ' - ' . $new_ver . '"');
+    drush_log('OUTPUT[git commit]:' . implode(',', drush_shell_exec_output()), 'notice');
+    drush_shell_exec('git tag -a "' . $new_ver . '" -m "update ver:' . $new_ver . '"');
+    drush_log('OUTPUT[git tag ]:' . implode(',', drush_shell_exec_output()), 'notice');
+
+    $branch = (isset($artifact['branch']) && !empty($artifact['branch'])) ? $artifact['branch'] : 'master';
+    drush_shell_exec('git push origin ' . $branch);
+    drush_log('OUTPUT[git push origin]:' . implode(',', drush_shell_exec_output()), 'notice');
+    drush_shell_exec('git push --tags "');
+    drush_log('OUTPUT[git push tags ]:' . implode(',', drush_shell_exec_output()), 'notice');
+
+    drush_log('artifact - ' . $artifact_name . ' was updated to ver: ' . $new_ver, 'ok');
+}
+
+/**
+ * goes to the artifact working dir and grabs uncommitted differences to display
+ * @param: $artifact_name
+ *      artifact name to which working dir it will go
+ */
+function see_diff_action($artifact_name)
+{
+    $work_dir = get_artifact_work_dir($artifact_name);
+    drush_log('looking into work dir - ' . $work_dir, 'notice');
+    chdir($work_dir);
+    drush_shell_exec('git diff');
+    $diff = drush_shell_exec_output();
+    drush_shell_exec('git diff --staged');
+    $output = array_merge($diff, drush_shell_exec_output());
+    print_r($output);
+}
+
+
+
+

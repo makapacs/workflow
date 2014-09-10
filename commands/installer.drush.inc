@@ -12,17 +12,18 @@ function installer_drush_command()
 //            'makefile' => 'blueprint of drupal installation'
         ),
         'options' => array(
-            '--env' => 'environment of the site such as dev, stage, test, etc. By default it\'s stage',
-            '--su' => 'site admin user. By default, it\'s "admin"',
-            '--su-pw' => 'site admin user password. By default, it\'s "password"',
-            '--db-user' => 'database user name. If not set, will use the general db user configured part of WorkFlow external configurations',
-            '--db-pwd' => 'database password. If not set, will use the general db password configured part of WorkFlow external configurations',
-            '--db-name' => 'the name of database. By default, it is constructed $env + "_" + $alias "_" + db or how its specified in alias configration - "db_name"',
-            '--make-file' => 'make file for the drupal installation. It can also be configured either at the alias site and external env configurations',
-            '--dest' => 'full path to destination directory. If not specified, it will use the "root" value from the site alias configurations'
+            'env' => 'environment of the site such as dev, stage, test, etc. By default it\'s stage',
+            'su' => 'site admin user. By default, it\'s "admin"',
+            'su-pw' => 'site admin user password. By default, it\'s "password"',
+            'db-user' => 'database user name. If not set, will use the general db user configured part of WorkFlow external configurations',
+            'db-pwd' => 'database password. If not set, will use the general db password configured part of WorkFlow external configurations',
+            'db-name' => 'the name of database. By default, it is constructed $env + "_" + $alias "_" + db or how its specified in alias configration - "db_name"',
+            'make' => 'make file for the drupal installation. It can also be configured either at the alias site and external env configurations',
+            'dest' => 'full path to destination directory. If not specified, it will use the "root" value from the site alias configurations'
         ),
         'examples' => array(
-            'drush is @awesomeness' => 'downloads and installs the awesomeness',
+            'drush is @awesomeness' => 'downloads and installs the awesomeness based on the make file declared in the alias or in the external configurations',
+            'drush is --make-file=path/to/make-file.make' => 'downloads and installs the awesomeness from make file provided'
         ),
         'aliases' => array('is'),
         'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -32,17 +33,25 @@ function installer_drush_command()
 
 function drush_install_site_init()
 {
-    load_workflow();
-    read_config();
+//    load_workflow();
+//    read_config();
 //    init_workflow();
+
+    read_config();
+//    read_artifacts();
+    init_inputs();
+    load_slim_drupal();
+//    load_drupal();
+    load_workflow();
 }
 
-function drush_installer_install_site($alias = '@self')
+function drush_installer_install_site($alias='@self')
 {
     drush_log('installing drupal instance...', 'ok');
 
     //retrieve db_user & db_password
-    $site_record = drush_sitealias_get_record($alias);
+//    $site_record = drush_sitealias_get_record($alias);
+    $site_record = drush_get_context('WF_ALIAS');
     //retrieve alias
     if($env = drush_get_option('env', TRUE)){
         //$env not provided...see if specified in alias config.
@@ -60,7 +69,7 @@ function drush_installer_install_site($alias = '@self')
             $db_name = $site_record['db-name'];
         }else{
             //not provided in alias...construct from env, alias values
-            $db_name = $env . '_' . $alias . '_db';
+            $db_name = $env . '_' . $site_record['#name'] . '_db';
         }
     }
 
@@ -71,7 +80,7 @@ function drush_installer_install_site($alias = '@self')
             $db_user = $site_record['db-user'];
         }else{
             //not provided in alias...see if in general config. otherwise construct from env,alias
-            ($db_user = drush_get_context('FLOW_DB_USER', FALSE)) ? /* using from external configs*/ : $db_user = $env . '_' . $alias;
+            ($db_user = drush_get_context('WF_DB_USER', FALSE)) ? /* using from external configs*/ : $db_user = $env . '_' . $alias;
         }
     }
 
@@ -81,7 +90,7 @@ function drush_installer_install_site($alias = '@self')
             $db_pwd = $site_record['db-pwd'];
         }else{
             //db_pwd not provided in alias configs...see if specified in general configs. if not, use 'password'
-            ($db_pwd = drush_get_context('FLOW_DB_PWD', FALSE)) ? /* using from external configs*/ : $db_pwd = 'password';
+            ($db_pwd = drush_get_context('FW_DB_PWD', FALSE)) ? /* using from external configs*/ : $db_pwd = 'password';
         }
 
     }
@@ -174,7 +183,7 @@ function drush_installer_install_site($alias = '@self')
             $default_dest = $site_record['root'];
         }else{
             //$default_dest not provided in alias configs...defaulting to root/deploys/env-alias
-            $default_dest = drush_get_context('FLOW_CONFIG_WORK_DIR', FALSE) . '/deploys/'.$env . '-' . $alias;
+            $default_dest = drush_get_context('WF_WORK_DIR', FALSE) . '/deploys/'.$env . '-' . $alias;
 //            return drush_set_error('WORKFLOW_INSTALLER_ERROR', dt('ERROR: the destination directory is not provided' ));
         }
     }
