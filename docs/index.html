@@ -10,7 +10,7 @@
 <head>
     <meta charset="utf-8">
 
-    <title>Artifact Flow - Workflow building, deploying, configuring artifacts</title>
+    <title>WorkFlow - Workflow building, deploying, configuring artifacts</title>
 
     <meta name="description"
           content="Workflow for building, deploying, configuring artifacts on Drupal platform. Please feel free to email via my user page contact form here. Thanks so much!">
@@ -119,31 +119,43 @@
         <a id="textual" href="http://designssquare.com" target="_blank" title="Design Square">
             Designs <span class="title-highlight">Square</span>
         </a>
-        <p id='tagline'>Inspiration Designs. Practical Widgets</p>
+        <p id='tagline' style="padding-left:5px;padding-right: 5px;text-align: center">Inspiration Designs. Practical Widgets</p>
     </div>
     <ol id="documenter_nav">
         <li><a class="current" href="#documenter_cover">Start</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#installation">Installation</a></li>
-        <li><a href="#menus">Menus</a></li>
-        <li><a href="#theme_settings">Theme Settings</a></li>
-        <li><a href="#regions">Regions</a></li>
-        <li><a href="#depenencies">Drupal Dependencies</a></li>
+        <li><a href="#terminology">Terminology</a></li>
+        <li><a href="#asset_naming">Asset Naming</a></li>
+        <li><a href="#blueprint">Blueprint</a></li>
+        <li><a href="#alias_config">Alias Configuration</a></li>
+        <li><a href="#artifacts">Artifacts</a></li>
+        <li><a href="#configurations">Configurations</a></li>
+        <li><a href="#conventional">Conventions</a></li>
+        <li><a href="#actions">Actions</a></li>
+        <li><a href="#commands">Commands</a></li>
+        <li><a href="#deployments">Deployment</a></li>
+        <li><a href="#arguments_api">Arguments API</a></li>
+        <li><a href="#variable_api">Variable API</a></li>
+        <li><a href="#profiler">Profiler</a></li>
+        <li><a href="#tags">Tags</a></li>
+        <li><a href="#developers">Developers</a></li>
+        <li><a href="#how_to">How To</a></li>
         <li><a href="#troubleshooting">Troubleshooting</a></li>
-        <li><a href="#backlog">Future Releases</a></li>
-        <li><a href="#releases">Release History</a></li>
+        <li><a href="#backlog">Backlog</a></li>
+        <li><a href="#releases">Releases</a></li>
     </ol>
     <div id="documenter_copyright">Copyright DesignsSquare.com 2014
     </div>
 </div>
 <div id="documenter_content">
     <section id="documenter_cover">
-        <h1>WorkFlow - Drupal Tool Documentation</h1>
+        <h1>WorkFlow Documentation</h1>
 
-        <h2>Effective Drupal tool</h2>
+        <h2>Drush Tool For Developers</h2>
         <hr>
         <ul>
-            <li>Last Updated: Aug 24, 2014</li>
+            <li>Last Updated: Sep 11, 2014</li>
             <li>Developed By: DesignsSquare.com</li>
             <li><a href="">
             </a>
@@ -155,10 +167,12 @@
         <h3>About</h3>
         <hr>
         <h4>Overall</h4>
-        <p>WorkFlow Drupal tool is used to build assets from artifacts, deploy and configure these assets into other drupal instances among other things</p>
-        <p>Each asset contains any number of artifacts with one of the two types - widget and theme, but is not limited to only those two types. You can add any type at any given type</p>
-        <h4>Blueprint is the DNA</h4>
-        <p>Each asset has a blueprint or also knowned as make file. The blueprint specifies all the artifacts to include in the asset, the action to apply and dependencies to download among other things for whatever you do - build, deploay, configure,etc. There are 3 main ways to
+        <p>WorkFlow is a tool used to build assets, deploy and configure these assets on drupal instances among other things</p>
+        <p>Each asset contains any number of artifacts with one of the two types - widget and theme, but is not limited to only those two types.
+            You can add any type at any given type</p>
+        <p>Each asset has actions that are tasks that can be applied at the time of installation and configuration of asset</p>
+        <p>Each asset has a blueprint or also known as make file. The blueprint specifies all the artifacts to include in the asset,
+            the associated actions among other things for whenever you build, deploay or configure asset. There are 3 main ways to
         supply the blueprint from command line:
         <ol>
         <li><b>--asset:</b> by providing a name of asset, WorkFlow will locate the blueprint following conventions(see 'conventions' section) and environment configurations (see 'External Environment Configurations' section)</li>
@@ -168,21 +182,20 @@
         You only need to do one of the above to provide blueprint for tool to execute
         </p>
         <h4>Deployment Modes</h4>
-        <p>When deploying asset, you have a choice to deploy in one of the 3 forms - dev, test or stage. Each of the forms differ in how assets are downloaded and setup into your Drupal instance. In the
+        <p>When deploying asset, you have a choice to deploy it in one of the 3 forms - dev, test or stage. Each of the forms differ in how 
+            assets are downloaded and setup into your Drupal instance. In the
         following, is quick overview:
         <ul>
         <li><b>DEV:</b> artifacts are linked to from the working directory into the drupal instance for quick easy changes</li>
         <li><b>TEST:</b> artifacts are copied from package provided. This is perfect for testing before shipping asset</li>
-        <li><b>STAGE:</b> artifacts are cloned from github. Besides deploying in productions, this is great method for delivering
-            assets as well. Instead of transferring large package, its enough to provide the blueprint(make file) to the client that they can deploy
-            in 'STAGE' mode and the tool will download all from github based on version, branch specified in the blurprint of asset</li>
+        <li><b>STAGE:</b> artifacts are cloned from github.</li>
         </ul>
         </p>
         <h4>Whats included?</h4>
         <p>
             <ul>
                 <li>Documentation at the 'docs/index.html' </li>
-                <li>Samples at /samples directory</li>
+                <li>Workflow sandbox with two widgets - blog and portfolio and theme named Espresso</li>
             </ul>
         </p>
 
@@ -194,13 +207,13 @@
         </ul>
     </section>
     <section id="installation">
-        <h3>Installation</h3>
+        <h3>Installation</h3><hr>
         <h4>How To Install?</h4>
 
         <p>In the following are the steps to install Artifact WorkFlow Drupal tool</p>
         <ol>
             <li>
-                <b>Download</b><br>Clone the tool from github repo - ???
+                <b>Download</b><br>Clone the tool from github repo - https://github.com/makapacs/workflow
             </li>
             <li>
                 <b>Incorporate With Drush</b><br>
@@ -209,9 +222,14 @@
                     $options['include'] = array('/path/to/Artifact Workflow tool/commands');
                 </code>
             </li>
-            <li>
-                <b>Configure Your Environment</b><br>
-                Specify your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place it in to DRUSH_ROOT dir as described in 'Configuration' section
+            <li><p>choose one of the two:</p>
+                <ul>
+                    <li>Grab WorkFlow Sandbox from https://github.com/makapacs/workflow-sandbox and start develop. NO CONFIGURATION NEEDED </li>
+                    <li> <b>Configure Your Environment</b><br>
+                        Specify your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place it in to DRUSH_ROOT dir as
+                        described in 'Configuration' section</li>
+                </ul>
+
             </li>
         </ol>
     </section>
@@ -240,13 +258,16 @@
                 such as check the uncommitted changes in working directory, scrap email addresses from file,etc. Actions are also any Drush command. The purpose of actions is to automate repetitive tasks that can be reused by
                 declaring in blueprint(make file) and executing them all at once or per requirements. Actions can also be shared among assets and imported into deliverable package at the build process. See "Actions" section for details
             </li>
+            <li><b>Package</b>
+                Deliverable of asset that can be compressed in tar/zip format. It contains all the artifacts all arranged per directories - modules, themes
+            </li>
 
         </ul>
         <p>The 'prefix' is configured in the Tool configurations. See section "Configurations"</p>
         <p>Depending if the flags '--min', '--ver', '--branch' is provided, the package name is going to be constructed in the order from more specific to general as demostrated above</p>
     </section>
     <section id="asset_naming">
-        <h3>Asset Naming</h3>
+        <h3>Asset Naming</h3><hr>
         <h4>How To Install?</h4>
 
         <p>The final name of asset is combined with the prefix, type of artifact, name of artifact, branch name if present, min if present and version </p>
@@ -261,7 +282,7 @@
         <p>Depending if the flags '--min', '--ver', '--branch' is provided, the package name is going to be constructed in the order from more specific to general as demostrated above</p>
     </section>
     <section id="blueprint">
-        <h3>Blueprint</h3>
+        <h3>Blueprint</h3><hr>
         <h4>About Blueprint</h4>
         <p>every artifact such as widget or theme has its own make file defining all dependencies, configuration that is used to build, deploy,etc</p>
         <h4>Where is Make file located?</h4>
@@ -469,7 +490,7 @@
             with 'prefix'-'artifact type'-'artifact name'. Note, prefix can be configured in external environment configurations(please, see configurations section). In environment configurations, you
              can specify the blueprint root dir via 'make_root'. If 'make_root' is not specified in environment configurations, then it defaults to location - $HOME/workflow/blueprints</p>
     </section>
-    <section id="actions_overview">
+    <section id="actions">
     <h3>Actions Overview</h3>
     <hr>
      <h4>About Actions</h4>
@@ -547,7 +568,7 @@
         <h4>Add Your Own Actions</h4>
         <p>Comming soon...</p>
     </section>
-    <section id="commands_overview">
+    <section id="commands">
         <h3>Commands Overview</h3>
         <hr>
         <p>
@@ -556,11 +577,12 @@
         <table>
             <tr><th>Name</th><th>Alias</th><th>Params</th><td>Flags</td><th>Description</th></tr>
             <tr><td>install-site</td><td>is</td><td>alias</td><td>env,su,su-pw,db-user,db-pwd,db-name,make-file, dest</td><td>installes Drupal instance per make file provided in the destination of the alias or at the root/deploys/env_alias</td></tr>
-            <tr><td>build-artifact</td><td>ba</td><td>name, type</td><td>min,ver,branch</td><td>builds artifact per make file and stores it into distribution dir</td></tr>
-            <tr><td>deploy-artifact</td><td>da</td><td>alias</td><td>artifact,package,make,env,ver,min,branch</td><td>downloads and installs artifacts per make file in site with provided alias in one of the 3 modes - DEV, TEST, STAGE. Be default, artifacts are deployed in STAGE mode </td></tr>
-            <tr><td>destroy-instance</td><td>di</td><td>alias</td><td></td><td>drops tables and removes directory of site specified by alias</td></tr>
+            <tr><td>build-asset</td><td>ba</td><td>name, type</td><td>min,ver,branch</td><td>builds asset per make file and stores it into distribution dir</td></tr>
+            <tr><td>deploy-asset</td><td>da</td><td>alias</td><td>asset,package,make,env,ver,min,branch</td><td>downloads and installs asset per make file in site with provided alias in one of the 3 modes - DEV, TEST, STAGE. Be default, assets are deployed in STAGE mode </td></tr>
+            <tr><td>blow-it</td><td>bi</td><td>alias</td><td></td><td>drops tables and removes directory of site specified by alias</td></tr>
             <tr><td>execute-action</td><td>ea</td><td>action-name, alias</td><td>param</td><td>executes action. The action can also be any drush command. The param flag contains arguments fro the action/drush-command. </td></tr>
-            <tr><td>configure-artifact</td><td>ca</td><td>alias</td><td>tag,actions,package,make,artifact</td><td>configures artifact by applying actions from make file provided(--make), in the package(--package) or configured for artifact(--artifact).</td></tr>
+            <tr><td>configure-asset</td><td>ca</td><td>alias</td><td>tag,actions,package,make,asset</td><td>configures asset by applying actions from make file provided(--make), in the package(--package) or configured for asset(--asset).</td></tr>
+            <tr><td>profile-asset</td></td><td>pa</td><td>profile-name,alias</td><td>tag,actions,package,make,asset</td><td>configures asset by applying actions from make file provided(--make), in the package(--package) or configured for artifact(--asset).</td></tr>
         </table>
     </section>
     <section id="deployments">
@@ -568,13 +590,14 @@
         <h4>DEV (development)</h4>
         <p>When deploying artifacts in DEV mode, it will link the artifacts to its appropriate repositories in the working directory, so changes you make are updated in the
             working directory. By convention, the location of working version of the artifact is located at 'work_dir'/'artifact type'/'artifact name'. This can be overwritten by 'work_dir', 'work_dir_name' attributes
-        of artifact in blue print or artifact external configurations</p>
+        of artifact in blueprint or artifact external configurations</p>
         <h4>TEST</h4>
         <p>When deploying artifacts in TEST mode, it will copy the artifacts from the appropriate package located in your local distribution directory, so before delivering to client
             the package is tested. The distribution dir is configured in the 'dist' variable in external tool configurations. By convention, the packages are stored in 'dist'/'artifact type'/'package name'</p>
         <h4>STAGE</h4>
-        <p>When deploying artifacts in STAGE mode, it will clone the artifacts from external git hub repository per blue print(i.e make file) provided. This may be alternative method to deliver your artifacts. Instead of sending the package,
-            you can only provide the blue print(i.e. make file) and your client can deploy it in STAGE mode that way retrieving all of your artifacts from git hub repository.
+        <p>When deploying artifacts in STAGE mode, it will clone the artifacts from external git hub repository per blueprint(i.e make file) provided. This may be alternative method to deliver your artifacts. Instead of sending the package,
+            you can only provide the blueprint(i.e. make file) and your client can deploy it in STAGE mode that way retrieving all of your artifacts 
+            from git hub repository.
         </p>
     </section>
     <section id="arguments_api">
@@ -621,24 +644,9 @@
     <section id="profiler">
         <h3>Profiler</h3><hr>
         <h4>About Profiler</h4>
-
+<p>@ToDo</p>
         <h4>Profiles Overview</h4>
-        <ul>
-            <li>menu_html : to allow html in menu items</li>
-            <li>context : to reuse blocks such as search block,etc</li>
-        </ul>
-    </section>
-    <section id="developers">
-        <h3>Developers Section</h3><hr>
-        <h4>Handy Commands</h4>
-        <p>You may find following commands handy when developing assets(we recommend creating shell alias)</p>
-        <table>
-            <tr><th>Command</th><th>Description</th></tr>
-            <tr><td>ea get_artifact_info --asset=ASSET-NAME</td><td>Compares versions of each artifact in asset between the make file and working directory</td></tr>
-            <tr><td>ea list_updated_artifacts --asset=ASSET-NAME</td><td>goes through working directory for each artifact in the asset and displays ones changed(those that have uncommitted changes)</td></tr>
-            <tr><td>ea see_diff --param=ARTIFACT-NAME</td><td>it shows uncommitted changes in the working directory of the artifact. This is handy quick look what changed after running status and seeing with artifacts have been updated before commiting anything</td></tr>
-            <tr><td>ea update_work_dir --param=ARTIFACT-NAME1,ARTIFACT-NAME2</td><td>updates verions in .info and commits,push,tags changes for the ARTIFACTS specified in the working directory</td></tr>
-        </table>
+        <p>@ToDo</p>
     </section>
     <section id="tags">
         <h3>Tags</h3><hr>
@@ -664,6 +672,36 @@
             <tr><td>dev</td><td>this installs developer modules such as admin_menu,module_filter,coffee</td></tr>
         </table>
     </section>
+    <section id="developers">
+        <h3>Developers Section</h3><hr>
+        <h4>Handy Commands</h4>
+        <p>You may find following commands handy when developing assets(we recommend creating shell alias)</p>
+        <table>
+            <tr><th>Command</th><th>Description</th></tr>
+            <tr><td>ea get_artifact_info --asset=ASSET-NAME</td><td>Compares versions of each artifact in asset between the make file and working directory</td></tr>
+            <tr><td>ea list_updated_artifacts --asset=ASSET-NAME</td><td>goes through working directory for each artifact in the asset and displays ones changed(those that have uncommitted changes)</td></tr>
+            <tr><td>ea see_diff --param=ARTIFACT-NAME</td><td>it shows uncommitted changes in the working directory of the artifact. This is handy quick look what changed after running status and seeing with artifacts have been updated before commiting anything</td></tr>
+            <tr><td>ea update_work_dir --param=ARTIFACT-NAME1,ARTIFACT-NAME2</td><td>updates verions in .info and commits,push,tags changes for the ARTIFACTS specified in the working directory</td></tr>
+        </table>
+    </section>
+    <section id="how_to">
+        <h3>How To</h3><hr>
+        <h4>How To Install Workflow?</h4>
+        <h4>How to setup Workflow?</h4>
+        <p>The easiest is to clone sand box and configure it as following</p>
+        <ol>
+            <li>clone workflow sand box into your $HOME/workflow directory</li>
+
+        </ol>
+        <h4>How to add new widget?</h4>
+        <p>In the following are steps on configuring new widget(i.e. map widget)</p>
+<ol>
+    <li><b>Configure Working directory: </b>
+
+    </li>
+
+</ol>
+    </section>
 
     <section id="troubleshooting">
         <h3>Troubleshooting</h3>
@@ -680,6 +718,7 @@
         <h3>Things In Progress</h3>
         <hr>
         <ul>
+            <li>create action for generating boilerplate for new artifact</li>
             <li>make one entrance with interactive input for user to specify task and then dispatch to appropriate command </li>
             <li>make UI to run the tool</li>
             <li>make it possible to upload make file via UI</li>
@@ -695,7 +734,7 @@
         <hr>
         <h5>Release 0.2</h5>
         <ul>
-            <li>Menu fix to expand in any page not only defined Node instances</li>
+            <li>initial release</li>
 
         </ul>
     </section>

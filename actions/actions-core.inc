@@ -168,12 +168,8 @@ function configure_all_dependencies_action()
     //filter out workflow modules
     $filtered_inactive_dependencies = array_filter($depenencies_not_enabled, 'not_workflow_module');
     //version map
-    $version_map = array(); //for keeping vesions for download later
+    $version_map = array(); //for keeping versions for download later
     $striped_dependencies = array_unique(striped_dependencies($filtered_inactive_dependencies, $version_map));
-
-//    print('***version map***');
-//    print_r($version_map);
-
 
     if (empty($striped_dependencies)) {
         drush_log('all dependencies are already installed & enabled', 'ok');
@@ -564,6 +560,24 @@ function see_diff_action($artifact_name)
     print_r($output);
 }
 
+/**
+ * Clear all action clears all cash and runs cron jobs
+ */
+function clear_all_action(){
+    if($alias = wf_var('WF_ALIAS',FALSE)){
+        drush_log('clearing all for ' . $alias['root'], 'ok');
+        chdir($alias['root']);
+        drush_shell_exec('drush cc all');
+        $diff = drush_shell_exec_output();
+        drush_log('ouput for clearing cache: ' . "\n".implode(','."\n",$diff) ,'notice');
+        drush_shell_exec('drush cron');
+        $output = array_merge($diff, drush_shell_exec_output());
+        drush_log('ouput for clearing cache: ' . "\n".implode(','."\n",$output) ,'notice');
+    }else{
+        drush_log('ERROR: alias not specified..','ok');
+    }
+
+}
 
 
 

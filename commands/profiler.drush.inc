@@ -202,7 +202,7 @@ function _prepare_deploy_action(&$target_action){
 function _prepare_config_asset_action(&$target_action){
     if($target_action['name'] == 'configure-asset' || $target_action['name'] == 'ca'){
         //we switch the tags around to ensure config,init is called before user specified and then revert at the end
-        $custom_tags = (isset($target_action['option']['tag'][0]) && empty($target_action['option']['tag'][0])) ? $target_action['option']['tag'][0].',' : '' ;
+        $custom_tags = (isset($target_action['option']['tag']) && !empty($target_action['option']['tag'])) ? implode(',',$target_action['option']['tag']).',' : '' ;
         $target_action['option']['tag'] ='config,init,'.$custom_tags.'revert';
     }
 }

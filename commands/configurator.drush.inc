@@ -76,6 +76,8 @@ function drush_configurator_configure_asset($alias = '@self')
         drush_log('adding shared actions from file - ' . drush_get_context('FLOW_CONFIG_DEFAULT_MAKE'), 'notice');
         $all_actions = $all_actions + get_actions_from_make(drush_get_context('WF_DEFAULT_MAKE'));
     }
+    drush_log('All actions: '."\n".implode(','."\n",array_keys($all_actions)),'notice');
+
 
     $glob_vars = array(); //list of return variables to be reused as specified in make file 'result'
     $glob_tags = array(); //list of tags
@@ -90,19 +92,19 @@ function drush_configurator_configure_asset($alias = '@self')
             (isset($all_actions[$action_name])) ? _applay_action($all_actions[$action_name], $glob_vars) : drush_log('action: ' . $action_name . ' was not found', 'notice');
         }
     } elseif (isset($active_tags) && !empty($active_tags)) {
-        drush_log('about to execute actions with tags - ' . implode(',', $active_tags), 'notice');
+        drush_log('about to execute actions with tags - ' . implode(',', $active_tags), 'ok');
         //build tag hash tree
         _build_tags($all_actions, $glob_tags);
 
         foreach ($active_tags as $key => $tag) {
-            drush_log('executing tag - ' . $tag, 'notice');
+            drush_log('executing tag - ' . $tag, 'ok');
             //retrieve all actions for particular tag
             $actions_per_tag = (isset($glob_tags[$tag])) ? $glob_tags[$tag] : array();
             if (empty($actions_per_tag)) {
                 drush_log('No actions found by tag - ' . $tag, 'ok');
             } else {
                 foreach ($actions_per_tag as $key => $action_name) {
-                    drush_log('executing action - ' . $action_name . ' for tag ' . $tag, 'notice');
+                    drush_log('executing action - ' . $action_name . ' for tag ' . $tag, 'ok');
                     $action = $all_actions[$action_name];
                     _applay_action($action, $glob_vars);
                 }

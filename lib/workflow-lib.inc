@@ -20,6 +20,11 @@ function read_artifacts()
     if (!isset($artifacts_file) || empty($artifacts_file)) {
         $artifacts_file = _drush_config_file('system', 'artifacts');
     }
+    if(!isset($artifacts_file) || !file_exists($artifacts_file)){
+        //see if its at WorkFlow default root
+        $artifacts_file = wf_var('WF_ROOT').'/artifacts.drushrc.php';
+    }
+
 
     if (isset($artifacts_file) && !empty($artifacts_file)) {
         @include_once($artifacts_file);
