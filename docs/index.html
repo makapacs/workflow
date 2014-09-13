@@ -141,6 +141,7 @@
         <li><a href="#tags">Tags</a></li>
         <li><a href="#developers">Developers</a></li>
         <li><a href="#how_to">How To</a></li>
+        <li><a href="#sendbox">SandBox</a></li>
         <li><a href="#troubleshooting">Troubleshooting</a></li>
         <li><a href="#backlog">Backlog</a></li>
         <li><a href="#releases">Releases</a></li>
@@ -194,7 +195,7 @@
         <h4>Whats included?</h4>
         <p>
             <ul>
-                <li>Documentation at the 'docs/index.html' </li>
+                <li>Documentation at the 'docs/index.html' or http://designssquare.com/workflow-docs </li>
                 <li>Workflow sandbox with two widgets - blog and portfolio and theme named Espresso</li>
             </ul>
         </p>
@@ -230,6 +231,9 @@
                         described in 'Configuration' section</li>
                 </ul>
 
+            </li>
+            <li>
+                add additional configurations such db user, db password,etc to alias. Please, see <a href="#!/alias_config">Alias Configuration section</a>
             </li>
         </ol>
     </section>
@@ -328,7 +332,7 @@
                 The type of the artifact such as widget, theme, etc. All artifacts without type declared is of type 'widget'
             </li>
             <li><b>repo</b>
-                The url of github account containing the repository of an artifact
+                The url of github account containing the repository of an artifact. Make sure there is forward slash at the end(ie. https://github.com/git-account/)
             </li>
             <li><b>repo_name</b>
                 the repository name in GitHub storing an artifact. The 'repo'/'repo_nam' combains full path to clone artifact
@@ -353,26 +357,26 @@
         <h4>Declaring In Blueprint</h4>
         <p>Each artifact can be declared in the make file as following:</p>
         <code>
-            widget[commerce][name]=commerce
-            widget[commerce][order]=1
-            widget[commerce][final_name]=designssquare_com_widget_commerce
-            widget[commerce][repo]=https://github.com/kapasoft-drupal-modules/
-            widget[commerce][repo_name]=commerce
-            widget[commerce][ver]=v.0.1
-            widget[commerce][work_dir]=/path/to/local/work/dir
-            widget[commerce][work_dir_name]=commerce_widget
+            widget[commerce][name]=commerce<br>
+            widget[commerce][order]=1<br>
+            widget[commerce][final_name]=designssquare_com_widget_commerce<br>
+            widget[commerce][repo]=https://github.com/kapasoft-drupal-modules/<br>
+            widget[commerce][repo_name]=commerce<br>
+            widget[commerce][ver]=v.0.1<br>
+            widget[commerce][work_dir]=/path/to/local/work/dir<br>
+            widget[commerce][work_dir_name]=commerce_widget<br>
             ...
-            theme[bazar][name]=bazar
-            theme[bazar][order]=0
-            theme[bazar][final_name]=bazar
-            theme[bazar][repo]=https://github.com/kapasoft-drupal-modules/
-            theme[bazar][repo_name]=bazar-theme
-            theme[bazar][ver]=v.0.3.1
-            theme[bazar][work_dir_name]=bazar
-            ...
-            YOUR-TYPE[index][name]=name
-            YOUR-TYPE[index][order]=0
-            ...
+            theme[bazar][name]=bazar<br>
+            theme[bazar][order]=0<br>
+            theme[bazar][final_name]=bazar<br>
+            theme[bazar][repo]=https://github.com/kapasoft-drupal-modules/<br>
+            theme[bazar][repo_name]=bazar-theme<br>
+            theme[bazar][ver]=v.0.3.1<br>
+            theme[bazar][work_dir_name]=bazar<br>
+            ...<br>
+            YOUR-TYPE[index][name]=name<br>
+            YOUR-TYPE[index][order]=0<br>
+            ...<br>
         </code>
         <p>Here, we have declared two different type of artifacts. One is widget - commerce and another is theme - Bazar. When declaring artifacts in the make file there additional attribute 'order'
         that provides order of processing the artifacts, because some may depend on another.</p>
@@ -385,22 +389,22 @@
         will mask out ones declared in the external artifact configurations</p>
         <p>To declare artifacts externally, create a file 'artifacts.drushrc.php' and place it any path Drush searches for. Here is the sample format of 'artifacts.drushrc.php':</p>
         <code>
-            //declaring artifacts
-            $artifacts = array();
-            $artifacts['lib'] = array(
-            'name' => 'lib',
-            'repo' => /path/to/repo,
-            'repo_name' => 'designssquare-utils',
-            'final_name' => 'designssquare_com_lib',
-            'work_dir_name' => 'designssquare_lib',
-            );
-            $artifacts['sample_data'] = array(
-            ...
-            );
+            //declaring artifacts<br>
+            $artifacts = array();<br>
+            $artifacts['lib'] = array(<br>
+            'name' => 'lib',<br>
+            'repo' => /path/to/repo,<br>
+            'repo_name' => 'designssquare-utils',<br>
+            'final_name' => 'designssquare_com_lib',<br>
+            'work_dir_name' => 'designssquare_lib',<br>
+            );<br>
+            $artifacts['sample_data'] = array(<br>
+            ...<br>
+            );<br>
         </code>
     </section>
     <section id="configurations">
-        <h3>Configurations</h3><hr>
+        <h3>Environment Configurations</h3><hr>
         <h4>Location of Configurations</h4>
         <p>The configurations are externalized into workflow.drush.inc in DRUSH_ROOT dir($HOME/.drush/ dir) or any location DRUSH searches</p>
         <h4>Available Environment Configurations</h4>
@@ -434,14 +438,14 @@
         <h4>Formatting Environment Configurations</h4>
         <p>The configurations need to be formatted as array of name '$workflow_config' as following:</p>
         <code>
-            $workflow_config = array();
-            $workflow_config['work_dir'] = '/path/to/work/dir';
-            $workflow_config['make_root'] = '/path/to/blueprints';
-            $workflow_config['dist'] = '/path/to/distribution/dir';
-            $workflow_config['package_prefix'] = 'designssquare-com-';
-            $workflow_config['make_file'] = 'path/to/default-make-file.make';
-            $workflow_config['db_user'] = 'username';
-            $workflow_config['db_pwd'] = 'password';
+            $workflow_config = array();<br>
+            $workflow_config['work_dir'] = '/path/to/work/dir';<br>
+            $workflow_config['make_root'] = '/path/to/blueprints';<br>
+            $workflow_config['dist'] = '/path/to/distribution/dir';<br>
+            $workflow_config['package_prefix'] = 'designssquare-com-';<br>
+            $workflow_config['make_file'] = 'path/to/default-make-file.make';<br>
+            $workflow_config['db_user'] = 'username';<br>
+            $workflow_config['db_pwd'] = 'password';<br>
         </code>
         <h4>Available Artifact Configurations</h4>
         <ol>
@@ -453,9 +457,9 @@
         <h4>Formatting Artifact Configurations</h4>
         <p>The artifact configuration is an array of name $artifact_types containing all available artifact types</p>
         <code>
-            $artifact_types = array();
-            $artifact_types[] = 'widget';
-            $artifact_types[] = 'theme';
+            $artifact_types = array();<br>
+            $artifact_types[] = 'widget';<br>
+            $artifact_types[] = 'theme';<br>
         </code>
     </section>
     <section id="conventional">
@@ -500,17 +504,17 @@
     <h4>Declaring Actions</h4>
         <p>The actions are declared in the blueprint(make file) as following</p>
         <code>
-            action[load][name]=enable_artifact
-            action[load][order]=0
-            action[load][tag]=init
-            action[load][param][]=designssquare_lib
-            action[load][param][]=designssquare_lib_sample_data
-            action[load][param][]=espresso
+            action[load][name]=enable_artifact<br>
+            action[load][order]=0<br>
+            action[load][tag]=init<br>
+            action[load][param][]=designssquare_lib<br>
+            action[load][param][]=designssquare_lib_sample_data<br>
+            action[load][param][]=espresso<br>
 
-            action[default_theme][name]=set_default_theme
-            action[default_theme][order]=3
-            action[default_theme][tag]=init
-            action[default_theme][param][]=espresso
+            action[default_theme][name]=set_default_theme<br>
+            action[default_theme][order]=3<br>
+            action[default_theme][tag]=init<br>
+            action[default_theme][param][]=espresso<br>
 
         </code>
         Here, action named 'load' enables two modules - designssquare_lib, designssquare_lib_sample_data and theme "espresso". Afterwards, the action
@@ -553,15 +557,15 @@
         <p>You may have an action which takes an argument that is, perhaps, return of another action. Than you can declare it as variable with 'result'
             index and access it via '@' as following:</p>
         <code>
-            action[get_make][name]=get_make_file
-            action[get_make][order]=0
-            action[get_make][tag]=config
-            action[get_make][result]=make_file
+            action[get_make][name]=get_make_file<br>
+            action[get_make][order]=0<br>
+            action[get_make][tag]=config<br>
+            action[get_make][result]=make_file<br>
 
-            action[config_depend][name]=configure_all_dependencies
-            action[config_depend][order]=1
-            action[config_depend][tag]=config
-            action[config_depend][param][]=@make_file
+            action[config_depend][name]=configure_all_dependencies<br>
+            action[config_depend][order]=1<br>
+            action[config_depend][tag]=config<br>
+            action[config_depend][param][]=@make_file<br>
         </code>
         <p>Here, the action 'get_make' retrieves the make file and than store it in the variable "make_file" that is later reused as an argument in the action - "config_depend"</p>
         <p>Note: sharing variables are only supported for command - execute-action</p>
@@ -659,9 +663,9 @@
              way for you to share actions. In WorkFlow, the shared actions are imported at the build process into all packages, so you can reuse them. Here is
         how you can call them</p>
         <code>
-            drush ca @ALIAS --tag=TAG-NAME --asset=ASSET-NAME
-            drush ca @ALIAS --tag=TAG-NAME --make=path/to/make/file
-            drush ca @ALIAS --tag=TAG-NAME --package=path/to/package
+            drush ca @ALIAS --tag=TAG-NAME --asset=ASSET-NAME<br>
+            drush ca @ALIAS --tag=TAG-NAME --make=path/to/make/file<br>
+            drush ca @ALIAS --tag=TAG-NAME --package=path/to/package<br>
         </code>
         <p>So, by providing tag, you would call different tasks</p>
         <h4>Tags Overview</h4>
@@ -687,24 +691,75 @@
     <section id="how_to">
         <h3>How To</h3><hr>
         <h4>How To Install Workflow?</h4>
-        <h4>How to setup Workflow?</h4>
-        <p>The easiest is to clone sand box and configure it as following</p>
         <ol>
-            <li>clone workflow sand box into your $HOME/workflow directory</li>
+            <li>
+                <b>Download</b><br>
+                Clone the tool from github repo - https://github.com/makapacs/workflow
+            </li>
+            <li>
+                <b>Incorporate With Drush</b><br>
+                Update $options['include'] to include path to the tool with '/commands' in  Drush configuration file drushrc.php (usually in $HOME/.drush dir)
+                <code>
+                    $options['include'] = array('/path/to/Artifact Workflow tool/commands');
+                </code>
+            </li>
+            <li><p>choose one of the two:</p>
+                <ul>
+                    <li>Grab WorkFlow Sandbox from https://github.com/makapacs/workflow-sandbox and start develop. NO CONFIGURATION NEEDED </li>
+                    <li> <b>Configure Your Environment</b><br>
+                        Specify your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place it in to DRUSH_ROOT dir as
+                        described in <a href="#!/configurations">'Configuration' section</a></li>
+                </ul>
 
+            </li>
+            <li>
+                <b>Update Aliases</b>
+                Add additional configurations such db user, db password,etc to alias. Please, see <a href="#!/alias_config">Alias Configuration section</a>
+            </li>
         </ol>
-        <h4>How to add new widget?</h4>
-        <p>In the following are steps on configuring new widget(i.e. map widget)</p>
-<ol>
-    <li><b>Configure Working directory: </b>
-
-    </li>
-
-</ol>
+        <h4>How to setup Workflow?</h4>
+        <p>You can manually set up environment as specified at <a href="#!/configurations">'Environment Configuration'</a> section or
+            clone <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow Sandbox</a> that comes with default environment setup.</p>
+        <p>Note: when cloning WorkFlow Sandbox, make sure it's cloned into your $HOME/workflow dir to work</p>
+        <h4>How to add new Artifact(i.e. widget,theme,etc)?</h4>
+        <p>In the following are steps on configuring new widget(i.e. map widget)
+            <ol>
+                <li>Create repository in Github.com for the new artifact</li>
+                <li>Declare artifact in the artifact configuration file located at $HOME/.drush/artifact.drushrc.php or $HOME/workflow/artifact.drushrc.php. Please, see details in <a href="#!/artifacts">Artifacts</a> section</li>
+                <li>From here, you can do one of the two:
+                    <ol>
+                        <li><p>Do it manually:</p>
+                            <ol>
+                                <li>Create working directory for the new artifact</li>
+                                <li>Add info and other files necessary for Drupal module or theme</li>
+                                <li>Hook the new working directory with github. In the new working directory:<br>
+                                    <ol>
+                                        <li>initalize git repo(<code>git init</code>)</li>
+                                        <li>add new files(<code>git add .</code>)</li>
+                                        <li>commit (<code>git commit -m "first commit"</code>)</li>
+                                        <li>add remote repository(<code>git remote add origin url-of-git-repo.git</code>)</li>
+                                        <li>push it(<code>git push origin master</code>)</li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </li>
+                        <li>
+                            <p>Call action to create boilerplate and hook the git repo automatically for you</p><br>
+                            <code>drush ea create_artifact --param=ARTIFACT-NAME</code>
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+        </p>
     </section>
-
+    <section id="sandbox">
+        <h3>WorkFlow Sandbox</h3><hr>
+        <p>The WorkFlow Sandbox was created for easy way to start. It comes with three assets - theme Espresso, widget Blog and widget Portfolio</p>
+        <p>By cloning <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">workflow sandbox</a> into $HOME/workflow dir, the environment configurations are already preconfigured</p>
+        <p>See section 'How-to' for steps on configuring new widget</p>
+    </section>
     <section id="troubleshooting">
-        <h3>Troubleshooting</h3>
+        <h3>Troubleshooting</h3><hr>
 
         <h6>TIP: Turn on logging</h6>
         <p>When troubleshooting issue, its helpful to turn on logging. There are two levels important to mention</p>
@@ -718,14 +773,16 @@
         <h3>Things In Progress</h3>
         <hr>
         <ul>
-            <li>create action for generating boilerplate for new artifact</li>
+            <li>create interactive input for receiving commands</li>
+            <li>cache last commands to avoid retype every single time</li>
+            <li>create boilerplate generator for new artifact creation</li>
             <li>make one entrance with interactive input for user to specify task and then dispatch to appropriate command </li>
             <li>make UI to run the tool</li>
             <li>make it possible to upload make file via UI</li>
             <li>build common installer for UI</li>
             <li>make so that client only needs the blueprint - makefile to install all artifacts(themes, widgets) from remote location</li>
             <li>make to fetch make file from remote repository</li>
-            <li>introduce profiling a specific Drupal instance setup all declared in the makefile</li>
+            <li>enhance profiler to handle multiple assets instead one</li>
             <li>make it possible to store general configurations in shell env variables to mask out ones from workflow.drushcrc.php</li>
         </ul>
     </section>

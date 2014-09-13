@@ -185,10 +185,10 @@ function configure_all_dependencies_action()
 //            $name_tokens = explode('-', $target_module);
 
             //checks to see if module isn't present already or it has been different version than the stable version
-            if (!is_module_present(strip_ver($dependent_module)) || $target_module !=$dependent_module ) {
+            if (!is_module_present(strip_ver($dependent_module)) || $target_module != $dependent_module) {
                 drush_log('module ' . $target_module . ((drush_invoke_process($alias, "pm-download", array($target_module)) ? ' WAS ' : ' WAS NOT')) . ' downloaded', 'ok');
             } else {
-                drush_log("\n".'module - ' . $dependent_module . ' is already present...skip downloading', 'ok');
+                drush_log("\n" . 'module - ' . $dependent_module . ' is already present...skip downloading', 'ok');
             }
 
             /***Enable***/
@@ -563,21 +563,69 @@ function see_diff_action($artifact_name)
 /**
  * Clear all action clears all cash and runs cron jobs
  */
-function clear_all_action(){
-    if($alias = wf_var('WF_ALIAS',FALSE)){
+function clear_all_action()
+{
+    if ($alias = wf_var('WF_ALIAS', FALSE)) {
         drush_log('clearing all for ' . $alias['root'], 'ok');
         chdir($alias['root']);
         drush_shell_exec('drush cc all');
         $diff = drush_shell_exec_output();
-        drush_log('ouput for clearing cache: ' . "\n".implode(','."\n",$diff) ,'notice');
+        drush_log('ouput for clearing cache: ' . "\n" . implode(',' . "\n", $diff), 'notice');
         drush_shell_exec('drush cron');
         $output = array_merge($diff, drush_shell_exec_output());
-        drush_log('ouput for clearing cache: ' . "\n".implode(','."\n",$output) ,'notice');
-    }else{
-        drush_log('ERROR: alias not specified..','ok');
+        drush_log('ouput for clearing cache: ' . "\n" . implode(',' . "\n", $output), 'notice');
+    } else {
+        drush_log('ERROR: alias not specified..', 'ok');
     }
 
 }
 
+/**
+ * creates new artifact(i.e.widget,theme) boiler plate
+ * @param: $name
+ *      the name of the new widget
+ * @param: $type
+ *      the type of widget(i.e widget,theme)
+ *
+ */
+
+function create_boilerplate_action($artifact_name)
+{
+    $artifact = get_artifact_by_name($artifact_name);
+    if(isset($artifact) && !empty($artifact)){
+        $type = $artifact['type'];
+        $name = $artifact['name'];
+        //create working directory for new artifact
+        $dir = wf_var('WF_WORK_DIR') . '/' . $type . 's/' . $name;
+        execute_command('sudo mkdir ' . $dir);
+        drush_log('working directory for artifact ' . $name . ' was created at ' . $dir, 'ok');
+
+        //update permission to write
+        execute_command('sudo chmod -R 777 ' . $dir);
+
+        //write boilerplate
+        write_boilerplate($artifact_name);
+        drush_log('boilerplate written for ' . $type, 'ok');
+    } else {
+        drush_log('ERROR: artifact not found by name - ' . $artifact_name, 'ok');
+    }
 
 
+}
+
+/**
+ * creates widget boilerplate
+ *      -creates working directory
+ *      -write boilerplate info file and others
+ *      -initiates repo and pushes first commit
+ * $param: $artifact_name
+ *      name of artifact as declared in the artifact configurations
+ */
+
+function create_artifact_action($artifact_name)
+{
+    //creates boiler plate
+    create_boilerplate_action($artifact_name);
+    //hooks git repo
+    hook_git_repo($artifact_name);
+}

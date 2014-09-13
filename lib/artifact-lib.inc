@@ -24,7 +24,7 @@ if (drush_get_option('backup-files')) {
 function _process_make_file($make_file, $dest = Null, $options = Null)
 {
     if (!isset($options)) {
-        print_log('options not set..','notice');
+        print_log('options not set..', 'notice');
         $options = array();
         $options['debug'] = drush_get_option('debug', FALSE);
         $options['no-core'] = drush_get_option('no-core', FALSE);
@@ -35,8 +35,8 @@ function _process_make_file($make_file, $dest = Null, $options = Null)
     print_r($options);
 
     if ($dest) {
-        drush_log('make_file: ' . $make_file . ' dest: ' . $dest . ' optionss:' . implode(',', $options) ,'notice');
-        drush_log("SITE INSTALL",'ok');
+        drush_log('make_file: ' . $make_file . ' dest: ' . $dest . ' optionss:' . implode(',', $options), 'notice');
+        drush_log("SITE INSTALL", 'ok');
         return drush_invoke_process('@none', 'make', array($make_file, $dest), $options);
     } else {
         drush_print("MODULE INSTALL");
@@ -440,6 +440,7 @@ function get_widget_name($name, $type)
     return $artifact_name;
 }
 
+//@Deprecated
 function get_repo($name, $type)
 {
     $repo_name = '';
@@ -606,25 +607,25 @@ function get_actions_from_dir($dir)
 //on defautl make_name is built from alternatives. Otherwise, it is specified in artifact configurations
 function get_make_file($name = '')
 {
-    if($make = drush_get_context('FW_CACHED_MAKE',FALSE)){
-        drush_log('using make file from cache...'.$make,'notice');
+    if ($make = drush_get_context('FW_CACHED_MAKE', FALSE)) {
+        drush_log('using make file from cache...' . $make, 'notice');
         return $make;
-    }else{
+    } else {
         $config = get_config();
 
         //make file provided via --make
-        if(!file_exists($make_file = wf_var('WF_ASSET_MAKE', FALSE))){
-            if(!file_exists($make_file = wf_var('WF_ASSET_MAKE', FALSE))){
+        if (!file_exists($make_file = wf_var('WF_ASSET_MAKE', FALSE))) {
+            if (!file_exists($make_file = wf_var('WF_ASSET_MAKE', FALSE))) {
                 //check if relative path provided
-                $make_file = $config['make_root'].'/'.wf_var('WF_ASSET_MAKE', FALSE);
+                $make_file = $config['make_root'] . '/' . wf_var('WF_ASSET_MAKE', FALSE);
             }
         }
 
         if (!file_exists($make_file) || wf_var('WF_ASSET_MAKE', TRUE)) {
             //see if make file provided via --package
             $package_dir = wf_var('WF_ASSET_PACKAGE', FALSE);
-            $package_dir = (file_exists(wf_var('WF_ASSET_PACKAGE', FALSE))) ? wf_var('WF_ASSET_PACKAGE', FALSE) : $config['dist'].'/'.wf_var('WF_ASSET_PACKAGE', FALSE);
-            if(wf_var('WF_ASSET_PACKAGE', FALSE) && file_exists($package_dir)){
+            $package_dir = (file_exists(wf_var('WF_ASSET_PACKAGE', FALSE))) ? wf_var('WF_ASSET_PACKAGE', FALSE) : $config['dist'] . '/' . wf_var('WF_ASSET_PACKAGE', FALSE);
+            if (wf_var('WF_ASSET_PACKAGE', FALSE) && file_exists($package_dir)) {
                 //read all make files from package directory
                 foreach (glob($package_dir . "/*.make") as $filename) {
                     $make_file = $filename;
@@ -644,22 +645,22 @@ function get_make_file($name = '')
 
                         if (file_exists($make_file)) {
                             drush_log('make_file found ' . $make_file, 'ok');
-                            drush_log('caching make file...'.$make_file,'notice');
-                            drush_set_context('FW_CACHED_MAKE',$make_file);
+                            drush_log('caching make file...' . $make_file, 'notice');
+                            drush_set_context('FW_CACHED_MAKE', $make_file);
                             return $make_file;
                         }
                     }
                 }
                 drush_log(dt('Artifact blueprint(make file) was not found. Using default - ' . $config['default_make']), 'ok');
-                drush_log('caching make file...'.$config['default_make'],'notice');
-                drush_set_context('FW_CACHED_MAKE',$config['default_make']);
+                drush_log('caching make file...' . $config['default_make'], 'notice');
+                drush_set_context('FW_CACHED_MAKE', $config['default_make']);
                 return $config['default_make'];
             }
         }
 
         drush_log('blueprint(make file) found ' . $make_file, 'notice');
-        drush_log('caching make file...'.$make_file,'notice');
-        drush_set_context('FW_CACHED_MAKE',$make_file);
+        drush_log('caching make file...' . $make_file, 'notice');
+        drush_set_context('FW_CACHED_MAKE', $make_file);
         return $make_file;
     }
 
@@ -816,7 +817,7 @@ function get_distribution($name)
     $base_name = (empty($artifact_names)) ? $package_name : array_pop($artifact_names);
     $dist_dir = $config['dist'];
 //    $type = ($artifact['type'] != 'theme') ? 'module' : $artifact['type'];
-        $type = $artifact['type'];
+    $type = $artifact['type'];
     $artifact_dist = $dist_dir . '/' . $type . 's/'; //distribution dir for the particular artifact
     $full_path = $artifact_dist . $base_name;
     return array(
@@ -830,10 +831,10 @@ function get_distribution($name)
 function execute_command($command)
 {
 //    (DEBUG_ON) ? _log('COMMAND: ' . $command) : '';
-    drush_log(dt('COMMAND: @command', array('@command' => $command)), 'debug');
+    drush_log(dt('COMMAND: @command', array('@command' => $command)), 'notice');
     drush_shell_exec($command);
     if (!preg_match('/zip/', $command)) {
-        drush_log(dt('@output', array('@output' => implode(',', drush_shell_exec_output()))), 'debug');
+        drush_log(dt('@output', array('@output' => implode(',', drush_shell_exec_output()))), 'notice');
 //        drush_log(drush_shell_exec_output(), 'debug');
     }
 }
@@ -977,10 +978,11 @@ function strip_ver($module_name)
  *
  */
 
-function append_content($source, $dest, $start_token, $end_token){
+function append_content($source, $dest, $start_token, $end_token)
+{
     //    $actions = get_actions_from_make(drush_get_context('WF_DEFAULT_MAKE'));
-    $handle_default =fopen($source,'r');
-    $all_make_content = fread($handle_default,4096);
+    $handle_default = fopen($source, 'r');
+    $all_make_content = fread($handle_default, 4096);
 
     $start_pos = mb_strpos($all_make_content, $start_token) - 1;
     $end_pos = mb_strpos($all_make_content, $end_token);
@@ -988,12 +990,12 @@ function append_content($source, $dest, $start_token, $end_token){
     $size_to_read = strlen(substr($all_make_content, $start_pos, $end_pos));
     $star_offset = strlen(substr($all_make_content, 0, $start_pos));
     rewind($handle_default);
-    fseek ($handle_default, $star_offset);
-    $action_snap = fread($handle_default,$size_to_read);
+    fseek($handle_default, $star_offset);
+    $action_snap = fread($handle_default, $size_to_read);
 
-    if($ret = file_put_contents($dest, "\n".$action_snap, FILE_APPEND)){
-        drush_log('appendned '.$ret.' bytes to '.$dest,'notice');
-    }else{
+    if ($ret = file_put_contents($dest, "\n" . $action_snap, FILE_APPEND)) {
+        drush_log('appendned ' . $ret . ' bytes to ' . $dest, 'notice');
+    } else {
         drush_log('FAILED to append default', 'notice');
     }
 }
@@ -1003,38 +1005,41 @@ function append_content($source, $dest, $start_token, $end_token){
  * @param $full_path
  */
 
-function get_package_name($package_temp_dest){
-    $path_tokens = explode('/',$package_temp_dest);
+function get_package_name($package_temp_dest)
+{
+    $path_tokens = explode('/', $package_temp_dest);
     $last_token = array_pop($path_tokens);
     //removed extension if exists
-    $raw_name = (strpos($last_token,'.tar.gz')) ? substr($last_token,0,-7) : substr($last_token,0,-4);
+    $raw_name = (strpos($last_token, '.tar.gz')) ? substr($last_token, 0, -7) : substr($last_token, 0, -4);
     return $raw_name;
 }
 
 /**
  * apply any fix to the modules before downloaded,enabled
- *@param: $module_name
+ * @param: $module_name
  *      name of the module
  */
 
-function _fix_dependency(&$module_name){
-        $fixed_module = $module_name;
-        if($module_name == 'features_extra'){
-            //fix module name to avoid infinite loop
-            $fixed_module = 'fe_block';
-        }
-      return $fixed_module;
+function _fix_dependency(&$module_name)
+{
+    $fixed_module = $module_name;
+    if ($module_name == 'features_extra') {
+        //fix module name to avoid infinite loop
+        $fixed_module = 'fe_block';
+    }
+    return $fixed_module;
 }
 
 /**
  * checks if module is with the prefix defined in the external environment configurations
  * @param:
  */
-function not_workflow_module($module){
-    $patter = str_replace('-','_',drush_get_context('WF_PACKAGE_PREFIX'));
-    if(0 == preg_match('/'.$patter.'/',$module)){
+function not_workflow_module($module)
+{
+    $patter = str_replace('-', '_', drush_get_context('WF_PACKAGE_PREFIX'));
+    if (0 == preg_match('/' . $patter . '/', $module)) {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -1046,11 +1051,12 @@ function not_workflow_module($module){
  * @return bool
  *
  */
-function is_module_present($module){
+function is_module_present($module)
+{
     $path_to_module = drupal_get_path('module', $module);
-    if(file_exists($path_to_module) && $module != 'features_extra'){
+    if (file_exists($path_to_module) && $module != 'features_extra') {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -1062,13 +1068,14 @@ function is_module_present($module){
  * @return: path to the working directory of the artifact
  */
 
-function get_artifact_work_dir($name){
+function get_artifact_work_dir($name)
+{
     $artifact = get_artifact_by_name($name);
     $work_dir = (isset($artifact['work_dir']) && !empty($artifact['work_dir'])) ? $artifact['work_dir'] : drush_get_context('WF_WORK_DIR');
     $work_dir_name = (isset($artifact['work_dir_name']) && !empty($artifact['work_dir_name'])) ? $artifact['work_dir_name'] : $name;
 
     $potential_work_dir = $work_dir . '/' . $artifact['type'] . 's/' . $work_dir_name;
-    if(!file_exists($potential_work_dir)){
+    if (!file_exists($potential_work_dir)) {
         $potential_work_dir = $work_dir . '/' . $work_dir_name;
     }
     return $potential_work_dir;
@@ -1080,21 +1087,22 @@ function get_artifact_work_dir($name){
  * @return
  *      array of type - artifacts that is in uncommitted state
  */
-function get_uncommitted_artifacts(){
+function get_uncommitted_artifacts()
+{
     $updated_artifacts = array();
     $make = get_make_file();
 
-    if(!file_exists($make)){
-        drush_die( dt('ERROR: the blueprint(make file) not provided' ), 0);
+    if (!file_exists($make)) {
+        drush_die(dt('ERROR: the blueprint(make file) not provided'), 0);
     }
 
     $all_artifacts = get_artifacts_from_blueprint();
-    foreach($all_artifacts as $key => $artifact){
+    foreach ($all_artifacts as $key => $artifact) {
         $work_dir = get_artifact_work_dir($artifact['name']);
         chdir($work_dir);
         drush_shell_exec('git status');
         $status = drush_shell_exec_output();
-        if(isset($status[1]) && $status[1] != 'nothing to commit, working directory clean' ){
+        if (isset($status[1]) && $status[1] != 'nothing to commit, working directory clean') {
             $updated_artifacts[] = $artifact;
         }
     }
@@ -1108,24 +1116,25 @@ function get_uncommitted_artifacts(){
  * @return
  *      nubmer of version(i.e.v0.1.2)
  */
-function get_artifact_blueprint_ver($artifact_name){
+function get_artifact_blueprint_ver($artifact_name)
+{
     $work_dir = get_artifact_work_dir($artifact_name);
     $info_file = '';
     chdir($work_dir);
-    foreach (glob($work_dir."/*.info") as $filename) {
+    foreach (glob($work_dir . "/*.info") as $filename) {
         $info_file = $filename;
     }
-    drush_log('found info file: ' . $info_file . ' in dir ' . $work_dir,'notice');
+    drush_log('found info file: ' . $info_file . ' in dir ' . $work_dir, 'notice');
     $file = file($info_file);
     if ($file) {
-        foreach($file as $key => $line) {
-            if(preg_match('/version/', $line)){
+        foreach ($file as $key => $line) {
+            if (preg_match('/version/', $line)) {
                 $new_ver = _get_ver($line);
                 return $new_ver;
             }
         }
-    }else{
-        drush_log('.info file not found','ok');
+    } else {
+        drush_log('.info file not found', 'ok');
     }
     return null;
 }
@@ -1137,23 +1146,24 @@ function get_artifact_blueprint_ver($artifact_name){
  * @return number
  *      new version nubmer
  */
-function increment_blueprint_ver($work_dir){
+function increment_blueprint_ver($work_dir)
+{
     $info_file = '';
     $new_ver = '';
     chdir($work_dir);
-    foreach (glob($work_dir."/*.info") as $filename) {
+    foreach (glob($work_dir . "/*.info") as $filename) {
         $info_file = $filename;
     }
-    drush_log('found info file: ' . $info_file . ' in dir ' . $work_dir,'notice');
-    $handle_temp = @fopen($work_dir.'/temp.info',"w");
+    drush_log('found info file: ' . $info_file . ' in dir ' . $work_dir, 'notice');
+    $handle_temp = @fopen($work_dir . '/temp.info', "w");
     $file = file($info_file);
     if ($file) {
-        foreach($file as $key => $line) {
-            if(preg_match('/version/', $line)){
+        foreach ($file as $key => $line) {
+            if (preg_match('/version/', $line)) {
                 $new_ver = _ver_up($line);
                 $line_to_write = 'version = ' . $new_ver . "\n";
                 fwrite($handle_temp, $line_to_write, strlen($line_to_write));
-            }else{
+            } else {
                 fwrite($handle_temp, $line, strlen($line));
             }
 
@@ -1162,23 +1172,25 @@ function increment_blueprint_ver($work_dir){
         fclose($handle_temp);
     }
 
-    rename($work_dir.'/temp.info', $info_file);
+    rename($work_dir . '/temp.info', $info_file);
     return $new_ver;
 }
 
 //scraps version out and increments
-function _ver_up($line){
+function _ver_up($line)
+{
     $only_ver = _get_ver($line);
     $tokens = explode('.', trim($only_ver));
     $last_dig = array_pop($tokens);
     $last_dig = $last_dig + 1;
     $tokens[] = $last_dig;
-    return implode('.',$tokens);
+    return implode('.', $tokens);
 }
 
 //scraps version out of line
-function _get_ver($line){
-    return trim(substr($line, strpos($line,'=')+1));
+function _get_ver($line)
+{
+    return trim(substr($line, strpos($line, '=') + 1));
 }
 
 /*
@@ -1191,12 +1203,13 @@ function _get_ver($line){
  * return value if set or default value
  */
 
-function wf_var($var_name, $default = false){
+function wf_var($var_name, $default = false)
+{
     $var = drush_get_context($var_name);
 
-    if(!isset($var) || empty($var)){
+    if (!isset($var) || empty($var)) {
         return $default;
-    }else{
+    } else {
         return $var;
     }
 }
@@ -1205,11 +1218,10 @@ function wf_var($var_name, $default = false){
  * strips off all version that are save in $version_map and returns list of modules without duplicates
  *
  */
-function striped_dependencies($modules, &$version_map){
-//    $striped_modules = array();
-//    array_walk($modules, 'hash_ver',$version_map);
-    foreach($modules as $key => &$module){
-        if($pos = strpos($module, '-')) {
+function striped_dependencies($modules, &$version_map)
+{
+    foreach ($modules as $key => &$module) {
+        if ($pos = strpos($module, '-')) {
             $ver = substr($module, $pos + 1);
             $module = substr($module, 0, $pos);
             $version_map[$module] = $ver;
@@ -1218,14 +1230,114 @@ function striped_dependencies($modules, &$version_map){
     return array_unique($modules);
 }
 
-//function hash_ver(&$module, $key, &$hash){
-//    print('***gon in hash_ver: '.$module);
-//    print_r($hash);
-//    if($pos = strpos($module, '-')) {
-//        $ver = substr($module, $pos + 1);
-//        $module = substr($module, 0, $pos);
-//        $hash[$module] = $ver;
-//    }
-//    print('***end in hash_ver: '.$module);
-//    print_r($hash);
-//}
+
+/**
+ * writes the necessary boilerplate for artifact depending on type
+ * @param $artifact_name
+ *      the name of artifact
+ */
+function write_boilerplate($artifact_name)
+{
+    $artifact = get_artifact_by_name($artifact_name);
+    $dest = get_work_dir($artifact);
+    $name = $artifact['name'];
+    $module_name = $artifact['module_name'];
+    $type = $artifact['type'];
+    switch ($type) {
+        case 'widget':
+            $line_to_write = 'name = DesignsSquare.com '.strtoupper($name).' '.$type."\n";
+            $line_to_write .= 'description = functionality for Drupal '.strtoupper($name).' '.$type."\n";
+            $line_to_write .= 'core = 7.x'."\n";
+            $line_to_write .= 'version = v0.0.0'."\n";
+            $line_to_write .= 'project = '.$module_name."\n";
+            $line_to_write .= 'package = '.str_replace('-','.',wf_var('WF_PACKAGE_PREFIX','designssquare_com_')).$type.'.'.$name."\n";
+            //write info file
+            $handle_info = fopen($dest . '/' . str_replace('-','_',wf_var('WF_PACKAGE_PREFIX','designssquare_com_')).$name . '.info', "w");
+            fwrite($handle_info, $line_to_write, strlen($line_to_write));
+            fclose($handle_info);
+
+            //create module file necessary for module to show up in module list
+            $handle_module = fopen($dest . '/' . str_replace('-','_',wf_var('WF_PACKAGE_PREFIX','designssquare_com_')).$name . '.module', "w");
+            fwrite($handle_module, '<?php'."/n", strlen($line_to_write));
+            fclose($handle_module);
+            break;
+        case 'theme':
+            $line_to_write = 'name = '.$name."\n";
+            $line_to_write .= 'description = Drupal Theme - '.strtoupper($name)."\n";
+            $line_to_write .= 'version = v0.0.0'."\n";
+            $line_to_write .= 'pcore = 7.x'."\n";
+            //write info file
+            $handle_info = @fopen($dest . '/'.$name . '.info', "w");
+            fwrite($handle_info, $line_to_write, strlen($line_to_write));
+            fclose($handle_info);
+
+            //create template php file
+            $handle_template = @fopen($dest . '/template.php', "w");
+            fwrite($handle_template, '<?php', strlen($line_to_write));
+            fclose($handle_template);
+            break;
+    }
+}
+
+
+/**
+ * initiates git repo, adds repository and push for the first time
+ * @param: $artifact_name
+ *      the name of artifact as declared in the artifacts.drushrc.php
+ */
+
+function hook_git_repo($artifact_name){
+    $artifact = get_artifact_by_name($artifact_name);
+    $dest = get_work_dir($artifact);
+    $git_repo = get_artifact_repo($artifact);
+    if(file_exists($dest)){
+        chdir($dest);
+        execute_command('git init');
+        execute_command('git add .');
+        execute_command('git commit -m "first commit"');
+        if(!empty($git_repo)){
+            execute_command('git remote add origin '.$git_repo);
+        }else{
+            drush_log('ERROR: git repo not specified','notice');
+        }
+        drush_log('...pushing into repo - '.$git_repo, 'ok');
+        execute_command('git push origin master');
+        drush_log('finished configuring git repo - ' . $git_repo . ' in the working directory '.$dest, 'notice');
+    }else{
+        drush_log('ERROR:  dest - ' . $dest .' specified does not exist','notice');
+    }
+}
+
+
+/**
+ * builds path to working directory from artifact provided
+ * @param: $artifact
+ *      array of artifact
+ * @return:
+ *      full path to working directory of the artifact
+ */
+function get_work_dir($artifact){
+    if(isset($artifact) && !empty($artifact)){
+        return $artifact['work_dir'].'/'.$artifact['type'].'s/'.$artifact['work_dir_name'];
+    }else{
+        drush_log('ERROR: artifact not specified','notice');
+        return '';
+    }
+}
+
+/**
+ * builds path to the repo from the artifact provided
+ * @param: $artifact
+ *      array of artifact
+ * @return
+ *      full path of git repo
+ */
+function get_artifact_repo($artifact){
+    if(isset($artifact) && !empty($artifact)){
+        return $artifact['repo'] . $artifact['repo_name'] . '.git';
+    }else{
+        drush_log('ERROR: artifact not specified','notice');
+        return '';
+    }
+
+}

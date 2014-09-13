@@ -30,6 +30,7 @@ function executer_drush_command()
             'ea list_uncommitted_artifacts --asset=espresso' => 'list all artifacts that have been updated but not committed in the working dir for the particular asset',
             'ea update_all_work_dir --param="test update" --asset=espresso' => 'goes through each artifact and commits/push/increments version/adds tag if there is changes',
             'ea get_artifact_info --asset=espresso' => 'displays and compares each artifact versions between blueprint and working dir',
+            'ea create_artifact --param=metronic --verbose' => 'creates boilerplate artifact work directory and adds/commits/pushes first commit',
         ),
         'aliases' => array('ea'),
         'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
