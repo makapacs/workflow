@@ -119,7 +119,7 @@ function drush_installer_install_site($alias='@self')
         $db_name = $db_conf['database'];
     }
 
-    drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name)),'debug');
+    drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name)),'notice');
 
     //check if database exists or can connect with current credentials
 //    $con = mysqli_connect("localhost", $db_user, $db_pwd, $db_name);
@@ -164,7 +164,7 @@ function drush_installer_install_site($alias='@self')
         }
     }
 
-    drush_log(dt('SITE Credentials: user=@user, pass=@pwd ', array('@user' => $site_user, '@pwd' => $site_pwd)),'debug');
+    drush_log(dt('SITE Credentials: user=@user, pass=@pwd ', array('@user' => $site_user, '@pwd' => $site_pwd)),'notice');
 
     $AdminUsername = $site_user;
     $AdminPassword = $site_pwd;
@@ -229,7 +229,8 @@ function drush_installer_install_site($alias='@self')
 # Install core
 ##########################################################
 // let's jump to our site directory before we do anything else, because it may be other than alias specified
-    drush_op('chdir', $default_dest);
+//    drush_op('chdir', $default_dest)
+    chdir($default_dest);
     //download Drupal and modules per make file
     drush_invoke_process('@self', 'make', array($default_make), array('yes' => 1, 'no-core'=>0, 'debug'=>0));
 

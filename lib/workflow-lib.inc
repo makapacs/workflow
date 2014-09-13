@@ -278,9 +278,7 @@ function init_inputs()
     drush_set_context('WF_INPUT_ACTION', $actions);
     drush_log('WF_INPUT_ACTION is set to: ' . implode(',', $actions), 'notice');
 
-
-    if ($package_dir = drush_get_option('package', false)) {
-
+    if ($package_dir = drush_get_option('package', FALSE)) {
         //check if dir specified
         if (!file_exists($package_dir)) {
             //if user didn't provided full path, lets see if its in the dist dir

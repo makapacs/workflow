@@ -621,40 +621,43 @@ function get_make_file($name = '')
             }
         }
 
-        if (!file_exists($make_file) || wf_var('WF_ASSET_MAKE', TRUE)) {
+        $temp_make = wf_var('WF_ASSET_MAKE', '');
+        if (!file_exists($make_file) || empty($temp_make)) {
             //see if make file provided via --package
-            $package_dir = wf_var('WF_ASSET_PACKAGE', FALSE);
-            $package_dir = (file_exists(wf_var('WF_ASSET_PACKAGE', FALSE))) ? wf_var('WF_ASSET_PACKAGE', FALSE) : $config['dist'] . '/' . wf_var('WF_ASSET_PACKAGE', FALSE);
-            if (wf_var('WF_ASSET_PACKAGE', FALSE) && file_exists($package_dir)) {
+            $package = wf_var('WF_ASSET_PACKAGE', '');
+            $package_dir = (file_exists($package)) ? $package : $config['dist'] . '/' . $package;
+            if (!empty($package) && file_exists($package_dir)) {
                 //read all make files from package directory
                 foreach (glob($package_dir . "/*.make") as $filename) {
                     $make_file = $filename;
                 }
-            }
-            if (!file_exists($make_file) || wf_var('WF_ASSET_MAKE', TRUE)) {
-                //try read the make specified by artifact
-                $name = (!empty($name)) ? $name : wf_var('WF_ASSET_NAME', 'no-artifact');
-                $artifact = get_artifact_by_name($name);
+            } elseif(empty($temp_make) || !file_exists($make_file)) {
+                $temp_make = wf_var('WF_ASSET_MAKE', '');
+                if (!file_exists($make_file) || empty($temp_make)) {
+                    //try read the make specified by artifact
+                    $name = (!empty($name)) ? $name : wf_var('WF_ASSET_NAME', 'no-artifact');
+                    $artifact = get_artifact_by_name($name);
 
-                if (isset($artifact)) {
-                    $list_of_names = (isset($artifact['type'])) ? artifact_names($name, $artifact['type']) : artifact_names($name, 'widget');
-                    foreach ($list_of_names as $key => $artifact_name) {
-                        $make_file = $config['make_root'] . '/';
-                        $make_file .= (isset($artifact['type'])) ? $artifact['type'] . 's/' : '';
-                        $make_file .= $artifact_name . '.make';
+                    if (isset($artifact)) {
+                        $list_of_names = (isset($artifact['type'])) ? artifact_names($name, $artifact['type']) : artifact_names($name, 'widget');
+                        foreach ($list_of_names as $key => $artifact_name) {
+                            $make_file = $config['make_root'] . '/';
+                            $make_file .= (isset($artifact['type'])) ? $artifact['type'] . 's/' : '';
+                            $make_file .= $artifact_name . '.make';
 
-                        if (file_exists($make_file)) {
-                            drush_log('make_file found ' . $make_file, 'ok');
-                            drush_log('caching make file...' . $make_file, 'notice');
-                            drush_set_context('FW_CACHED_MAKE', $make_file);
-                            return $make_file;
+                            if (file_exists($make_file)) {
+                                drush_log('make_file found ' . $make_file, 'ok');
+                                drush_log('caching make file...' . $make_file, 'notice');
+                                drush_set_context('FW_CACHED_MAKE', $make_file);
+                                return $make_file;
+                            }
                         }
                     }
+                    drush_log(dt('Artifact blueprint(make file) was not found. Using default - ' . $config['default_make']), 'ok');
+                    drush_log('caching make file...' . $config['default_make'], 'notice');
+                    drush_set_context('FW_CACHED_MAKE', $config['default_make']);
+                    return $config['default_make'];
                 }
-                drush_log(dt('Artifact blueprint(make file) was not found. Using default - ' . $config['default_make']), 'ok');
-                drush_log('caching make file...' . $config['default_make'], 'notice');
-                drush_set_context('FW_CACHED_MAKE', $config['default_make']);
-                return $config['default_make'];
             }
         }
 
@@ -1245,29 +1248,29 @@ function write_boilerplate($artifact_name)
     $type = $artifact['type'];
     switch ($type) {
         case 'widget':
-            $line_to_write = 'name = DesignsSquare.com '.strtoupper($name).' '.$type."\n";
-            $line_to_write .= 'description = functionality for Drupal '.strtoupper($name).' '.$type."\n";
-            $line_to_write .= 'core = 7.x'."\n";
-            $line_to_write .= 'version = v0.0.0'."\n";
-            $line_to_write .= 'project = '.$module_name."\n";
-            $line_to_write .= 'package = '.str_replace('-','.',wf_var('WF_PACKAGE_PREFIX','designssquare_com_')).$type.'.'.$name."\n";
+            $line_to_write = 'name = DesignsSquare.com ' . strtoupper($name) . ' ' . $type . "\n";
+            $line_to_write .= 'description = functionality for Drupal ' . strtoupper($name) . ' ' . $type . "\n";
+            $line_to_write .= 'core = 7.x' . "\n";
+            $line_to_write .= 'version = v0.0.0' . "\n";
+            $line_to_write .= 'project = ' . $module_name . "\n";
+            $line_to_write .= 'package = ' . str_replace('-', '.', wf_var('WF_PACKAGE_PREFIX', 'designssquare_com_')) . $type . '.' . $name . "\n";
             //write info file
-            $handle_info = fopen($dest . '/' . str_replace('-','_',wf_var('WF_PACKAGE_PREFIX','designssquare_com_')).$name . '.info', "w");
+            $handle_info = fopen($dest . '/' . str_replace('-', '_', wf_var('WF_PACKAGE_PREFIX', 'designssquare_com_')) . $name . '.info', "w");
             fwrite($handle_info, $line_to_write, strlen($line_to_write));
             fclose($handle_info);
 
             //create module file necessary for module to show up in module list
-            $handle_module = fopen($dest . '/' . str_replace('-','_',wf_var('WF_PACKAGE_PREFIX','designssquare_com_')).$name . '.module', "w");
-            fwrite($handle_module, '<?php'."/n", strlen($line_to_write));
+            $handle_module = fopen($dest . '/' . str_replace('-', '_', wf_var('WF_PACKAGE_PREFIX', 'designssquare_com_')) . $name . '.module', "w");
+            fwrite($handle_module, '<?php' . "/n", strlen($line_to_write));
             fclose($handle_module);
             break;
         case 'theme':
-            $line_to_write = 'name = '.$name."\n";
-            $line_to_write .= 'description = Drupal Theme - '.strtoupper($name)."\n";
-            $line_to_write .= 'version = v0.0.0'."\n";
-            $line_to_write .= 'pcore = 7.x'."\n";
+            $line_to_write = 'name = ' . $name . "\n";
+            $line_to_write .= 'description = Drupal Theme - ' . strtoupper($name) . "\n";
+            $line_to_write .= 'version = v0.0.0' . "\n";
+            $line_to_write .= 'pcore = 7.x' . "\n";
             //write info file
-            $handle_info = @fopen($dest . '/'.$name . '.info', "w");
+            $handle_info = @fopen($dest . '/' . $name . '.info', "w");
             fwrite($handle_info, $line_to_write, strlen($line_to_write));
             fclose($handle_info);
 
@@ -1286,25 +1289,30 @@ function write_boilerplate($artifact_name)
  *      the name of artifact as declared in the artifacts.drushrc.php
  */
 
-function hook_git_repo($artifact_name){
+function hook_git_repo($artifact_name)
+{
     $artifact = get_artifact_by_name($artifact_name);
     $dest = get_work_dir($artifact);
     $git_repo = get_artifact_repo($artifact);
-    if(file_exists($dest)){
+    if (file_exists($dest)) {
         chdir($dest);
         execute_command('git init');
         execute_command('git add .');
+        execute_command('sudo chmod -R 777 .git');
+        execute_command('git tag -a "v0.0.0" -m "init commit"');
         execute_command('git commit -m "first commit"');
-        if(!empty($git_repo)){
-            execute_command('git remote add origin '.$git_repo);
-        }else{
-            drush_log('ERROR: git repo not specified','notice');
+
+        if (!empty($git_repo)) {
+            execute_command('git remote add origin ' . $git_repo);
+        } else {
+            drush_log('ERROR: git repo not specified', 'notice');
         }
-        drush_log('...pushing into repo - '.$git_repo, 'ok');
+        drush_log('...pushing into repo - ' . $git_repo, 'ok');
         execute_command('git push origin master');
-        drush_log('finished configuring git repo - ' . $git_repo . ' in the working directory '.$dest, 'notice');
-    }else{
-        drush_log('ERROR:  dest - ' . $dest .' specified does not exist','notice');
+        execute_command('git push --tags');
+        drush_log('finished configuring git repo - ' . $git_repo . ' in the working directory ' . $dest, 'notice');
+    } else {
+        drush_log('ERROR:  dest - ' . $dest . ' specified does not exist', 'notice');
     }
 }
 
@@ -1316,11 +1324,12 @@ function hook_git_repo($artifact_name){
  * @return:
  *      full path to working directory of the artifact
  */
-function get_work_dir($artifact){
-    if(isset($artifact) && !empty($artifact)){
-        return $artifact['work_dir'].'/'.$artifact['type'].'s/'.$artifact['work_dir_name'];
-    }else{
-        drush_log('ERROR: artifact not specified','notice');
+function get_work_dir($artifact)
+{
+    if (isset($artifact) && !empty($artifact)) {
+        return $artifact['work_dir'] . '/' . $artifact['type'] . 's/' . $artifact['work_dir_name'];
+    } else {
+        drush_log('ERROR: artifact not specified', 'notice');
         return '';
     }
 }
@@ -1332,11 +1341,12 @@ function get_work_dir($artifact){
  * @return
  *      full path of git repo
  */
-function get_artifact_repo($artifact){
-    if(isset($artifact) && !empty($artifact)){
+function get_artifact_repo($artifact)
+{
+    if (isset($artifact) && !empty($artifact)) {
         return $artifact['repo'] . $artifact['repo_name'] . '.git';
-    }else{
-        drush_log('ERROR: artifact not specified','notice');
+    } else {
+        drush_log('ERROR: artifact not specified', 'notice');
         return '';
     }
 
