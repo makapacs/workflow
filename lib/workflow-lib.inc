@@ -389,7 +389,8 @@ function _base_artifact()
     $art['ver'] = '';
     $art['repo_name'] = '';
     $art['final_name'] = '';
-    $art['work_dir'] = drush_get_context('WF_WORK_DIR', '');
+//    $art['work_dir'] = drush_get_context('WF_WORK_DIR', '');
+    $art['work_dir'] = '';
     $art['work_dir_name'] = '';
     $art['branch'] = 'master';
     return $art;

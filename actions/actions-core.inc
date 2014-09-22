@@ -412,7 +412,7 @@ function set_default_theme_action($theme_name, $alias = '@self')
 function set_action($name, $value)
 {
     variable_set($name, $value);
-    _log('variable "' . $name . '" was set to "' . $value . '"');
+    drush_log('variable "' . $name . '" was set to "' . $value . '"','ok');
 //    _log('variable - ' . $name . ((drush_invoke_process("@self", "vset", array($name,$value)) ? ' WAS ' : ' WAS NOT')) . ' set to '.$value);
 }
 
@@ -423,15 +423,37 @@ function set_action($name, $value)
  * 3. @ToDo turn on file caching and aggrigation
  * 4. @ToDo Disable devel related modules - devel_themer, devel, coffee,etc
  * 5. @ToDo create local writable dir and assign to admin/config/media/file-system for "Private File Sys Path", "Tempaorary Dir"
+ * 6. @ToDo disable shortcuts module
 */
 function production_ready_action()
 {
+    $alias = wf_var('WF_ALIAS');
     //turn off update module
-    _log('module - "update" ' . ((drush_invoke_process("@self", "dis", array('update')) ? ' WAS ' : ' WAS NOT')) . ' disabled');
+    drush_log('module - "update" ' . ((drush_invoke_process($alias, "dis", array('update')) ? ' WAS ' : ' WAS NOT')) . ' disabled','ok');
 
     //turn off messages
     set_action('error_level', 0);
+
+    //regular tune up
+    tune_up_action();
 }
+
+/**
+ * this function does following tune up actions
+ *   1. @ToDo disable shortcuts module
+ *   2. @ToDo disable editor for comments
+ *   3. @ToDo enable admin menu
+ */
+function tune_up_action(){
+    $alias = wf_var('WF_ALIAS');
+    //disable shortcuts module
+    _log('module - "shortcut" ' . ((drush_invoke_process($alias, "dis", array('shortcut')) ? ' WAS ' : ' WAS NOT')) . ' disabled');
+}
+
+/**
+ * @param string $ver
+ * @param string $compression
+ */
 
 /*Enables jquery_update module and sets version
  *
@@ -443,13 +465,12 @@ function production_ready_action()
  * */
 function configure_jquery_action($ver = "1.10", $compression = "min")
 {
-
-    _log('configuring jquery_update...');
+    drush_log('configuring jquery_update...','ok');
     enable_artifact_action('jquery_update');
     set_action('jquery_update_compression_type', "min");
     set_action('jquery_update_jquery_cdn', "google");
-    set_action('jquery_update_jquery_admin_version', "1.10");
-    set_action('jquery_update_jquery_version', "1.10");
+    set_action('jquery_update_jquery_admin_version', $ver);
+    set_action('jquery_update_jquery_version', $ver);
 }
 
 /*
@@ -534,6 +555,7 @@ function update_work_dir_action($artifact_name, $message = 'updated work dir')
     drush_shell_exec('git tag -a "' . $new_ver . '" -m "update ver:' . $new_ver . '"');
     drush_log('OUTPUT[git tag ]:' . implode(',', drush_shell_exec_output()), 'notice');
 
+    drush_log('updating repo - '.$artifact['repo'].$artifact['repo_name'],'ok');
     $branch = (isset($artifact['branch']) && !empty($artifact['branch'])) ? $artifact['branch'] : 'master';
     drush_shell_exec('git push origin ' . $branch);
     drush_log('OUTPUT[git push origin]:' . implode(',', drush_shell_exec_output()), 'notice');
@@ -596,7 +618,7 @@ function create_boilerplate_action($artifact_name)
         $type = $artifact['type'];
         $name = $artifact['name'];
         //create working directory for new artifact
-        $dir = wf_var('WF_WORK_DIR') . '/' . $type . 's/' . $name;
+        $dir = get_work_dir($artifact);
         execute_command('sudo mkdir ' . $dir);
         drush_log('working directory for artifact ' . $name . ' was created at ' . $dir, 'ok');
 

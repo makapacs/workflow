@@ -81,7 +81,9 @@ function drush_deployer_deploy_asset($alias_name)
                     $drup_type = ($artifact_type != 'theme') ? 'module' : $artifact_type;
                     $dest = $root_dir . '/sites/all/' . $drup_type . 's/' . $artifact['final_name'];
                     //check to see if located at location per convention. if not then set work_dir + '/' + work_dir_name
-                    $source = (file_exists($artifact['work_dir'] . '/' . $artifact_type . 's')) ? $artifact['work_dir'] . '/' . $artifact_type . 's/' . $artifact['work_dir_name'] : $artifact['work_dir'] . '/' . $artifact['work_dir_name'];
+
+//                    $source = (file_exists($artifact['work_dir'] . '/' . $artifact_type . 's')) ? $artifact['work_dir'] . '/' . $artifact_type . 's/' . $artifact['work_dir_name'] : $artifact['work_dir'] . '/' . $artifact['work_dir_name'];
+                    $source = get_work_dir($artifact);
                     drush_log('Linking ' . $artifact_type . ' - ' . $artifact['final_name'] . ' from ' . $source . ' to ' . $dest . '...', 'notice');
 
                     if (file_exists($source)) {

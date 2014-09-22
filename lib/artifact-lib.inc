@@ -1268,7 +1268,7 @@ function write_boilerplate($artifact_name)
             $line_to_write = 'name = ' . $name . "\n";
             $line_to_write .= 'description = Drupal Theme - ' . strtoupper($name) . "\n";
             $line_to_write .= 'version = v0.0.0' . "\n";
-            $line_to_write .= 'pcore = 7.x' . "\n";
+            $line_to_write .= 'core = 7.x' . "\n";
             //write info file
             $handle_info = @fopen($dest . '/' . $name . '.info', "w");
             fwrite($handle_info, $line_to_write, strlen($line_to_write));
@@ -1327,7 +1327,10 @@ function hook_git_repo($artifact_name)
 function get_work_dir($artifact)
 {
     if (isset($artifact) && !empty($artifact)) {
-        return $artifact['work_dir'] . '/' . $artifact['type'] . 's/' . $artifact['work_dir_name'];
+        $dir_name = (isset($artifact['work_dir_name']) && !empty($artifact['work_dir_name'])) ? $artifact['work_dir_name'] : $artifact['name'];
+        $dir_path = (isset($artifact['work_dir']) && !empty($artifact['work_dir'])) ? $artifact['work_dir'] : wf_var('WF_WORK_DIR') . '/' . $artifact['type'] .'s';
+        $dir = $dir_path . '/' . $dir_name;
+        return $dir;
     } else {
         drush_log('ERROR: artifact not specified', 'notice');
         return '';

@@ -171,7 +171,7 @@
     <hr>
     <h4>Overall</h4>
 
-    <p>WorkFlow is a tool used to build assets, deploy and configure these assets on drupal instances among other
+    <p>WorkFlow is a tool used to build, deploy and configure assets(i.e themes, widgets,etc) on drupal instances among other
         things</p>
 
     <p>Each asset contains any number of artifacts with one of the two types - widget and theme, but is not limited to
@@ -246,7 +246,10 @@
                 $options['include'] = array('/path/to/Artifact Workflow tool/commands');
             </code>
         </li>
-        <li><p>choose one of the two:</p>
+        <b>DONE HERE IF ONLY FOR DEPLOYMENT</b>
+        <li><b>Configure Environment</b>
+            <p>choose one of the two:
+
             <ul>
                 <li>Grab WorkFlow Sandbox from https://github.com/makapacs/workflow-sandbox and start develop. NO
                     CONFIGURATION NEEDED
@@ -257,7 +260,7 @@
                     described in 'Configuration' section
                 </li>
             </ul>
-
+            </p>
         </li>
         <li>
             add additional configurations such db user, db password,etc to alias. Please, see <a href="#!/alias_config">Alias
@@ -268,7 +271,6 @@
 <section id="terminology">
     <h3>Terminology</h3>
     <hr>
-    <h4>Terminology Terms </h4>
     <ul>
         <li><b>Asset</b><br>
             Asset is the product that combines together different artifacts and actions to provide some functionality,
@@ -316,8 +318,6 @@
 <section id="asset_naming">
     <h3>Asset Naming</h3>
     <hr>
-    <h4>How To Install?</h4>
-
     <p>The final name of asset is combined with the prefix, type of artifact, name of artifact, branch name if present,
         min if present and version </p>
     <ol>
@@ -948,7 +948,19 @@
         </tr>
         <tr>
             <td>dev</td>
-            <td>this installs developer modules such as admin_menu,module_filter,coffee</td>
+            <td>this installs developer modules such as devel_themer</td>
+        </tr>
+        <tr>
+            <td>audio</td>
+            <td>installs and configures audio</td>
+        </tr>
+        <tr>
+            <td>video</td>
+            <td>installs and configures video</td>
+        </tr>
+        <tr>
+            <td>tune_up</td>
+            <td>tune up the drupal instances by disabling shortcuts modul, enabling admin_menu,module_filter,coffee,etc</td>
         </tr>
     </table>
 </section>
@@ -1059,6 +1071,7 @@
             <li>
                 <p>Call action to create boilerplate and hook the git repo automatically for you</p><br>
                 <code>drush ea create_artifact --param=ARTIFACT-NAME</code>
+                <p>The ARTIFACT-NAME is the article name in Artifact configuraiton file artifact.drushrc.php</p>
             </li>
         </ol>
     </li>
@@ -1270,6 +1283,16 @@
             messages including ones associated with Drush execution
         </li>
     </ul>
+
+    <h6>MYSQL locks</h6>
+    <p>Since mysql shares one lock between all database, it happens often that one thread locks another. To resolve look what thread
+    is currently running and kill it as following
+    <code><br>
+     mysql -u root -p //to login mysql
+     show engine innodb status;//lists current threads active
+     kill TREAD-ID;//kill the thread in lock state
+    </code>
+    </p>
 
 </section>
 <section id="backlog">
