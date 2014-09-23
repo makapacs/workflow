@@ -266,8 +266,11 @@ function build_artifact($artifact, $dest)
         $artifact_config = $artifact;
     }
 
+    if (empty($artifact_config['repo']) || empty($artifact_config['repo_name']) || empty($artifact_config['branch'])) {
+        drush_die('Artifact - ' . $artifact['name'] . ' is not complete....unable to build', 0);
+    }
     //keep it consistent with drupal naming and file structure
-    $type = ($artifact_config['type'] == 'widget') ? 'module' : $artifact_config['type'];
+    $type = (isset($artifact_config['type']) && $artifact_config['type'] == 'widget') ? 'module' : $artifact_config['type'];
 //    $type = $artifact_config['type'];
 
     $widget_dist_dest_lib = $dest . '/' . $type . 's/' . $artifact_config['final_name'];
@@ -631,7 +634,7 @@ function get_make_file($name = '')
                 foreach (glob($package_dir . "/*.make") as $filename) {
                     $make_file = $filename;
                 }
-            } elseif(empty($temp_make) || !file_exists($make_file)) {
+            } elseif (empty($temp_make) || !file_exists($make_file)) {
                 $temp_make = wf_var('WF_ASSET_MAKE', '');
                 if (!file_exists($make_file) || empty($temp_make)) {
                     //try read the make specified by artifact
@@ -693,16 +696,21 @@ function remove_cur_artifact($name, $type)
     $type = ($type != 'theme') ? 'module' : $type;
     if (isset($artifact) && !empty($artifact) && isset($artifact['final_name']) && !empty($artifact['final_name'])) {
         $dest_dir = $root . '/sites/all/' . $type . 's/' . $artifact['final_name'];
-    } else {
-        //we may be quering the artifact by final name instead the actual name when reading from current drupal instance
-        $dest_dir = $root . '/sites/all/' . $type . 's/' . $name;
-    }
+
+//    else {
+//        //we may be quering the artifact by final name instead the actual name when reading from current drupal instance
+//        $dest_dir = $root . '/sites/all/' . $type . 's/' . $name;
+//    }
 //    drush_log('remove_cur_artifiact checks destination: '.$dest_dir, 'notice');
-    if (file_exists($dest_dir)) {
-        drush_log('deleting existing ' . $type . ': ' . $name . '....' . $dest_dir, 'notice');
-        execute_command('sudo rm -R ' . $dest_dir);
-    } else {
-        drush_log('ERROR: artifact - ' . $dest_dir . ' to be removed doesn\'t exist', 'notice');
+        if (file_exists($dest_dir)) {
+            drush_log('deleting existing ' . $type . ': ' . $name . '....' . $dest_dir, 'notice');
+            execute_command('sudo rm -R ' . $dest_dir);
+        } else {
+            drush_log('ERROR: artifact - ' . $dest_dir . ' to be removed doesn\'t exist', 'notice');
+        }
+    }else{
+        drush_log('ERROR: unable destination of artifact - '.$name, 'notice');
+
     }
 }
 
@@ -1328,7 +1336,7 @@ function get_work_dir($artifact)
 {
     if (isset($artifact) && !empty($artifact)) {
         $dir_name = (isset($artifact['work_dir_name']) && !empty($artifact['work_dir_name'])) ? $artifact['work_dir_name'] : $artifact['name'];
-        $dir_path = (isset($artifact['work_dir']) && !empty($artifact['work_dir'])) ? $artifact['work_dir'] : wf_var('WF_WORK_DIR') . '/' . $artifact['type'] .'s';
+        $dir_path = (isset($artifact['work_dir']) && !empty($artifact['work_dir'])) ? $artifact['work_dir'] : wf_var('WF_WORK_DIR') . '/' . $artifact['type'] . 's';
         $dir = $dir_path . '/' . $dir_name;
         return $dir;
     } else {

@@ -72,7 +72,7 @@ function drush_configurator_configure_asset($alias = '@self')
     $all_actions = get_actions_from_make($make_file);
 
     //if package is not set or no make provided, lets import actions from default make file as well
-    if (wf_var('WF_ASSET_PACKAGE', TRUE) && wf_var('WF_ASSET_MAKE', TRUE)) {
+    if (!wf_var('WF_ASSET_PACKAGE') && !wf_var('WF_ASSET_MAKE')) {
         drush_log('adding shared actions from file - ' . drush_get_context('FLOW_CONFIG_DEFAULT_MAKE'), 'notice');
         $all_actions = $all_actions + get_actions_from_make(drush_get_context('WF_DEFAULT_MAKE'));
     }

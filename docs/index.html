@@ -236,35 +236,37 @@
     <p>In the following are the steps to install Artifact WorkFlow Drupal tool</p>
     <ol>
         <li>
-            <b>Download</b><br>Clone the tool from github repo - https://github.com/makapacs/workflow
+            <b>Download</b><br>Clone the tool from github repo - <a href="https://github.com/makapacs/workflow" target="_blank">WorkFlow</a>
         </li>
         <li>
             <b>Incorporate With Drush</b><br>
-            Update $options['include'] to include path to the tool with '/commands' in Drush configuration file
-            drushrc.php (usually in $HOME/.drush dir)
+            In the Drush configuration file - drushrc.php (usually located in $HOME/.drush dir), update $options['include'] to point to $directory + "/commands" you cloned WorkFlow in the above step<br>
             <code>
-                $options['include'] = array('/path/to/Artifact Workflow tool/commands');
+                $options['include'] = array('/path/to/WorkFlow Dir/commands');
             </code>
         </li>
         <b>DONE HERE IF ONLY FOR DEPLOYMENT</b>
         <li><b>Configure Environment</b>
-            <p>choose one of the two:
+            <p>Choose one of the two:
 
             <ul>
-                <li>Grab WorkFlow Sandbox from https://github.com/makapacs/workflow-sandbox and start develop. NO
-                    CONFIGURATION NEEDED
+                <li>Clone WorkFlow Sandbox from <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow Sandbox</a> into $HOME/workflow and start develop. NO OTHER
+                    CONFIGURATIONS NEEDED<br>
+                   <code>
+                       git clone https://github.com/makapacs/workflow-sandbox.git workflow<br>
+                   </code>
+
                 </li>
-                <li><b>Configure Your Environment</b><br>
-                    Specify your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place
+                <li>Specify your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place
                     it in to DRUSH_ROOT dir as
-                    described in 'Configuration' section
+                    described in <a href="#!/configurations">'Configuration' section</a>
                 </li>
             </ul>
             </p>
         </li>
-        <li>
-            add additional configurations such db user, db password,etc to alias. Please, see <a href="#!/alias_config">Alias
-            Configuration section</a>
+        <li><b>Configure Aliases and Artifacts</b><br>
+            Add additional configurations such db user, db password,etc for alias(see <a href="#!/alias_config">Alias Configuration section</a>) and
+            set up artifacts(see <a href="#!/artifacts">Artifacts section</a>). The <a href="#!/how_to">"How To" section</a> is good place to start. The <a href="#!/kickstart">Kickstart section</a> is in progress
         </li>
     </ol>
 </section>
@@ -301,10 +303,10 @@
             such as check the uncommitted changes in working directory, scrap email addresses from file,etc. Actions are
             also any Drush command. The purpose of actions is to automate repetitive tasks that can be reused by
             declaring in blueprint(make file) and executing them all at once or per requirements. Actions can also be
-            shared among assets and imported into deliverable package at the build process. See "Actions" section for
-            details
+            shared among assets. The actions are also imported into deliverable package as part of the blueprint(make file) at the build process.
+            See "Actions" section for more details
         </li>
-        <li><b>Package</b>
+        <li><b>Package</b><br>
             Deliverable of asset that can be compressed in tar/zip format. It contains all the artifacts all arranged
             per directories - modules, themes
         </li>
@@ -365,14 +367,24 @@
             db-user,db-pwd,db-name
             (i.e. $db_url = 'mysql://user-name:pass@127.0.0.1/db_name)
         </li>
-        <li><b>make-file</b>
+        <li><b>make-file[Optional]</b>
             full path to the make file used for initial installation of Drupal if one is not provided at the time of
             execution 'site-install' command
         </li>
     </ul>
+    <p>Here is an example for an alias:<br>
+    <code>
+        $aliases['stage-metronic'] = array(<br>
+        'root' => '/path/to/drupal/instance',<br>
+        'uri' => 'domain/name',<br>
+        'db-user' => 'some_user',<br>
+        'db-pwd' => 'password1',<br>
+        'db-name' => 'some_db',<br>
+        );<br>
+    </code>
+    </p>
     <p>Important to note, that alias configurations - db-name, db-user, db-pwd will be overritten with ones user
-        specifies at
-        the time of execution if any</p>
+        specifies at the time of execution if any</p>
 
 </section>
 <section id="artifacts">
@@ -1257,16 +1269,17 @@
 </ol>
 
 </section>
-<section id="sandbox">
-    <h3>WorkFlow Sandbox</h3>
+<section id="kickstart">
+    <h3>Kickstart with WorkFlow Sandbox</h3>
     <hr>
     <p>The WorkFlow Sandbox was created for easy way to start. It comes with three assets - theme Espresso, widget Blog
         and widget Portfolio</p>
 
     <p>By cloning <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">workflow sandbox</a> into
-        $HOME/workflow dir, the environment configurations are already preconfigured</p>
+        $HOME/workflow dir, the environment configurations are already pre-configured</p>
 
     <p>See section 'How-to' for steps on configuring new widget</p>
+    <p>@ToDo: add sample runs for Espresso, Blog and Portfolio here</p>
 </section>
 <section id="troubleshooting">
     <h3>Troubleshooting</h3>

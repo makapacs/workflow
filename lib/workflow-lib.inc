@@ -26,9 +26,26 @@ function read_artifacts()
     }
 
 
-    if (isset($artifacts_file) && !empty($artifacts_file)) {
+    if (isset($artifacts_file) && !empty($artifacts_file) && file_exists($artifacts_file)) {
         @include_once($artifacts_file);
 
+        _set_artifact_defaults($artifacts);
+        //check if artifacts specified
+//        if(isset($artifact)){
+
+
+
+        drush_set_context('WF_ARTIFACTS', $artifacts);
+        drush_log('artifact file found and set in cache WF_ARTIFACTS', 'notice');
+    } else {
+        drush_log('ERROR: artifact configurations not found', 'notice');
+    }
+}
+
+function _set_artifact_defaults(&$artifacts){
+    if(!isset($artifacts) || empty($artifacts)){
+        return Null;
+    }else{
         //get the default attributes of the artifact
         $base_artifact = _base_artifact();
         //marge defaults
@@ -37,12 +54,9 @@ function read_artifacts()
             //marge defaults
             $artifacts[$key] = $artifact + $base_artifact;
         }
-        drush_set_context('WF_ARTIFACTS', $artifacts);
-        drush_log('artifact file found and set in cache WF_ARTIFACTS', 'notice');
-    } else {
-        drush_log('ERROR: artifact configurations not found', 'notice');
     }
 }
+
 
 /*
  *
@@ -359,6 +373,8 @@ function init_artifacts()
         drush_log('External artifact configurations not set...loading from blueprint', 'debug');
         //retrieve artifact declaration from make file
         $artifacts = get_artifacts_from_blueprint();
+        //add defaults
+        _set_artifact_defaults($artifacts);
     }
 
     //get the default attributes of the artifact
