@@ -18,8 +18,13 @@ function installer_drush_command()
             'db-user' => 'database user name. If not set, will use the general db user configured part of WorkFlow external configurations',
             'db-pwd' => 'database password. If not set, will use the general db password configured part of WorkFlow external configurations',
             'db-name' => 'the name of database. By default, it is constructed $env + "_" + $alias "_" + db or how its specified in alias configration - "db_name"',
-            'make' => 'make file for the drupal installation. It can also be configured either at the alias site and external env configurations',
-            'dest' => 'full path to destination directory. If not specified, it will use the "root" value from the site alias configurations'
+            'dest' => 'full path to destination directory. If not specified, it will use the "root" value from the site alias configurations',
+
+            /*different ways to provide blueprint - make file*/
+            'package' => 'full or relative path to compressed package or uncompressed package directory containing make file you like to be used in this installation. This overrides the package specified by asset.',
+            'make' => 'full or relative path to make file that you want to be used for installation. This overrides the make file specified by asset.',
+            'asset' => 'name of the asset containing make file used for installing new site'
+
         ),
         'examples' => array(
             'drush is @awesomeness' => 'downloads and installs the awesomeness based on the make file declared in the alias or in the external configurations',
