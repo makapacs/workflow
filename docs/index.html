@@ -362,6 +362,9 @@
         <li><b>db-name</b>
             The database name for current drupal installation
         </li>
+        <li><b>db-address</b>
+            the database addres such as 'localhost','127.0.0.1',etc
+        </li>
         <li><b>db-url</b>
             the database url for current drupal installation. If specified, than it will be used instead of
             db-user,db-pwd,db-name
@@ -531,12 +534,20 @@
             The package_prefix specifies the prefix added to the package name. For example, all pacakge at
             designssquare.com is prefixed with 'designssquare-com-'
         </li>
-        <li><b>db_user</b><br>
+        <li><b>db-user</b><br>
             the database user used for site installation, etc if not specified at site alias configurations or at the
             time of execution
         </li>
-        <li><b>db_pwd</b><br>
+        <li><b>db-pwd</b><br>
             the database user password used for site installation, etc if not specified at site alias configurations or
+            at the time of execution
+        </li>
+        <li><b>db-name</b><br>
+            the database name used for site installation, etc if not specified at site alias configurations or
+            at the time of execution
+        </li>
+        <li><b>db-address</b><br>
+            the address of database used for site installation, etc if not specified at site alias configurations or
             at the time of execution
         </li>
         <li><b>make_file</b><br>
@@ -900,6 +911,8 @@
         </li>
         <li><b>WF_DB_PWD:</b> This database user password for site installations. It is specified in the environment
             configurations with 'db_pwd'. If not specified, then defaults to "password"
+        </li>
+        <li><b>WF_DB_ADDRESS</b> The database address such as 'localhost', '127.0.0.1',etc
         </li>
         <li><b>WF_PACKAGE_PREFIX:</b> The prefix added to the package name of asset configurable at the external
             environment configuration at build process
@@ -1310,6 +1323,10 @@
      kill TREAD-ID;//kill the thread in lock state<br>
     </code>
     </p>
+
+    <h6>SQLSTATE[HY000] [2013] Lost connection to MySQL server at &#039;reading initial communication packet&#039;, system error: 111. Is the database server running?</h6>
+    <p> Ensure that MySQL address(localhost, 127.0.0.1,etc) is configured the correct one in the alias configuration(please, see <a href="#!/alias_config">alias configurations</a>). You may also find
+    useful tips on how to determine your MySQL address in post - <a href="http://margotskapacs.com/2013/01/installing-mysql-on-mac" target="_blank"> Install MySQL On MAC </a> (see Troubleshooting section)</p>
 
 </section>
 <section id="backlog">

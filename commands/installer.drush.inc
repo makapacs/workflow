@@ -17,7 +17,8 @@ function installer_drush_command()
             'su-pw' => 'site admin user password. By default, it\'s "password"',
             'db-user' => 'database user name. If not set, will use the general db user configured part of WorkFlow external configurations',
             'db-pwd' => 'database password. If not set, will use the general db password configured part of WorkFlow external configurations',
-            'db-name' => 'the name of database. By default, it is constructed $env + "_" + $alias "_" + db or how its specified in alias configration - "db_name"',
+            'db-name' => 'the name of database',
+            'db-address' => 'the address of database',
             'dest' => 'full path to destination directory. If not specified, it will use the "root" value from the site alias configurations',
 
             /*different ways to provide blueprint - make file*/
@@ -63,6 +64,7 @@ function drush_installer_install_site($alias='@self')
     $db_name = get_db_credential('db-name');
     $db_user = get_db_credential('db-user');
     $db_pwd = get_db_credential('db-pwd');
+    $address = ($address = get_db_credential('db-address')) ? $address : 'localhost';
 
     $is_db_url = FALSE;
     if($db_url = drush_get_option('db-url', TRUE)){
@@ -73,7 +75,7 @@ function drush_installer_install_site($alias='@self')
             $is_db_url = TRUE;
         }else{
             //$db_url not provided in alias configs...construct from db-user, db-pwd and db-name
-            $db_url = 'mysql://' . $db_user . ':' . $db_pwd . '@127.0.0.1/' . $db_name;
+            $db_url = 'mysql://' . $db_user . ':' . $db_pwd . '@'.$address.'/' . $db_name;
         }
     }else{
         //db-url is provided
@@ -86,9 +88,10 @@ function drush_installer_install_site($alias='@self')
         $db_user = $db_conf['user'];
         $db_pwd = $db_conf['pass'];
         $db_name = $db_conf['database'];
+        $address = $db_conf['host'];
     }
 
-    drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name)),'notice');
+    drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name, db-address=@address', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name, '@address' => $address)),'notice');
 
 
     # Site Configurations
@@ -127,7 +130,6 @@ function drush_installer_install_site($alias='@self')
 #Download
 #########################################################
     //destination
-
     $default_dest = get_destination();
 
 
@@ -142,33 +144,6 @@ function drush_installer_install_site($alias='@self')
 
     //makefile
     $default_make = get_make_file();
-//    if($default_make = drush_get_option('make-file', TRUE)){
-//        if(isset($site_record['make-file']) && !empty($site_record['make-file'])){
-//            //$default_make not provided ...see if specified in alias configs.
-//            $default_make = $site_record['make-file'];
-//        }else{
-//            //$default_make not provided in alias configs...'
-//            return drush_set_error('WORKFLOW_INSTALLER_ERROR', dt('ERROR: the make file not provided' ));
-//        }
-//
-//    }
-
-//    $dest = ($build_dest = drush_get_option('build-dest', FALSE)) ? $build_dest : $default_dest;
-//    drush_log(dt('Dest folder: @dest', array('@dest' => $dest )), 'debug');
-//    $status = _process_make_file($default_make, $default_dest, array('no-core' => 0));
-//    $proc_status = ($status) ? "SUCCESSFUL" : "FAILED";
-//    drush_log(dt('Make Download @st',array('@st' => $proc_status)), 'notice');
-
-# Database
-##########################################################
-//    $dbHost="localhost";
-//    $dbName= ($dbname = drush_get_option('db-name', FALSE)) ? $dbname : $db_name;
-//    $dbUser= ($dbuser = drush_get_option('db-user', FALSE)) ? $dbuser : $db_user;
-//    $dbPassword = ($dbpass = drush_get_option('db-pass', FALSE)) ? $dbpass : $db_password;
-//    $dbPort ="3306";
-//    $db_url = ($dburl = drush_get_option('db-url', FALSE)) ? $dburl : 'mysql://'.$dbUser.':'.$dbPassword.'@'.$dbHost.':' . $dbPort . '/' . $dbName;
-##########################################################
-
 
 # Install core
 ##########################################################

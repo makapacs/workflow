@@ -147,6 +147,9 @@ function _parse_param($params){
             case '@db-name':
                 $temp_par = wf_var('WF_DB_NAME','');
                 break;
+            case '@db-address':
+                $temp_par = wf_var('WF_DB_ADDRESS','');
+                break;
             default:
                 $temp_par = $param;
                 break;

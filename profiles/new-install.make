@@ -9,6 +9,7 @@
 ;;@db-user - database user
 ;;@db-pwd - database password
 ;;@db-name - database name
+;;@db-address - database address
 
 action[install][name]=install-site
 action[install][order]=0
@@ -19,6 +20,7 @@ action[install][flag][package]=@package
 action[install][flag][db-user]=@db-user
 action[install][flag][db-pwd]=@db-pwd
 action[install][flag][db-name]=@db-name
+action[install][flag][db-address]=@db-address
 
 action[deploy][name]=deploy-asset
 action[deploy][order]=1

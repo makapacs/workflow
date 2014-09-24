@@ -142,22 +142,37 @@ function read_config()
         drush_log(dt('ERROR: WF_DEFAULT_MAKE are not set in external env configuration. Using make_root/build-drupal-core.make'), 'notice');
     }
 
-    if (isset($workflow_config['db_user']) && !empty($workflow_config['db_user'])) {
-        drush_set_context('WF_DB_USER', $workflow_config['db_user']);
-        drush_log(dt('WF_DB_USER set to @name', array('@name' => $workflow_config['db_user'])), 'notice');
+    if (isset($workflow_config['db-user']) && !empty($workflow_config['db-user'])) {
+        drush_set_context('WF_DB_USER', $workflow_config['db-user']);
+        drush_log(dt('WF_DB_USER set to @name', array('@name' => $workflow_config['db-user'])), 'notice');
     } else {
-        drush_set_context('WF_DB_USER', 'root');
+        drush_set_context('WF_DB_USER', false);
         drush_log(dt('WF_DB_USER are not set in external env configuration. Using "root"'), 'notice');
     }
 
-    if (isset($workflow_config['db_pwd']) && !empty($workflow_config['db_pwd'])) {
-        drush_set_context('WF_DB_PWD', $workflow_config['db_pwd']);
-        drush_log(dt('WF_DB_PWD set to @name', array('@name' => $workflow_config['db_pwd'])), 'notice');
+    if (isset($workflow_config['db-pwd']) && !empty($workflow_config['db-pwd'])) {
+        drush_set_context('WF_DB_PWD', $workflow_config['db-pwd']);
+        drush_log(dt('WF_DB_PWD set to @name', array('@name' => $workflow_config['db-pwd'])), 'notice');
     } else {
-        drush_set_context('WF_DB_PWD', 'password');
+        drush_set_context('WF_DB_PWD', false);
         drush_log(dt('WF_DB_PWD are not set in external env configuration'), 'notice');
     }
 
+    if (isset($workflow_config['db-name']) && !empty($workflow_config['db-name'])) {
+        drush_set_context('WF_DB_NAME', $workflow_config['db_name']);
+        drush_log(dt('WF_DB_NAME set to @name', array('@name' => $workflow_config['db-name'])), 'notice');
+    } else {
+        drush_set_context('WF_DB_NAME', false);
+        drush_log(dt('WF_DB_NAME are not set in external env configuration'), 'notice');
+    }
+
+    if (isset($workflow_config['db-address']) && !empty($workflow_config['db-address'])) {
+        drush_set_context('WF_DB_ADDRESS', $workflow_config['db-address']);
+        drush_log(dt('WF_DB_ADDRESS set to @name', array('@name' => $workflow_config['db-address'])), 'notice');
+    } else {
+        drush_set_context('WF_DB_ADDRESS', false);
+        drush_log(dt('WF_DB_ADDRESS are not set in external env configuration'), 'notice');
+    }
 
     //artifact types declared
     if (isset($artifact_types) && !empty($artifact_types)) {
@@ -259,6 +274,16 @@ function init_inputs()
 
     }
 
+    //--alias
+    if($alias_name = drush_get_option('alias', FALSE)){
+        $alias = drush_sitealias_get_record($alias_name);
+        if(isset($alias)){drush_set_context('WF_ALIAS', $alias);};
+        drush_log(dt('WF_ALIAS set to @name', array('@name' => implode(','."\n", $alias))), 'notice');
+
+        //override defaults before user inputs
+//        _override_defaults($alias);
+    }
+
     drush_set_context('WF_ASSET_BRANCH', drush_get_option('branch', FALSE));
     drush_log(dt('WF_ASSET_BRANCH set to @name', array('@name' => drush_get_option('branch', FALSE))), 'notice');
     drush_set_context('WF_WIDGET_MIN', drush_get_option('min', FALSE));
@@ -276,18 +301,15 @@ function init_inputs()
     drush_log(dt('WF_DB_USER set to @name', array('@name' => drush_get_option('db-user', FALSE))), 'notice');
     drush_set_context('WF_DB_PWD', drush_get_option('db-pwd', false));
     drush_log(dt('WF_DB_PWD set to @name', array('@name' => drush_get_option('db-pwd', FALSE))), 'notice');
+    drush_set_context('WF_DB_ADDRESS', drush_get_option('db-address', false));
+    drush_log(dt('WF_DB_ADDRESS set to @name', array('@name' => drush_get_option('db-address', FALSE))), 'notice');
 
     //--asset
     if($article_name = drush_get_option('asset', FALSE)){
         drush_set_context('WF_ASSET_NAME', $article_name);
         drush_log(dt('WF_ASSET_NAME set to @name', array('@name' => $article_name)), 'notice');
     }
-    //--alias
-    if($alias_name = drush_get_option('alias', FALSE)){
-        $alias = drush_sitealias_get_record($alias_name);
-        if(isset($alias)){drush_set_context('WF_ALIAS', $alias);};
-        drush_log(dt('WF_ALIAS set to @name', array('@name' => implode(','."\n", $alias))), 'notice');
-    }
+
 
     $params = ($param = drush_get_option('param', false)) ? explode(',', $param) : array();
     drush_set_context('WF_INPUT_PARAM', $params);
@@ -350,22 +372,7 @@ function init_inputs()
     drush_log('WF_ASSET_PACKAGE is set to: ' . $package_dir, 'notice');
 
 
-    //NOTE:Moved the following logic into API get_make_file()
-//    if ($orgin_make = drush_get_option('make', false)) {
-//        if (!file_exists($orgin_make)) {
-//            //if user didn't provided full path, lets see if its in the blueprint dir
-//            $make = drush_get_context('WF_MAKE_ROOT') . '/' . $orgin_make;
-//            if (!file_exists($make)) {
-//                //incase the make is relevant to the current directory
-//                $make = getcwd() . '/' . $orgin_make;
-//                if(!file_exists($make)){
-//                    drush_log(dt('ERROR: make file provided doesn\'t exist ...'.$make), 'notice');
-//                }
-//            }
-//        }
-//    }
-//
-//    $final_make = (isset($make) && file_exists($make)) ? $make : $orgin_make;
+
     drush_set_context('WF_ASSET_MAKE', drush_get_option('make', false));
     drush_log('WF_ASSET_MAKE is set to: ' . drush_get_option('make', false), 'notice');
 }
@@ -455,8 +462,8 @@ function get_db_credential($credential){
     $internal_var = _get_internal_name($credential);
     if($cred = wf_var($internal_var)){
         return $cred;
-    }elseif($alias = wf_var('WF_ALIAS')){
-        return (isset($alias[$credential])) ? $alias[$credential] : '';
+    }elseif(($alias = wf_var('WF_ALIAS')) && isset($alias[$credential])){
+        return $alias[$credential];
     }else{
         drush_log('ERROR: db credential - '.$credential.' not specified', 'notice');
         return false;
@@ -520,6 +527,31 @@ function _get_internal_name($user_input){
         case 'db-name':
             $internal_name = 'WF_DB_NAME';
             break;
+        case 'db-address':
+            $internal_name = 'WF_DB_ADDRESS';
+            break;
+        case 'make-file':
+            $internal_name = 'WF_DEFAULT_MAKE';
+            break;
+        default:
+            $internal_name = FALSE;
+            break;
     }
     return $internal_name;
+}
+
+/**
+ * overrides defaults of external environment variables
+ */
+function _override_defaults($alias){
+    if(isset($alias) && !empty($alias)){
+        foreach($alias as $key =>$value){
+            $attribute = _get_internal_name($key);
+            if($attribute){
+                drush_log('Alias config ['.$key.'] = '.$value.' masked out value - ' . wf_var($attribute) . ' for [' . $attribute .'] = ', 'notice');
+                drush_set_context($attribute, $value);
+            }
+
+        }
+    }
 }

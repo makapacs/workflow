@@ -713,7 +713,8 @@ function get_artifact_by_name($name)
         drush_log('artifact declarations masked out ', 'debug');
         return ($art && isset($art[$name])) ? $art[$name] : array();
     } else {
-        return drush_set_error('DRUSH_ARTIFACT_INIT_FAILED', dt('WF_ARTIFACTS are not set'));
+        drush_log(dt('WF_ARTIFACTS are not set'),'notice');
+        return false;
     }
 
 //    return $artifact;
