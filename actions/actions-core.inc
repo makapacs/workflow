@@ -463,7 +463,7 @@ function tune_up_action(){
  *      set whether compressing the jquery or not
  *
  * */
-function configure_jquery_action($ver = "1.10", $compression = "min")
+function config_jquery_action($ver = "1.10", $compression = "min")
 {
     drush_log('configuring jquery_update...','ok');
     enable_artifact_action('jquery_update');
