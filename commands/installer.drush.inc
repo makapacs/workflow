@@ -56,49 +56,13 @@ function drush_installer_install_site($alias='@self')
 
     //retrieve db_user & db_password
 //    $site_record = drush_sitealias_get_record($alias);
-    $site_record = drush_get_context('WF_ALIAS');
+    $site_record = wf_var('WF_ALIAS');
     //retrieve alias
-    if($env = drush_get_option('env', TRUE)){
-        //$env not provided...see if specified in alias config.
-        if(isset($site_record['env']) && !empty($site_record['env'])){
-            $env = $site_record['env'];
-        }else{
-            //not provided in alias...default to 'stage'
-            $env = 'stage';
-        }
-    }
 
-    if($db_name = drush_get_option('db-name', TRUE)){
-        //$db_name not provided...see if specified in alias configs.
-        if(isset($site_record['db-name']) && !empty($site_record['db-name'])){
-            $db_name = $site_record['db-name'];
-        }else{
-            //not provided in alias...construct from env, alias values
-            $db_name = $env . '_' . $site_record['#name'] . '_db';
-        }
-    }
-
-
-    if($db_user = drush_get_option('db-user', TRUE)){
-        //db_user not provided...see if specified in alias configs.
-        if(isset($site_record['db-user']) && !empty($site_record['db-user'])){
-            $db_user = $site_record['db-user'];
-        }else{
-            //not provided in alias...see if in general config. otherwise construct from env,alias
-            ($db_user = drush_get_context('WF_DB_USER', FALSE)) ? /* using from external configs*/ : $db_user = $env . '_' . $alias;
-        }
-    }
-
-    if($db_pwd = drush_get_option('db-pwd', TRUE)){
-        if(isset($site_record['db-pwd']) && !empty($site_record['db-pwd'])){
-            //db_pwd not provided ...see if specified in alias configs.
-            $db_pwd = $site_record['db-pwd'];
-        }else{
-            //db_pwd not provided in alias configs...see if specified in general configs. if not, use 'password'
-            ($db_pwd = drush_get_context('FW_DB_PWD', FALSE)) ? /* using from external configs*/ : $db_pwd = 'password';
-        }
-
-    }
+    $env = get_env();
+    $db_name = get_db_credential('db-name');
+    $db_user = get_db_credential('db-user');
+    $db_pwd = get_db_credential('db-pwd');
 
     $is_db_url = FALSE;
     if($db_url = drush_get_option('db-url', TRUE)){
@@ -125,25 +89,6 @@ function drush_installer_install_site($alias='@self')
     }
 
     drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name)),'notice');
-
-    //check if database exists or can connect with current credentials
-//    $con = mysqli_connect("localhost", $db_user, $db_pwd, $db_name);
-//    if (mysqli_connect_errno()) {
-//        drush_log(dt("Failed to connect to MySQL: @connect", array('@connect' => mysqli_connect_error())), 'notice');
-//        drush_log(dt('database @db does not exist ....creating', array('db' => $db_name)), 'ok');
-        //create database. @NO Need because site-install will create
-//        $ret = drush_invoke_process('@self', 'sql-create', array(), array(
-//            'db-su' => $db_user,
-//            'db-su-pw' => $db_pwd,
-//            'db-url' => $db_url,
-//        ));
-//        drush_log(dt('Sql-create: @ret', array('@ret' => implode(',',$ret))), 'debug');
-//    } else {
-//        drush_log(dt('database @db exist....skip creating', array('db' => $db_name)), 'ok');
-//    }
-
-
-//    $debug_mode = TRUE;
 
 
     # Site Configurations
@@ -182,16 +127,9 @@ function drush_installer_install_site($alias='@self')
 #Download
 #########################################################
     //destination
-    if($default_dest = drush_get_option('dest', TRUE)){
-        if(isset($site_record['root']) && !empty($site_record['root'])){
-            //$default_dest not provided ...see if specified in alias configs.
-            $default_dest = $site_record['root'];
-        }else{
-            //$default_dest not provided in alias configs...defaulting to root/deploys/env-alias
-            $default_dest = drush_get_context('WF_WORK_DIR', FALSE) . '/deploys/'.$env . '-' . $alias;
-//            return drush_set_error('WORKFLOW_INSTALLER_ERROR', dt('ERROR: the destination directory is not provided' ));
-        }
-    }
+
+    $default_dest = get_destination();
+
 
     if(file_exists($default_dest)){
         drush_log(dt('destination - @dest exists. Removing for clean install', array('@dest' => $default_dest)),'ok');
@@ -203,16 +141,17 @@ function drush_installer_install_site($alias='@self')
     execute_command('sudo chmod -R 777 ' . $default_dest);
 
     //makefile
-    if($default_make = drush_get_option('make-file', TRUE)){
-        if(isset($site_record['make-file']) && !empty($site_record['make-file'])){
-            //$default_make not provided ...see if specified in alias configs.
-            $default_make = $site_record['make-file'];
-        }else{
-            //$default_make not provided in alias configs...'
-            return drush_set_error('WORKFLOW_INSTALLER_ERROR', dt('ERROR: the make file not provided' ));
-        }
-
-    }
+    $default_make = get_make_file();
+//    if($default_make = drush_get_option('make-file', TRUE)){
+//        if(isset($site_record['make-file']) && !empty($site_record['make-file'])){
+//            //$default_make not provided ...see if specified in alias configs.
+//            $default_make = $site_record['make-file'];
+//        }else{
+//            //$default_make not provided in alias configs...'
+//            return drush_set_error('WORKFLOW_INSTALLER_ERROR', dt('ERROR: the make file not provided' ));
+//        }
+//
+//    }
 
 //    $dest = ($build_dest = drush_get_option('build-dest', FALSE)) ? $build_dest : $default_dest;
 //    drush_log(dt('Dest folder: @dest', array('@dest' => $dest )), 'debug');

@@ -850,7 +850,7 @@
         <li>WF_ASSET_VER: the version of package taken from flag '--ver'</li>
         <li>WF_ASSET_MIN: whether the dependencies are included taken from flag '--min'</li>
         <li>WF_ASSET_BRANCH: the branch of the asset taken from flag '--branch'</li>
-        <li>WF_ASSET_ENV: the deployment mode for asset such as dev, stage, test,etc</li>
+        <li>WF_ENV: the deployment mode for asset such as dev, stage, test,etc</li>
         <li>WF_ASSET_MAKE: make file of asset provided by user via flag '--make'.</li>
         <li>WF_ASSET_PACKAGE: the path to the package directory or compressed package of asset specified by flag
             --package. It defaults to DIST/"package dir" or "current dir"/package
@@ -861,6 +861,10 @@
         </li>
         <li>WF_INPUT_TAG: list of tags assigned to actions to be executed via DRUSH command - configure-asset</li>
         <li>WF_INPUT_ACTION:list of action to execute via DRUSH command - configure-asset</li>
+        <li>WF_DB_NAME:the name of database to install site(only used at the time of site install)</li>
+        <li>WF_DB_USER:the the username for database used to install site</li>
+        <li>WF_DB_PWD:the the password for database user used to install site</li>
+        <li>WF_DEST:the destination of the drupal instance being installed, deployed or configured</li>
     </ul>
 
 </section>
@@ -1298,12 +1302,12 @@
     </ul>
 
     <h6>MYSQL locks</h6>
-    <p>Since mysql shares one lock between all database, it happens often that one thread locks another. To resolve look what thread
-    is currently running and kill it as following
+    <p>Since mysql shares one lock between all database, it happens often that one thread locks another when executing multiple WorkFlow commands at
+     once. To resolve, look what thread is currently running and kill it as following
     <code><br>
-     mysql -u root -p //to login mysql
-     show engine innodb status;//lists current threads active
-     kill TREAD-ID;//kill the thread in lock state
+     mysql -u root -p //to login mysql<br>
+     show engine innodb status;//lists current threads active<br>
+     kill TREAD-ID;//kill the thread in lock state<br>
     </code>
     </p>
 

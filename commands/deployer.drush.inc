@@ -61,7 +61,7 @@ function drush_deployer_deploy_asset($alias_name)
 //let's jump to our site directory before we do anything else
     drush_op('chdir', $root_dir);
 
-    $env = drush_get_context('WF_ASSET_ENV', 'dev');
+    $env = wf_var('WF_ENV', 'dev');
     drush_log('***' . strtoupper($env) . ' deployment***', 'ok');
 
 //loop through different type of artifacts and perform delete, build

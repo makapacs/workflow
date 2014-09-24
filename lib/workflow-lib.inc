@@ -265,8 +265,17 @@ function init_inputs()
     drush_log(dt('WF_WIDGET_MIN set to @name', array('@name' => drush_get_option('min', FALSE))), 'notice');
     drush_set_context('WF_ASSET_VER', drush_get_option('ver', FALSE));
     drush_log(dt('WF_ASSET_VER set to @name', array('@name' => drush_get_option('ver', FALSE))), 'notice');
-    drush_set_context('WF_ASSET_ENV', drush_get_option('env', 'stage'));
-    drush_log(dt('WF_ASSET_ENV set to @name', array('@name' => drush_get_option('env', FALSE))), 'notice');
+    drush_set_context('WF_ENV', drush_get_option('env', 'stage'));
+    drush_log(dt('WF_ENV set to @name', array('@name' => drush_get_option('env', FALSE))), 'notice');
+    drush_set_context('WF_DEST', drush_get_option('dest',false));
+    drush_log(dt('WF_DEST set to @name', array('@name' => drush_get_option('dest', FALSE))), 'notice');
+//db related
+    drush_set_context('WF_DB_NAME', drush_get_option('db-name', FALSE));
+    drush_log(dt('WF_DB_NAME set to @name', array('@name' => drush_get_option('db-name', FALSE))), 'notice');
+    drush_set_context('WF_DB_USER', drush_get_option('db-user', false));
+    drush_log(dt('WF_DB_USER set to @name', array('@name' => drush_get_option('db-user', FALSE))), 'notice');
+    drush_set_context('WF_DB_PWD', drush_get_option('db-pwd', false));
+    drush_log(dt('WF_DB_PWD set to @name', array('@name' => drush_get_option('db-pwd', FALSE))), 'notice');
 
     //--asset
     if($article_name = drush_get_option('asset', FALSE)){
@@ -303,6 +312,8 @@ function init_inputs()
             }
         }
 
+        //ensure full path
+        $package_dir = realpath($package_dir);
 
         //check if compressed
         $package_ext = substr($package_dir,-3);
@@ -432,4 +443,83 @@ function inform_make_supplied(){
 
     $blueprint = get_make_file();
     drush_log('...using blueprint: ' . $blueprint, 'ok');
+}
+
+/**
+ * retrieve db info
+ * @param: $credential
+ *      db credential such as db-name, db-pwd, db-user
+ */
+
+function get_db_credential($credential){
+    $internal_var = _get_internal_name($credential);
+    if($cred = wf_var($internal_var)){
+        return $cred;
+    }elseif($alias = wf_var('WF_ALIAS')){
+        return (isset($alias[$credential])) ? $alias[$credential] : '';
+    }else{
+        drush_log('ERROR: db credential - '.$credential.' not specified', 'notice');
+        return false;
+    }
+}
+
+/**
+ * retrieves destination based on alias or --dest flag
+ */
+function get_destination(){
+    $dest = '';
+    if($default_dest = wf_var('WF_DEST')){
+        $dest = $default_dest;
+    }elseif($alias = wf_var('WF_ALIAS')){
+        $dest = $alias['root'];
+    }else{
+        $dest =  wf_var('WF_WORK_DIR') . '/deploys/no-dest-'.wf_var('WF_ASSET_NAME');
+        drush_log('ERROR: destination not specified... defaults to '.$dest,'notice');
+    }
+    return $dest;
+}
+
+/**
+ * retrieves environment
+ */
+function get_env(){
+    $env = 'stage';
+    if($env = wf_var('WF_ASSET_ENV', TRUE)){
+        //$env not provided...see if specified in alias config.
+        if(isset($site_record['env']) && !empty($site_record['env'])){
+            $env = $site_record['env'];
+        }
+    }
+    return $env;
+}
+
+/***
+ * retrieves default make file
+ */
+function get_default_make_file(){
+    $alias = wf_var('WF_ALIAS');
+    if(isset($alias['make-file'])){
+        return $alias['make-file'];
+    }else{
+        return wf_var('WF_DEFAULT_MAKE');
+    }
+}
+
+/**mapping between user input and the internal var name
+ * @param $user_input
+ */
+function _get_internal_name($user_input){
+   $internal_name = '';
+    switch($user_input){
+        case 'db-user':
+            $internal_name = 'WF_DB_USER';
+            break;
+        case 'db-pwd':
+            $internal_name = 'WF_DB_PWD';
+            break;
+        case 'db-name':
+            $internal_name = 'WF_DB_NAME';
+            break;
+    }
+    return $internal_name;
 }

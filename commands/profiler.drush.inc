@@ -16,6 +16,11 @@ function profiler_drush_command()
             'tag' => 'list of one or more tags to associated with actions to execute on the package in addition to "config,init,revert" at the configuration stage',
             'env' => 'the environment such as test, dev, stage used at deployment stage',
 
+            /***db specific**/
+            'db-user' => 'database user',
+            'db-pwd' => 'database password',
+            'db-name' => 'database name',
+
             /*different ways to provide blueprint - make file*/
             'package' => 'path to the package containing make file used for profiling asset. If "env" is not specified,it will default to TEST deployment',
             'make' => 'path to the make file for profiling asset. If "env" is not specified, it will default to STAGE deployment',
@@ -36,7 +41,7 @@ function profiler_drush_command()
     return $items;
 }
 
-function drush_profile_asset_init()
+function drush_profile_asset_init($profile = 'dependent-install', $alias = '@self')
 {
     read_config();
     read_artifacts();
@@ -47,10 +52,10 @@ function drush_profile_asset_init()
     init_artifacts();
 }
 
-function drush_profiler_profile_asset($name = 'not-found', $alias = '@self')
+function drush_profiler_profile_asset($profile = 'dependent-install', $alias = '@self')
 {
     inform_make_supplied();
-    drush_log(dt('executing profile  - @profile ...', array('@profile' => $name)), 'ok');
+    drush_log(dt('executing profile  - @profile ...', array('@profile' => $profile)), 'ok');
 
 // check if we can bootstrap
     $alias_record = drush_get_context('WF_ALIAS');
@@ -59,11 +64,6 @@ function drush_profiler_profile_asset($name = 'not-found', $alias = '@self')
     if (empty($alias_record)) {
         drush_die("I can't bootstrap from the current location.", 0);
     }
-
-//    drush_bootstrap_max_to_sitealias($alias_record);
-
-//let's jump to our site directory before we do anything else
-//    drush_op('chdir', $alias_record['root']);
 
     $profile_blueprint = dirname(__FILE__) . '/../profiles/'.drush_get_context('WF_PROFILE_NAME').'.make';
 
@@ -124,7 +124,7 @@ function _parse_param($params){
                 $temp_par = wf_var('WF_ASSET_PACKAGE','');
                 break;
             case '@env':
-                $temp_par = wf_var('WF_ASSET_ENV','');
+                $temp_par = wf_var('WF_ENV','');
                 break;
             case '@ver':
                 $temp_par = wf_var('WF_ASSET_VER','');
@@ -137,6 +137,15 @@ function _parse_param($params){
                 break;
             case '@branch':
                 $temp_par = wf_var('WF_ASSET_BRANCH','');
+                break;
+            case '@db-user':
+                $temp_par = wf_var('WF_DB_USER','');
+                break;
+            case '@db-pwd':
+                $temp_par = wf_var('WF_DB_PWD','');
+                break;
+            case '@db-name':
+                $temp_par = wf_var('WF_DB_NAME','');
                 break;
             default:
                 $temp_par = $param;
@@ -162,7 +171,7 @@ function _prepare_deploy_action(&$target_action){
     //environment is determined based on the flag --make or --package
     if($target_action['name'] == 'deploy-asset' || $target_action['name'] == 'da'){
 
-        if($env = wf_var('WF_ASSET_ENV',FALSE)){
+        if($env = wf_var('WF_ENV',FALSE)){
             //env already set
             drush_log('INFO: switching environment to "' . $env . '" environment since make file provided','notice');
             $target_action['option']['env'] = $env;
@@ -170,12 +179,12 @@ function _prepare_deploy_action(&$target_action){
             //if make-file specified, than deploy in stage
             if(file_exists(drush_get_context('WF_ASSET_MAKE'))){
                 drush_log('INFO: switching environment to "stage" environment since make file provided','notice');
-                drush_set_context('WF_ASSET_ENV','stage');
+                drush_set_context('WF_ENV','stage');
                 $target_action['option']['env'] = 'stage';
             }elseif(file_exists(drush_get_context('WF_ASSET_PACKAGE'))){
                 //if package specified, then deploy in test
                 drush_log('INFO: switching environment to "test" environment since package provided','notice');
-                drush_set_context('WF_ASSET_ENV','test');
+                drush_set_context('WF_ENV','test');
                 $target_action['option']['env'] = 'test';
             }else{
                 //if neither package nor make specified, then check if asset has been specified
@@ -183,7 +192,7 @@ function _prepare_deploy_action(&$target_action){
                 if(isset($asset) && !empty($asset)){
                     //run in dev
                     drush_log('INFO: switching environment to "dev" environment since asset is specified','notice');
-                    drush_set_context('WF_ASSET_ENV','dev');
+                    drush_set_context('WF_ENV','dev');
                     $target_action['option']['env'] = 'dev';
                 }
 

@@ -614,13 +614,11 @@ function get_make_file($name = '')
         drush_log('using make file from cache...' . $make, 'notice');
         return $make;
     } else {
-        $config = get_config();
-
         //make file provided via --make
-        if (!file_exists($make_file = wf_var('WF_ASSET_MAKE', FALSE))) {
-            if (!file_exists($make_file = wf_var('WF_ASSET_MAKE', FALSE))) {
+        if (!file_exists($make_file = wf_var('WF_ASSET_MAKE'))) {
+            if (!file_exists($make_file = wf_var('WF_ASSET_MAKE'))) {
                 //check if relative path provided
-                $make_file = $config['make_root'] . '/' . wf_var('WF_ASSET_MAKE', FALSE);
+                $make_file = wf_var('WF_MAKE_ROOT') . '/' . wf_var('WF_ASSET_MAKE');
             }
         }
 
@@ -628,7 +626,7 @@ function get_make_file($name = '')
         if (!file_exists($make_file) || empty($temp_make)) {
             //see if make file provided via --package
             $package = wf_var('WF_ASSET_PACKAGE', '');
-            $package_dir = (file_exists($package)) ? $package : $config['dist'] . '/' . $package;
+            $package_dir = (file_exists($package)) ? $package : wf_var('WF_DIST') . '/' . $package;
             if (!empty($package) && file_exists($package_dir)) {
                 //read all make files from package directory
                 foreach (glob($package_dir . "/*.make") as $filename) {
@@ -644,7 +642,7 @@ function get_make_file($name = '')
                     if (isset($artifact)) {
                         $list_of_names = (isset($artifact['type'])) ? artifact_names($name, $artifact['type']) : artifact_names($name, 'widget');
                         foreach ($list_of_names as $key => $artifact_name) {
-                            $make_file = $config['make_root'] . '/';
+                            $make_file = wf_var('WF_MAKE_ROOT') . '/';
                             $make_file .= (isset($artifact['type'])) ? $artifact['type'] . 's/' : '';
                             $make_file .= $artifact_name . '.make';
 
@@ -656,35 +654,24 @@ function get_make_file($name = '')
                             }
                         }
                     }
-                    drush_log(dt('Artifact blueprint(make file) was not found. Using default - ' . $config['default_make']), 'ok');
-                    drush_log('caching make file...' . $config['default_make'], 'notice');
-                    drush_set_context('FW_CACHED_MAKE', $config['default_make']);
-                    return $config['default_make'];
+
+                    $default_make = get_default_make_file();
+                    drush_log(dt('Artifact blueprint(make file) was not found. Using default - ' . $default_make), 'ok');
+                    drush_log('caching make file...' . $default_make, 'notice');
+                    drush_set_context('FW_CACHED_MAKE', $default_make);
+                    return $default_make;
                 }
             }
         }
 
+        //ensure full path
+        $make_file = realpath($make_file);
         drush_log('blueprint(make file) found ' . $make_file, 'notice');
         drush_log('caching make file...' . $make_file, 'notice');
         drush_set_context('FW_CACHED_MAKE', $make_file);
         return $make_file;
     }
 
-}
-
-//@ToDo - consider removing and using the drush_get_context() API
-function get_config()
-{
-    $config = array();
-    $config['root'] = ($work_dir = drush_get_context('WF_ROOT', FALSE)) ? $work_dir : drush_set_error('WORKFLOW_ROOT_ERROR', dt('ERROR: FLOW_ROOR not specified'));
-    $config['work_dir'] = ($work_dir = drush_get_context('WF_WORK_DIR', FALSE)) ? $work_dir : drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_WORK_DIR  not specified'));
-    $config['make_root'] = ($make_root = drush_get_context('WF_MAKE_ROOT', FALSE)) ? $make_root : drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_MAKE_ROOT  not specified'));
-    $config['dist'] = ($dist = drush_get_context('WF_DIST', FALSE)) ? $dist : drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_DIST  not specified'));
-    $config['package_prefix'] = ($prefix = drush_get_context('WF_PACKAGE_PREFIX')) ? $prefix : drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_PACKAGE_PREFIX  not specified'));
-    $config['default_make'] = ($make = drush_get_context('WF_DEFAULT_MAKE')) ? $make : drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_DEFAULT_MAKE  not specified'));
-    $config['db_user'] = ($db_user = drush_get_context('WF_DB_USER')) ? $db_user : drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_DB_USER  not specified'));
-    $config['db_pwd'] = ($db_pwd = drush_get_context('WF_DB_PWD')) ? $db_pwd : drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_DB_PWD  not specified'));
-    return $config;
 }
 
 function remove_cur_artifact($name, $type)
@@ -820,13 +807,12 @@ function _log($message)
 //builds distribution packageName and fullPath
 function get_distribution($name)
 {
-    $config = get_config();
     $artifact = get_artifact_by_name($name);
 
     $artifact_names = artifact_names($name, $artifact['type']);
     $package_name = array_shift($artifact_names);
     $base_name = (empty($artifact_names)) ? $package_name : array_pop($artifact_names);
-    $dist_dir = $config['dist'];
+    $dist_dir = wf_var('WF_DIST');
 //    $type = ($artifact['type'] != 'theme') ? 'module' : $artifact['type'];
     $type = $artifact['type'];
     $artifact_dist = $dist_dir . '/' . $type . 's/'; //distribution dir for the particular artifact
@@ -853,9 +839,8 @@ function execute_command($command)
 //creates versions of artifact full names
 function artifact_names($name, $type)
 {
-    $config = get_config();
     $alternatives = array();
-    $base = $config['package_prefix'] . $type . '-' . $name;
+    $base = wf_var('WF_PACKAGE_PREFIX') . $type . '-' . $name;
     $alternatives[] = $base;
 
     foreach (get_options() as $key => $option) {

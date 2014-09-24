@@ -6,11 +6,19 @@
 ;;@asset -  name of the asset
 ;;@ver - the version of the asset
 ;;@branch -  the branch or type
+;;@db-user - database user
+;;@db-pwd - database password
+;;@db-name - database name
 
 action[install][name]=install-site
 action[install][order]=0
 action[install][tag]=install
 action[install][param][]=@alias
+action[install][flag][make]=@make
+action[install][flag][package]=@package
+action[install][flag][db-user]=@db-user
+action[install][flag][db-pwd]=@db-pwd
+action[install][flag][db-name]=@db-name
 
 action[deploy][name]=deploy-asset
 action[deploy][order]=1
