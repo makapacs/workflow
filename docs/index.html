@@ -143,7 +143,7 @@
         <li><a href="#tags">Tags</a></li>
         <li><a href="#developers">Developers</a></li>
         <li><a href="#how_to">How To</a></li>
-        <li><a href="#sendbox">SandBox</a></li>
+        <li><a href="#sandbox">SandBox</a></li>
         <li><a href="#troubleshooting">Troubleshooting</a></li>
         <li><a href="#backlog">Backlog</a></li>
         <li><a href="#releases">Releases</a></li>
@@ -158,7 +158,7 @@
     <h2>Drush Tool For Developers</h2>
     <hr>
     <ul>
-        <li>Last Updated: Sep 12, 2014</li>
+        <li>Last Updated: Oct 18, 2014</li>
         <li>Developed By: DesignsSquare.com</li>
         <li><a href="">
         </a>
@@ -237,13 +237,17 @@
     <ol>
         <li>
             <b>Download</b><br>Clone the tool from github repo - <a href="https://github.com/makapacs/workflow" target="_blank">WorkFlow</a>
+            <code><br>
+                sudo git clone https://github.com/makapacs/workflow workflow-lib
+            </code>
         </li>
         <li>
             <b>Incorporate With Drush</b><br>
-            In the Drush configuration file - drushrc.php (usually located in $HOME/.drush dir), update $options['include'] to point to $directory + "/commands" you cloned WorkFlow in the above step<br>
+            In the Drush configuration file - drushrc.php (usually located in $HOME/.drush dir), update $options['include'] to point to "/dir/to/workflow-lib"(dir you cloned WorkFlow in the above) + "/commands", so it looks as following: <br>
             <code>
-                $options['include'] = array('/path/to/WorkFlow Dir/commands');
+                $options['include'] = array('/dir/to/workflow-lib/commands');
             </code>
+            <p>If 'drushrc.php' is missing, copy example - example.drushrc.php from /path/to/drush/examples directory into $HOME/.drush dir and rename it to - drushrc.php</p>
         </li>
         <b>DONE HERE IF ONLY FOR DEPLOYMENT</b>
         <li><b>Configure Environment</b>
@@ -1252,11 +1256,10 @@
 </ol>
 <h4>How to deploy asset?</h4>
 
-<p>Once you have the package built, spin up Drupal instance and lets deploy. In the following, there are three different ways
-    to deploy based on the
-    method you provide make file</p>
-<ol>
-    <li><b>Directly Providing Blueprint via "--make"</b><br>
+<p>Once you have the package built, spin up Drupal instance and lets deploy. There are three possible ways
+    to deploy based on the method you provide the make file. In the following are listed all the 3 different methods:</p>
+<ul>
+    <li><b>By Directly Providing Blueprint via "--make"</b><br>
         <code>
             drush da @dev-metronic --make=themes/PREFIX-theme-metronic-0.1.make --env=dev
         </code>
@@ -1283,10 +1286,10 @@
     </li>
     <p>From the above, you can see the "env" was provided as well. Please, see section <a href="#!/deployments">"Deployments"</a>
         about three different ways to deploy based on "env"</p>
-</ol>
+</ul>
 
 </section>
-<section id="kickstart">
+<section id="sandbox">
     <h3>Kickstart with WorkFlow Sandbox</h3>
     <hr>
     <p>The WorkFlow Sandbox was created for easy way to start. It comes with three assets - theme Espresso, widget Blog
@@ -1295,8 +1298,32 @@
     <p>By cloning <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">workflow sandbox</a> into
         $HOME/workflow dir, the environment configurations are already pre-configured</p>
 
-    <p>See section 'How-to' for steps on configuring new widget</p>
-    <p>@ToDo: add sample runs for Espresso, Blog and Portfolio here</p>
+    <h4>DEPLOYMENT</h4>
+    <p>In the following is a sample of deploying assets - Espresso, Blog and Profile that comes with workflow sandbox:</p>
+    <ol>
+        <li><h6><i>Spin Drupal</i></h6>
+            <p>We start by spinning new drupal instance that we going to use to deploy assets - Espresso, Blog, Portfolio</p></li>
+        <li> <h6><i>Deploy and Configure Theme - Espresso</i></h6>
+            <p>@ToDo</p></li>
+        <li> <h6><i>Deploy and Configure Widget - Blog</i></h6>
+            <p>@ToDo</p></li>
+        <li>
+            <h6><i>Deploy and Configure Widget - Portfolio</i></h6>
+            <p>@ToDo</p>
+        </li>
+        <li><h6><i>Blow It</i></h6>
+            <p>@ToDo</p>
+        </li>
+        <li>
+            <h6><i>Profile All</i></h6>
+            <p>@ToDo</p>
+        </li>
+    </ol>
+
+    <h4>DEVELOPMENT</h4>
+    <p>In the following is sample of developing with workflow. Here we will create widget from scratch, package and build deliverable and test it at our new test site</p>
+    <p>@ToDo</p>
+
 </section>
 <section id="troubleshooting">
     <h3>Troubleshooting</h3>
@@ -1335,7 +1362,6 @@
     <ul>
         <li>create interactive input for receiving commands</li>
         <li>cache last commands to avoid retype every single time</li>
-        <li>create boilerplate generator for new artifact creation</li>
         <li>make one entrance with interactive input for user to specify task and then dispatch to appropriate command
         </li>
         <li>make UI to run the tool</li>
@@ -1349,6 +1375,8 @@
         <li>make it possible to store general configurations in shell env variables to mask out ones from
             workflow.drushcrc.php
         </li>
+        <li>Make support for remote alias to work</li>
+        <li>add additional command for new instance setup(copy alias,create database,setup apache,etc)</li>
     </ul>
 </section>
 <section id="releases">
@@ -1357,7 +1385,10 @@
     <h5>Release 0.2</h5>
     <ul>
         <li>initial release</li>
-
+    </ul>
+    <h5>Release 0.3</h5>
+    <ul>
+        <li>add boilerplate generator for new artifact creation</li>
     </ul>
 </section>
 </div>

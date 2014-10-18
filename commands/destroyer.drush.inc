@@ -13,7 +13,7 @@ function destroyer_drush_command()
         ),
         'options' => array(),
         'examples' => array(
-            'drush di @workflow' => 'drops tables and removes dir of alias - workflow',
+            'drush bi @workflow' => 'drops tables and removes dir of alias - workflow',
         ),
         'aliases' => array('bi'),
         'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.

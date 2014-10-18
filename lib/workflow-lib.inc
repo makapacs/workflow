@@ -1,4 +1,3 @@
-
 <?php
 require_once(dirname(__FILE__) . '/../lib/artifact-lib.inc');
 
@@ -20,9 +19,9 @@ function read_artifacts()
     if (!isset($artifacts_file) || empty($artifacts_file)) {
         $artifacts_file = _drush_config_file('system', 'artifacts');
     }
-    if(!isset($artifacts_file) || !file_exists($artifacts_file)){
+    if (!isset($artifacts_file) || !file_exists($artifacts_file)) {
         //see if its at WorkFlow default root
-        $artifacts_file = wf_var('WF_ROOT').'/artifacts.drushrc.php';
+        $artifacts_file = wf_var('WF_ROOT') . '/artifacts.drushrc.php';
     }
 
 
@@ -34,7 +33,6 @@ function read_artifacts()
 //        if(isset($artifact)){
 
 
-
         drush_set_context('WF_ARTIFACTS', $artifacts);
         drush_log('artifact file found and set in cache WF_ARTIFACTS', 'notice');
     } else {
@@ -42,10 +40,11 @@ function read_artifacts()
     }
 }
 
-function _set_artifact_defaults(&$artifacts){
-    if(!isset($artifacts) || empty($artifacts)){
+function _set_artifact_defaults(&$artifacts)
+{
+    if (!isset($artifacts) || empty($artifacts)) {
         return Null;
-    }else{
+    } else {
         //get the default attributes of the artifact
         $base_artifact = _base_artifact();
         //marge defaults
@@ -102,7 +101,7 @@ function read_config()
         drush_set_context('WF_WORK_DIR', $workflow_config['work_dir']);
         drush_log(dt('WF_WORK_DIR set to @name', array('@name' => $workflow_config['work_dir'])), 'notice');
     } else {
-        drush_set_context('WF_WORK_DIR', drush_get_context('WF_ROOT').'/work-dir');
+        drush_set_context('WF_WORK_DIR', drush_get_context('WF_ROOT') . '/work-dir');
         drush_log(dt('ERROR: WF_WORK_DIR  not specified. Using default $WF_ROOT/work-dir'), 'notice');
 //        return drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_WORK_DIR  not specified'));
     }
@@ -111,7 +110,7 @@ function read_config()
         drush_set_context('WF_MAKE_ROOT', $workflow_config['make_root']);
         drush_log(dt('WF_MAKE_ROOT set to @name', array('@name' => $workflow_config['make_root'])), 'notice');
     } else {
-        drush_set_context('WF_MAKE_ROOT', drush_get_context('WF_ROOT').'/blueprints');
+        drush_set_context('WF_MAKE_ROOT', drush_get_context('WF_ROOT') . '/blueprints');
         drush_log(dt('ERROR: WF_MAKE_ROOT  not specified. Using default $WF_ROOT/blueprints'), 'notice');
 //        return drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_MAKE_ROOT  not specified'));
     }
@@ -120,7 +119,7 @@ function read_config()
         drush_set_context('WF_DIST', $workflow_config['dist']);
         drush_log(dt('WF_DIST set to @name', array('@name' => $workflow_config['dist'])), 'notice');
     } else {
-        drush_set_context('WF_DIST', drush_get_context('WF_ROOT').'/dist');
+        drush_set_context('WF_DIST', drush_get_context('WF_ROOT') . '/dist');
         drush_log(dt('ERROR: WF_DIST  not specified. Using default $WF_ROOT/dist'), 'notice');
 //        return drush_set_error('WORKFLOW_INIT_CONFIG_ERROR', dt('ERROR: WF_DIST  not specified'));
     }
@@ -250,7 +249,7 @@ function init_inputs()
                     //deploy-asset
                     $alias = drush_sitealias_get_record($args[1]);
                     drush_set_context('WF_ALIAS', $alias);
-                    drush_log(dt('WF_ALIAS set to @name', array('@name' => implode(','."\n", $alias))), 'notice');
+                    drush_log(dt('WF_ALIAS set to @name', array('@name' => implode(',' . "\n", $alias))), 'notice');
                     break;
             }
         }
@@ -267,7 +266,7 @@ function init_inputs()
                 case 'profile-asset':
                     $alias = drush_sitealias_get_record($args[2]);
                     drush_set_context('WF_ALIAS', $alias);
-                    drush_log(dt('WF_ALIAS set to @name', array('@name' => implode(','."\n", $alias))), 'notice');
+                    drush_log(dt('WF_ALIAS set to @name', array('@name' => implode(',' . "\n", $alias))), 'notice');
                     break;
             }
         }
@@ -275,10 +274,12 @@ function init_inputs()
     }
 
     //--alias
-    if($alias_name = drush_get_option('alias', FALSE)){
+    if ($alias_name = drush_get_option('alias', FALSE)) {
         $alias = drush_sitealias_get_record($alias_name);
-        if(isset($alias)){drush_set_context('WF_ALIAS', $alias);};
-        drush_log(dt('WF_ALIAS set to @name', array('@name' => implode(','."\n", $alias))), 'notice');
+        if (isset($alias)) {
+            drush_set_context('WF_ALIAS', $alias);
+        };
+        drush_log(dt('WF_ALIAS set to @name', array('@name' => implode(',' . "\n", $alias))), 'notice');
 
         //override defaults before user inputs
 //        _override_defaults($alias);
@@ -292,7 +293,7 @@ function init_inputs()
     drush_log(dt('WF_ASSET_VER set to @name', array('@name' => drush_get_option('ver', FALSE))), 'notice');
     drush_set_context('WF_ENV', drush_get_option('env', 'stage'));
     drush_log(dt('WF_ENV set to @name', array('@name' => drush_get_option('env', FALSE))), 'notice');
-    drush_set_context('WF_DEST', drush_get_option('dest',false));
+    drush_set_context('WF_DEST', drush_get_option('dest', false));
     drush_log(dt('WF_DEST set to @name', array('@name' => drush_get_option('dest', FALSE))), 'notice');
 //db related
     drush_set_context('WF_DB_NAME', drush_get_option('db-name', FALSE));
@@ -305,7 +306,7 @@ function init_inputs()
     drush_log(dt('WF_DB_ADDRESS set to @name', array('@name' => drush_get_option('db-address', FALSE))), 'notice');
 
     //--asset
-    if($article_name = drush_get_option('asset', FALSE)){
+    if ($article_name = drush_get_option('asset', FALSE)) {
         drush_set_context('WF_ASSET_NAME', $article_name);
         drush_log(dt('WF_ASSET_NAME set to @name', array('@name' => $article_name)), 'notice');
     }
@@ -338,39 +339,38 @@ function init_inputs()
         $package_dir = realpath($package_dir);
 
         //check if compressed
-        $package_ext = substr($package_dir,-3);
-        if('.gz' == $package_ext || 'zip' == $package_ext){
-            drush_log('package is compressed...uncompressing','notice');
+        $package_ext = substr($package_dir, -3);
+        if ('.gz' == $package_ext || 'zip' == $package_ext) {
+            drush_log('package is compressed...uncompressing', 'notice');
 
-            $package_temp_dest = drush_get_context('WF_ROOT').'/.cache/packages';
-            if(!file_exists($package_temp_dest)){
+            $package_temp_dest = drush_get_context('WF_ROOT') . '/.cache/packages';
+            if (!file_exists($package_temp_dest)) {
                 drush_log('cache didn\'t exist...creating', 'notice');
-                execute_command('sudo mkdir -p '.$package_temp_dest);
+                execute_command('sudo mkdir -p ' . $package_temp_dest);
             }
 
-            if(file_exists($package_temp_dest.'/'.get_package_name($package_dir))){
-                drush_log('..but first clean cache...removing ' . $package_temp_dest . '/'.get_package_name($package_dir));
-                execute_command('sudo rm -R '.$package_temp_dest. '/' . get_package_name($package_dir));
+            if (file_exists($package_temp_dest . '/' . get_package_name($package_dir))) {
+                drush_log('..but first clean cache...removing ' . $package_temp_dest . '/' . get_package_name($package_dir));
+                execute_command('sudo rm -R ' . $package_temp_dest . '/' . get_package_name($package_dir));
             }
 
-            if('.gz' == $package_ext){
+            if ('.gz' == $package_ext) {
                 //untar
-                drush_log('untar package into cache - '.$package_temp_dest,'notice');
+                drush_log('untar package into cache - ' . $package_temp_dest, 'notice');
 
-                execute_command('sudo tar xvf '.$package_dir.' -C '.$package_temp_dest);
-            }else{
+                execute_command('sudo tar xvf ' . $package_dir . ' -C ' . $package_temp_dest);
+            } else {
                 //unzip
-                drush_log('unzip package into cache - '.$package_temp_dest,'notice');
-                execute_command('sudo unzip '.$package_dir.' -d '.$package_temp_dest);
+                drush_log('unzip package into cache - ' . $package_temp_dest, 'notice');
+                execute_command('sudo unzip ' . $package_dir . ' -d ' . $package_temp_dest);
             }
 
-            $package_dir = $package_temp_dest.'/'.get_package_name($package_dir);
+            $package_dir = $package_temp_dest . '/' . get_package_name($package_dir);
 
         }
     }
     drush_set_context('WF_ASSET_PACKAGE', $package_dir);
     drush_log('WF_ASSET_PACKAGE is set to: ' . $package_dir, 'notice');
-
 
 
     drush_set_context('WF_ASSET_MAKE', drush_get_option('make', false));
@@ -411,7 +411,7 @@ function init_artifacts()
 
     //reset the cache of artifacts with the updated configurations
     drush_set_context('WF_ARTIFACTS', $artifacts);
-    drush_log('WF_ARTIFACTS: reset the cache of artifacts with the updated configurations ','notice');
+    drush_log('WF_ARTIFACTS: reset the cache of artifacts with the updated configurations ', 'notice');
 }
 
 function _base_artifact()
@@ -433,15 +433,16 @@ function _base_artifact()
 /**
  * inform about which method ,out of the three possible, the make file is supplied
  */
-function inform_make_supplied(){
-    $name = wf_var('WF_ASSET_NAME','no-artifact');
-    if($name != 'no-artifact'){
+function inform_make_supplied()
+{
+    $name = wf_var('WF_ASSET_NAME', 'no-artifact');
+    if ($name != 'no-artifact') {
         //deploying by specifying asset
         drush_log('asset - "' . $name . '" specified...', 'ok');
-    }elseIf($package = wf_var('WF_ASSET_PACKAGE',false)){
+    } elseIf ($package = wf_var('WF_ASSET_PACKAGE', false)) {
         //deploy in by providing package
         drush_log('asset specified from package ' . $package . '...', 'ok');
-    }elseIf(drush_get_option('make', false)){
+    } elseIf (drush_get_option('make', false)) {
         drush_log('asset specified from make file ' . get_make_file() . '...', 'ok');
     }
 //    else{
@@ -458,14 +459,31 @@ function inform_make_supplied(){
  *      db credential such as db-name, db-pwd, db-user
  */
 
-function get_db_credential($credential){
+function get_db_credential($credential)
+{
     $internal_var = _get_internal_name($credential);
-    if($cred = wf_var($internal_var)){
+    if ($cred = wf_var($internal_var)) {
         return $cred;
-    }elseif(($alias = wf_var('WF_ALIAS')) && isset($alias[$credential])){
+    } elseif (($alias = wf_var('WF_ALIAS')) && isset($alias[$credential])) {
         return $alias[$credential];
-    }else{
-        drush_log('ERROR: db credential - '.$credential.' not specified', 'notice');
+    } else {
+        drush_log('ERROR: db credential - ' . $credential . ' not specified', 'notice');
+        return false;
+    }
+}
+
+/**retrieves the db-url
+ * @return False if db-url not specified or valid db-url
+ */
+function get_db_url()
+{
+    $site_record = wf_var('WF_ALIAS');
+    if ($db_url = drush_get_option('db-url', FALSE)) {
+        return $db_url;
+    }elseif (isset($site_record['db-url']) && !empty($site_record['db-url'])) {
+        $db_url = $site_record['db-url'];
+        return $db_url;
+    } else {
         return false;
     }
 }
@@ -473,15 +491,16 @@ function get_db_credential($credential){
 /**
  * retrieves destination based on alias or --dest flag
  */
-function get_destination(){
+function get_destination()
+{
     $dest = '';
-    if($default_dest = wf_var('WF_DEST')){
+    if ($default_dest = wf_var('WF_DEST')) {
         $dest = $default_dest;
-    }elseif($alias = wf_var('WF_ALIAS')){
+    } elseif ($alias = wf_var('WF_ALIAS')) {
         $dest = $alias['root'];
-    }else{
-        $dest =  wf_var('WF_WORK_DIR') . '/deploys/no-dest-'.wf_var('WF_ASSET_NAME');
-        drush_log('ERROR: destination not specified... defaults to '.$dest,'notice');
+    } else {
+        $dest = wf_var('WF_WORK_DIR') . '/deploys/no-dest-' . wf_var('WF_ASSET_NAME');
+        drush_log('ERROR: destination not specified... defaults to ' . $dest, 'notice');
     }
     return $dest;
 }
@@ -489,11 +508,12 @@ function get_destination(){
 /**
  * retrieves environment
  */
-function get_env(){
+function get_env()
+{
     $env = 'stage';
-    if($env = wf_var('WF_ASSET_ENV', TRUE)){
+    if ($env = wf_var('WF_ASSET_ENV', TRUE)) {
         //$env not provided...see if specified in alias config.
-        if(isset($site_record['env']) && !empty($site_record['env'])){
+        if (isset($site_record['env']) && !empty($site_record['env'])) {
             $env = $site_record['env'];
         }
     }
@@ -503,11 +523,12 @@ function get_env(){
 /***
  * retrieves default make file
  */
-function get_default_make_file(){
+function get_default_make_file()
+{
     $alias = wf_var('WF_ALIAS');
-    if(isset($alias['make-file'])){
+    if (isset($alias['make-file'])) {
         return $alias['make-file'];
-    }else{
+    } else {
         return wf_var('WF_DEFAULT_MAKE');
     }
 }
@@ -515,9 +536,10 @@ function get_default_make_file(){
 /**mapping between user input and the internal var name
  * @param $user_input
  */
-function _get_internal_name($user_input){
-   $internal_name = '';
-    switch($user_input){
+function _get_internal_name($user_input)
+{
+    $internal_name = '';
+    switch ($user_input) {
         case 'db-user':
             $internal_name = 'WF_DB_USER';
             break;
@@ -543,12 +565,13 @@ function _get_internal_name($user_input){
 /**
  * overrides defaults of external environment variables
  */
-function _override_defaults($alias){
-    if(isset($alias) && !empty($alias)){
-        foreach($alias as $key =>$value){
+function _override_defaults($alias)
+{
+    if (isset($alias) && !empty($alias)) {
+        foreach ($alias as $key => $value) {
             $attribute = _get_internal_name($key);
-            if($attribute){
-                drush_log('Alias config ['.$key.'] = '.$value.' masked out value - ' . wf_var($attribute) . ' for [' . $attribute .'] = ', 'notice');
+            if ($attribute) {
+                drush_log('Alias config [' . $key . '] = ' . $value . ' masked out value - ' . wf_var($attribute) . ' for [' . $attribute . '] = ', 'notice');
                 drush_set_context($attribute, $value);
             }
 

@@ -66,24 +66,24 @@ function drush_installer_install_site($alias='@self')
     $db_pwd = get_db_credential('db-pwd');
     $address = ($address = get_db_credential('db-address')) ? $address : 'localhost';
 
-    $is_db_url = FALSE;
-    if($db_url = drush_get_option('db-url', TRUE)){
-        if(isset($site_record['db-url']) && !empty($site_record['db-url'])){
-            //db_pwd not provided ...see if specified in alias configs.
-            $db_url = $site_record['db-url'];
-            //db-url is provided
-            $is_db_url = TRUE;
-        }else{
-            //$db_url not provided in alias configs...construct from db-user, db-pwd and db-name
-            $db_url = 'mysql://' . $db_user . ':' . $db_pwd . '@'.$address.'/' . $db_name;
-        }
-    }else{
-        //db-url is provided
-        $is_db_url = TRUE;
-    }
+//    $is_db_url = FALSE;
+//    if($db_url = drush_get_option('db-url', TRUE)){
+//        if(isset($site_record['db-url']) && !empty($site_record['db-url'])){
+//            //db_pwd not provided ...see if specified in alias configs.
+//            $db_url = $site_record['db-url'];
+//            //db-url is provided
+//            $is_db_url = TRUE;
+//        }else{
+//            //$db_url not provided in alias configs...construct from db-user, db-pwd and db-name
+//            $db_url = 'mysql://' . $db_user . ':' . $db_pwd . '@'.$address.'/' . $db_name;
+//        }
+//    }else{
+//        //db-url is provided
+//        $is_db_url = TRUE;
+//    }
 
     //if db is specified by url, extract the db credentials
-    if($is_db_url){
+    if($db_url = get_db_url()){
         $db_conf = drush_convert_db_from_db_url($db_url);
         $db_user = $db_conf['user'];
         $db_pwd = $db_conf['pass'];
