@@ -79,6 +79,11 @@ function read_config()
         $config_file = _drush_config_file('system', 'workflow');
     }
 
+    if (!isset($config_file) || empty($config_file)) {
+        //see if its at WorkFlow default root
+        $config_file = wf_var('WF_ROOT') . '/workflow.drushrc.php';
+    }
+
     //environment specific configurations
     if (isset($config_file) && !empty($config_file)) {
         @include_once($config_file);
@@ -576,5 +581,32 @@ function _override_defaults($alias)
             }
 
         }
+    }
+}
+
+/***creates database, adds user and flushes privileges
+ * @param $options
+ *      array of info necessary to create database
+ *      $options['host'] : the host IP of the database(i.e. 127.0.0.1, localhost,etc)
+ *      $options['root_usr']
+ *      $options['root_pwd']
+ *      $options['db_name']
+ *      $options['db_usr']
+ *      $options['db_pwd']
+ * @return boolean
+ */
+function setup_db($options = array()){
+    try {
+        $dbh = new PDO("mysql:host=".$options['host'], $options['root_usr'], $options['root_pwd']);
+
+        $dbh->exec("CREATE DATABASE `".$options['db_name']."`;
+                CREATE USER '".$options['db_usr']."'@'localhost' IDENTIFIED BY '".$options['db_pwd']."';
+                GRANT ALL ON `".$options['db_name']."`.* TO '".$options['db_usr']."'@'localhost';
+                FLUSH PRIVILEGES;");
+        drush_log($dbh->errorInfo(), 'notice');
+        return true;
+    } catch (PDOException $e) {
+        drush_log("DB ERROR: ". $e->getMessage(),'notice');
+        return false;
     }
 }

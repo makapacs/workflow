@@ -41,35 +41,50 @@ function drush_construct_container_init()
     load_workflow();
 }
 
-function drush_constructor_construct_container($alias='@self')
+function drush_constructor_construct_container($alias = '@self')
 {
-    drush_log('constructing container for alias...', 'ok');
+    $site_record = wf_var('WF_ALIAS');
 
-    //retrieve db_user & db_password
-//    $site_record = drush_sitealias_get_record($alias);
-//    $site_record = wf_var('WF_ALIAS');
-    //retrieve alias
+    if (!isset($site_record) || empty($site_record)) {
+        drush_die('Error: the alias is not specified', 0);
+    }
+    drush_log('constructing container for alias...', 'ok');
 
     $db_name = get_db_credential('db-name');
     $db_user = get_db_credential('db-user');
     $db_pwd = get_db_credential('db-pwd');
-    $address = ($address = get_db_credential('db-address')) ? $address : 'localhost';
+    $host = ($host = get_db_credential('db-address')) ? $host : 'localhost';
 
     //if db is specified by url, extract the db credentials
-    if($db_url = get_db_url()){
+    if ($db_url = get_db_url()) {
         $db_conf = drush_convert_db_from_db_url($db_url);
         $db_user = $db_conf['user'];
         $db_pwd = $db_conf['pass'];
         $db_name = $db_conf['database'];
-        $address = $db_conf['host'];
+        $host = $db_conf['host'];
     }
 
-    drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name, db-address=@address', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name, '@address' => $address)),'notice');
+    drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name, db-address=@address', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name, '@address' => $host)), 'notice');
+
+    $db_output = setup_db(array(
+        'host' => $host,
+        'root_usr' => wf_var('WF_DB_USER'),
+        'root_pwd' => wf_var('WF_DB_PWD'),
+        'db_name' => $db_name,
+        'db_usr' => $db_user,
+        'db_pwd' => $db_pwd,
+    ));
+
+    if ($db_output) {
+        drush_log('db - ' . $db_name . ' was created successfully', 'ok');
+    } else {
+        drush_log('Failed to create db - ' . $db_name, 'ok');
+    }
 
     //destination
     $default_dest = get_destination();
     chdir($default_dest);
 
     drush_log(dt('Done constructing container for alias ', array('@location' => 'some')), 'ok');
-    drush_log(dt('try spinning new drupal "drush is @some', array('@location' => 'some')), 'ok');
+    drush_log(dt('try spinning new drupal "drush is @some"', array('@location' => 'some')), 'ok');
 }
