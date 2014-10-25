@@ -119,6 +119,10 @@ function drush_deployer_deploy_asset($alias_name)
                     drush_log('start removing previously installed artifacts with type - ' . $artifact_type . '... ', 'ok');
                     remove_package_artifacts($dist_full_path, $artifact_type);
 
+                    if(!file_exists($source_dir)){
+                        drush_die('ERROR: artifacts to be deployed are not present','ok');
+                    }
+
                     //adding by copying from distribution package
                     drush_log('done removing, start building artifacts with type - ' . $artifact_type . '...', 'ok');
                     execute_command('sudo cp -R ' . $source_dir . '/ ' . $root_dir . '/sites/all/' . $type_test . 's/');
@@ -135,9 +139,8 @@ function drush_deployer_deploy_asset($alias_name)
                 //adding new modules from remote github
                 drush_log('done removing, start building artifacts of type - ' . $artifact_type . '...', 'ok');
                 foreach (get_artifacts_from_blueprint($artifact_type) as $key => $artifact) {
-                    build_artifact($artifact, 'sites/all');
+                    build_artifact($artifact, 'sites/all/'.get_artifact_final_dir($artifact['name']));
                 }
-
                 break;
         }
     }

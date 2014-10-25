@@ -11,7 +11,7 @@
 ;;@db-name - database name
 ;;@db-address - database address
 
-action[install][name]=install-site
+action[install][name]=spin-it
 action[install][order]=0
 action[install][tag]=install
 action[install][param][]=@alias

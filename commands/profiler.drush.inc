@@ -29,7 +29,7 @@ function profiler_drush_command()
             'branch' => 'the branch of repo. this can also be package type such as basic, plus, ultimate,etc',
         ),
         'examples' => array(
-            'pa installer-basic @workflow --env=test --pacakge=path/to/package/dir' => 'installs new site, deploys asset from the package and configures per actions with tags config,init,revert',
+            'pa dependent-install @workflow --env=test --pacakge=path/to/package/dir' => 'installs new site, deploys asset from the package and configures per actions with tags config,init,revert',
             'pa new-install @workflow --package=themes/designssquare-com-theme-espresso/designssquare-com-theme-espresso-0.5' => 'installs and deploys from package in test environment',
             'pa new-install @workflow --make=themes/designssquare-com-theme-espresso.make' => 'installs and downloads in stage environment since make file provided',
             'pa new-install @workflow --ver=0.5 --asset=espresso' => 'installs and downloads in dev environment',

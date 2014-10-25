@@ -40,13 +40,23 @@ function executer_drush_command()
 
 function drush_execute_action_init()
 {
-    load_workflow();
-    load_slim_drupal();
+//    load_workflow();
+////    load_slim_drupal();
+//    load_drupal();
+//    read_config();
+//    read_artifacts();
+//    init_inputs();
+//    //DRUPAL cannot be loaded for general actions
+////    load_drupal();
+//    init_artifacts();
+
     read_config();
     read_artifacts();
     init_inputs();
-    //DRUPAL cannot be loaded for general actions
+    //@Todo fix implement mechanism to load full drupal when executed solo for actions that need drupal only
+        load_slim_drupal();
 //    load_drupal();
+    load_workflow();
     init_artifacts();
 }
 
@@ -61,6 +71,7 @@ function drush_executer_execute_action($name = 'not-found', $alias = '@self')
     if (empty($alias_record)) {
         drush_log("executing in general..no alias specified", 'notice');
     }else{
+        $initial_dir = getcwd();
         //let's jump to our site directory before we do anything else
         drush_op('chdir', $alias_record['root']);
     }
@@ -74,6 +85,10 @@ function drush_executer_execute_action($name = 'not-found', $alias = '@self')
     $ret = apply_action($action);
     if(isset($ret['output']) && !empty($ret['output'])){
         drush_print($ret['output']);
+    }
+    if(isset($initial_dir)){
+        //return to initial dir
+        drush_op('chdir',$initial_dir);
     }
     drush_log(dt("\n".'...done executing action - @action', array('@action' => $name)), 'ok');
 }

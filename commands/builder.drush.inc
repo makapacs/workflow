@@ -64,7 +64,7 @@ function drush_builder_build_asset($name = 'not-found', $type = 'module')
             if (isset($all_artifacts) && is_array($all_artifacts) && !empty($all_artifacts)) {
                 foreach ($all_artifacts as $key => $artifact) {
                     drush_log('baking...' . $artifact['name'], 'ok');
-                    build_artifact($artifact, $dest);
+                    build_artifact($artifact, $dest.'/'.get_artifact_final_dir($artifact['name']));
                 }
             } else {
                 drush_log('INFO: no artifacts of type ' . $artifact_type . ' is specified', 'ok');
@@ -73,7 +73,7 @@ function drush_builder_build_asset($name = 'not-found', $type = 'module')
             //retrieve the  main artifact
             $artifact = get_artifact_by_name($name);
             //build the main artifact and don't include dependencies
-            build_artifact($artifact, $dest);
+            build_artifact($artifact, $dest.'/'.get_artifact_final_dir($artifact['name']));
         }
     }
 

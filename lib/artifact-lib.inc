@@ -269,14 +269,19 @@ function build_artifact($artifact, $dest)
     if (empty($artifact_config['repo']) || empty($artifact_config['repo_name']) || empty($artifact_config['branch'])) {
         drush_die('Artifact - ' . $artifact['name'] . ' is not complete....unable to build', 0);
     }
-    //keep it consistent with drupal naming and file structure
-    $type = (isset($artifact_config['type']) && $artifact_config['type'] == 'widget') ? 'module' : $artifact_config['type'];
-//    $type = $artifact_config['type'];
 
-    $widget_dist_dest_lib = $dest . '/' . $type . 's/' . $artifact_config['final_name'];
+//    if(preg_match("/wf_var('WF_DIST')/", $dest)){
+//        //keep it consistent with drupal naming and file structure
+//        $type = (isset($artifact_config['type']) && $artifact_config['type'] == 'widget') ? 'module' : $artifact_config['type'];
+//    }else{
+//        $type = $artifact_config['type'];
+//    }
+//
+//    $widget_dist_dest_lib = $dest . '/' . $type . 's/' . $artifact_config['final_name'];
+    $widget_dist_dest_lib = $dest;
     //@ToDo make it clone the tag as well to avoid separate co for tag
     $command = 'sudo git clone -b ' . $artifact_config['branch'] . ' ' . $artifact_config['repo'] . $artifact_config['repo_name'] . '.git ' . $widget_dist_dest_lib;
-    drush_log(dt('cloning ...@repo', array('@repo' => $artifact_config['repo'])), 'ok');
+    drush_log(dt('cloning ...@repo@repo-name', array('@repo' => $artifact_config['repo'],'@repo-name' => $artifact_config['repo_name'])), 'ok');
     execute_command($command);
 
     if (isset($artifact_config['ver']) && !empty($artifact_config['ver'])) {
@@ -705,12 +710,12 @@ function get_artifact_by_name($name)
 {
 
 
-    //for masking out defautl artifact conigurations over the ones in the make file
+    //for masking out default artifact configurations over the ones in the make file
 //    $artifacts_configured = get_artifacts_from_blueprint();
 //    $artifact = $artifacts_configured['name'];
 
     if ($art = drush_get_context('WF_ARTIFACTS', FALSE)) {
-        drush_log('artifact declarations masked out ', 'debug');
+        drush_log('artifact declarations masked out ', 'notice');
         return ($art && isset($art[$name])) ? $art[$name] : array();
     } else {
         drush_log(dt('WF_ARTIFACTS are not set'),'notice');
@@ -830,11 +835,16 @@ function execute_command($command)
 {
 //    (DEBUG_ON) ? _log('COMMAND: ' . $command) : '';
     drush_log(dt('COMMAND: @command', array('@command' => $command)), 'notice');
+    if (preg_match('/tar xvf/', $command)) {
+        drush_log(dt('uncompressing package...it may take same time'), 'ok');
+//        drush_log(drush_shell_exec_output(), 'debug');
+    }
     drush_shell_exec($command);
     if (!preg_match('/zip/', $command)) {
         drush_log(dt('@output', array('@output' => implode(',', drush_shell_exec_output()))), 'notice');
 //        drush_log(drush_shell_exec_output(), 'debug');
     }
+
 }
 
 //creates versions of artifact full names
@@ -1070,12 +1080,29 @@ function get_artifact_work_dir($name)
     $artifact = get_artifact_by_name($name);
     $work_dir = (isset($artifact['work_dir']) && !empty($artifact['work_dir'])) ? $artifact['work_dir'] : drush_get_context('WF_WORK_DIR');
     $work_dir_name = (isset($artifact['work_dir_name']) && !empty($artifact['work_dir_name'])) ? $artifact['work_dir_name'] : $name;
+    $type = (!isset($artifact['type']) || empty($artifact['type'])) ? 'widget' : $artifact['type'];
 
-    $potential_work_dir = $work_dir . '/' . $artifact['type'] . 's/' . $work_dir_name;
-    if (!file_exists($potential_work_dir)) {
+    if (file_exists($work_dir . '/' . $work_dir_name)) {
         $potential_work_dir = $work_dir . '/' . $work_dir_name;
+    }else{
+        $potential_work_dir = $work_dir . '/' . $type . 's/' . $work_dir_name;
     }
     return $potential_work_dir;
+}
+
+/**
+ * retrieves relative final directory location for artifact(i.e. modules/designssquare-com-blog, themes/metronic,etc)
+ * @param: $artifact_name
+ *         the name of artifact
+ * @return: path to the working directory of the artifact
+ */
+
+function get_artifact_final_dir($name)
+{
+    $artifact = get_artifact_by_name($name);
+    $final_dir_name = (isset($artifact['final_name']) && !empty($artifact['final_name'])) ? $artifact['final_name'] : $name;
+    $type = (isset($artifact['type']) && $artifact['type'] == 'widget') ? 'module' : $artifact['type'];
+    return $type . 's/' . $final_dir_name;
 }
 
 /**
@@ -1099,7 +1126,10 @@ function get_uncommitted_artifacts()
         chdir($work_dir);
         drush_shell_exec('git status');
         $status = drush_shell_exec_output();
-        if (isset($status[1]) && $status[1] != 'nothing to commit, working directory clean') {
+        $message = implode($status, ' ,');
+//        if (isset($status[1]) && $status[1] != 'nothing to commit, working directory clean') {
+        if (!preg_match('/nothing to commit, working directory clean/',$message)) {
+            //there are uncommited changes
             $updated_artifacts[] = $artifact;
         }
     }

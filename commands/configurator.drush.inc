@@ -40,7 +40,6 @@ function configurator_drush_command()
 
 function drush_configure_asset_init()
 {
-
     read_config();
     read_artifacts();
     init_inputs();

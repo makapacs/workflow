@@ -218,9 +218,9 @@
     <ul>
         <li>Documentation at the 'docs/index.html' or http://designssquare.com/workflow-docs</li>
         <li>Workflow sandbox with two widgets - blog and portfolio and theme named Espresso</li>
+        <li>VirtualBox image with WorkFlow/WorkFlow Sandbox installed and configured</li>
     </ul>
     </p>
-
     <h4>Requirements</h4>
     <ul>
         <li>Drush</li>
@@ -273,6 +273,9 @@
             set up artifacts(see <a href="#!/artifacts">Artifacts section</a>). The <a href="#!/how_to">"How To" section</a> is good place to start. The <a href="#!/kickstart">Kickstart section</a> is in progress
         </li>
     </ol>
+
+    <p>An alternative is to grab VirtualBox image with WorkFlow/WorkFlow Sandbox already installed and configured. Please, see more
+        info in section <a href="#!/virtualbox">"KickStart with VirtualBox"</a></p>
 </section>
 <section id="terminology">
     <h3>Terminology</h3>
@@ -319,7 +322,7 @@
     <p>The 'prefix' is configured in the Tool configurations. See section "Configurations"</p>
 
     <p>Depending if the flags '--min', '--ver', '--branch' is provided, the package name is going to be constructed in
-        the order from more specific to general as demostrated above</p>
+        the order from more specific to general as demonstrated above</p>
 </section>
 <section id="asset_naming">
     <h3>Asset Naming</h3>
@@ -367,7 +370,7 @@
             The database name for current drupal installation
         </li>
         <li><b>db-address</b>
-            the database addres such as 'localhost','127.0.0.1',etc
+            the database address such as 'localhost','127.0.0.1',etc
         </li>
         <li><b>db-url</b>
             the database url for current drupal installation. If specified, than it will be used instead of
@@ -510,8 +513,10 @@
     <hr>
     <h4>Location of Configurations</h4>
 
-    <p>The configurations are externalized into workflow.drush.inc in DRUSH_ROOT dir($HOME/.drush/ dir) or any location
-        DRUSH searches</p>
+    <p>The configurations are externalized into workflow.drushrc.php in DRUSH_ROOT dir($HOME/.drush/ dir) or any location
+        DRUSH searches. If using <a href="#!/artifacts">WorkFlow Sandbox</a> thdn configurations(i.e. workflow.drushrc.php)
+        is read from $HOME/workflow directory as well(if co-exist with ones $HOME/.drush/ directory, then priority given to
+        ones in $HOME/.drush/ directory)</p>
     <h4>Available Environment Configurations</h4>
     <ol>
         <li><b>work_dir</b><br>
@@ -569,8 +574,8 @@
         $workflow_config['dist'] = '/path/to/distribution/dir';<br>
         $workflow_config['package_prefix'] = 'designssquare-com-';<br>
         $workflow_config['make_file'] = 'path/to/default-make-file.make';<br>
-        $workflow_config['db_user'] = 'username';<br>
-        $workflow_config['db_pwd'] = 'password';<br>
+        $workflow_config['db-user'] = 'username';<br>
+        $workflow_config['db-pwd'] = 'password';<br>
     </code>
     <h4>Available Artifact Configurations</h4>
     <ol>
@@ -911,10 +916,10 @@
             defaults to make_root/build-drupal-core.make
         </li>
         <li><b>WF_DB_USER:</b> This database username used for site installs. It is specified in the environment
-            configurations with 'db_user'. If not specified, then defaults it defaults to "root"
+            configurations with 'db-user'. If not specified, then defaults it defaults to "root"
         </li>
         <li><b>WF_DB_PWD:</b> This database user password for site installations. It is specified in the environment
-            configurations with 'db_pwd'. If not specified, then defaults to "password"
+            configurations with 'db-pwd'. If not specified, then defaults to "password"
         </li>
         <li><b>WF_DB_ADDRESS</b> The database address such as 'localhost', '127.0.0.1',etc
         </li>
@@ -972,7 +977,6 @@
     <table>
         <tr>
             <th>Tag</th>
-            >
             <th>Description</th>
         </tr>
         <tr>
@@ -994,6 +998,13 @@
         <tr>
             <td>tune_up</td>
             <td>tune up the drupal instances by disabling shortcuts modul, enabling admin_menu,module_filter,coffee,etc</td>
+        </tr>
+        <tr>
+            <td>hosty</td>
+            <td>turns on virtual host directory support so the path to images and JS doesn't break if site run from subdirectory
+                instead root directory. We recommend to have hosty disabled whenever possible for performance reasons. If you have to
+                run the site in sub-directory in production, we would recommend considering alternative than using hosty solution
+            </td>
         </tr>
     </table>
 </section>
@@ -1028,6 +1039,30 @@
             <td>ea update_work_dir --param=ARTIFACT-NAME1,ARTIFACT-NAME2</td>
             <td>updates verions in .info and commits,push,tags changes for the ARTIFACTS specified in the working
                 directory
+            </td>
+        </tr>
+        <tr>
+            <td> ea create_boilerplate --param=ARTIFACT-NAME</td>
+            <td>When you are ready to develop new artifact, then declare it in the artifacts.drushr.php first and then execute this command to
+                create the boilerplate files/directories and hook it with github.com. Currently it supports two types - the theme and widget(that is Drupal Module boilerplate)
+            </td>
+        </tr>
+        <tr>
+            <td>ea flush_work_dir</td>
+            <td>removes working directory and recreates new based on the artifacts.drushrc.php configurations in $HOME/.drush dir.
+                This is useful when starting up, you can just declare artifacts and it will create your work directories for you.
+            </td>
+        </tr>
+        <tr>
+        <td>﻿ea update_work_structure</td>
+            <td>goes through each artifact declared in the artifact.drushrc.php configuration and creates work directory for those missing.
+            this is handy when you add new artifacts for quick way to build working directories.
+            </td>
+        </tr>
+        <tr>
+            <td>construct-container @ALIAS</td>
+            <td>When you ready to deploy for the first time, run this command that will create database, configure virtual hosts, etc to make
+                it ready spin new drupal instance and deploy your assets.
             </td>
         </tr>
     </table>
@@ -1067,14 +1102,31 @@
         Configuration section</a>
     </li>
 </ol>
-<h4>How to setup Workflow?</h4>
+<h4><a href="#" name="how_to_sandbox">How to setup Workflow?</a></h4>
 
 <p>You can manually set up environment as specified at <a href="#!/configurations">'Environment Configuration'</a>
-    section or
+    section <b>OR</b>
     clone <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow Sandbox</a> that comes
     with default environment setup.</p>
 
 <p>Note: when cloning WorkFlow Sandbox, make sure it's cloned into your $HOME/workflow dir to work</p>
+<p>After cloning WorkFlow Sandbox, make user you create DB super user with the following cridentials:
+    <code><br>
+        grant all privileges on *.* to 'workflow_root'@'%' identified by 'password1' with grant option;
+    </code>
+    <p>--OR--</p>
+    specify them in the $HOME/workflow/﻿workflow.drushrc.php as following:
+
+<code><br>
+    ...<br>
+    ﻿$workflow_config['db-user'] = 'workflow_user';/br>
+    ﻿$workflow_config['db-pwd'] = 'password1';<br>
+</code>
+</p>
+
+<p>Another alternative is taking VirtualBox image installed and configured with WorkFlow/WorkFlow Sandbox ready to build, deploy,
+    configure. For more info, please, see section <a href="#!/virtualbox">KickStart with VirtualBox</a></p>
+
 <h4>How to add new Artifact(i.e. widget,theme,etc)?</h4>
 
 <p>In the following are steps on configuring new widget(i.e. map widget)
@@ -1292,11 +1344,12 @@
 <section id="sandbox">
     <h3>Kickstart with WorkFlow Sandbox</h3>
     <hr>
-    <p>The WorkFlow Sandbox was created for easy way to start. It comes with three assets - theme Espresso, widget Blog
+    <p>The WorkFlow Sandbox was created to demonstrate quickley the power of WorkFlow. To do so, we have included three assets - theme Espresso, widget Blog
         and widget Portfolio</p>
-
-    <p>By cloning <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">workflow sandbox</a> into
-        $HOME/workflow dir, the environment configurations are already pre-configured</p>
+    <p>Please, see section <a href="index.html#how_to_sandbox">"How To Install Sandbox"</a> in How-To section for installing WorkFlow Sandbox</p>
+    <p>There is also VirtualBox Image with Workflow/Workflow Sandbox installed and configured. For more info, please, see section <a href="#!/virtualbox">"KickStart with VirtualBox"</a></p>
+    <!--<p>By cloning <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">workflow sandbox</a> into-->
+        <!--$HOME/workflow dir, the environment configurations are already pre-configured</p>-->
 
     <h4>DEPLOYMENT</h4>
     <p>In the following is a sample of deploying assets - Espresso, Blog and Profile that comes with workflow sandbox:</p>
@@ -1324,6 +1377,22 @@
     <p>In the following is sample of developing with workflow. Here we will create widget from scratch, package and build deliverable and test it at our new test site</p>
     <p>@ToDo</p>
 
+</section>
+<section id="virtualbox">
+    <h3>Kickstart With VirtualBox</h3>
+    <hr>
+    <p>There is VirtualBox image of xUbuntu with Workflow/WorkFlow Sandbox installed/configured available <a href="#">here</a></p>
+    <p>The workflow library is installed at $HOME/tools/workflow-lib. The WorkFlow Sandbox is located at $HOME/workflow. Make sure
+    you go to those directories and pulling the newest as following
+    <code>
+        cd workflow<br>
+        git pull<br>
+        cd ../tools/workflow-lib<br>
+        git pull</br>
+    </code>
+    </p>
+
+    @ToDo add all other specifications
 </section>
 <section id="troubleshooting">
     <h3>Troubleshooting</h3>
@@ -1368,15 +1437,16 @@
         <li>make it possible to upload make file via UI</li>
         <li>build common installer for UI</li>
         <li>make so that client only needs the blueprint - makefile to install all artifacts(themes, widgets) from
-            remote location
+            remote location. It needs to include repo info and branch in the final blue print for each artifact
         </li>
         <li>make to fetch make file from remote repository</li>
         <li>enhance profiler to handle multiple assets instead one</li>
         <li>make it possible to store general configurations in shell env variables to mask out ones from
-            workflow.drushcrc.php
+            workflow.drushrc.php
         </li>
         <li>Make support for remote alias to work</li>
         <li>add additional command for new instance setup(copy alias,create database,setup apache,etc)</li>
+        <li>implement virtual host setup part of the construct-container command</li>
     </ul>
 </section>
 <section id="releases">
@@ -1389,6 +1459,7 @@
     <h5>Release 0.3</h5>
     <ul>
         <li>add boilerplate generator for new artifact creation</li>
+        <li>add command construct-container to setup database, virtual hosts, etc all need to spin drupal instance </li>
     </ul>
 </section>
 </div>

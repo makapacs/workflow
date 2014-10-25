@@ -19,9 +19,9 @@ function read_artifacts()
     if (!isset($artifacts_file) || empty($artifacts_file)) {
         $artifacts_file = _drush_config_file('system', 'artifacts');
     }
-    if (!isset($artifacts_file) || !file_exists($artifacts_file)) {
+    if (isset($artifacts_file) && !file_exists($artifacts_file) || !isset($artifacts_file)) {
         //see if its at WorkFlow default root
-        $artifacts_file = wf_var('WF_ROOT') . '/artifacts.drushrc.php';
+        $artifacts_file = drush_server_home() . '/workflow/artifacts.drushrc.php';
     }
 
 
@@ -79,13 +79,13 @@ function read_config()
         $config_file = _drush_config_file('system', 'workflow');
     }
 
-    if (!isset($config_file) || empty($config_file)) {
+    if (isset($config_file) && !file_exists($config_file) || !isset($config_file)) {
         //see if its at WorkFlow default root
-        $config_file = wf_var('WF_ROOT') . '/workflow.drushrc.php';
+        $config_file = drush_server_home() . '/workflow/workflow.drushrc.php';
     }
 
     //environment specific configurations
-    if (isset($config_file) && !empty($config_file)) {
+    if (isset($config_file) && !empty($config_file) && file_exists($config_file)) {
         @include_once($config_file);
     } else {
         drush_log(dt('ERROR: Env Configurations Not Set'), 'notice');
@@ -301,15 +301,22 @@ function init_inputs()
     drush_set_context('WF_DEST', drush_get_option('dest', false));
     drush_log(dt('WF_DEST set to @name', array('@name' => drush_get_option('dest', FALSE))), 'notice');
 //db related
-    drush_set_context('WF_DB_NAME', drush_get_option('db-name', FALSE));
-    drush_log(dt('WF_DB_NAME set to @name', array('@name' => drush_get_option('db-name', FALSE))), 'notice');
-    drush_set_context('WF_DB_USER', drush_get_option('db-user', false));
-    drush_log(dt('WF_DB_USER set to @name', array('@name' => drush_get_option('db-user', FALSE))), 'notice');
-    drush_set_context('WF_DB_PWD', drush_get_option('db-pwd', false));
-    drush_log(dt('WF_DB_PWD set to @name', array('@name' => drush_get_option('db-pwd', FALSE))), 'notice');
-    drush_set_context('WF_DB_ADDRESS', drush_get_option('db-address', false));
-    drush_log(dt('WF_DB_ADDRESS set to @name', array('@name' => drush_get_option('db-address', FALSE))), 'notice');
-
+    if($db_name = drush_get_option('db-name', false)){
+        drush_set_context('WF_DB_NAME', $db_name);
+        drush_log(dt('WF_DB_NAME set to @name', array('@name' => $db_name)), 'notice');
+    }
+    if($db_user = drush_get_option('db-user', false)){
+        drush_set_context('WF_DB_USER', $db_user);
+        drush_log(dt('WF_DB_USER set to @name', array('@name' => $db_user)), 'notice');
+    }
+    if($db_pwd = drush_get_option('db-pwd', false)){
+        drush_set_context('WF_DB_PWD', $db_pwd);
+        drush_log(dt('WF_DB_PWD set to @name', array('@name' => $db_pwd)), 'notice');
+    }
+    if($db_host = drush_get_option('db-address', false)){
+        drush_set_context('WF_DB_ADDRESS', $db_host);
+        drush_log(dt('WF_DB_ADDRESS set to @name', array('@name' => $db_host)), 'notice');
+    }
     //--asset
     if ($article_name = drush_get_option('asset', FALSE)) {
         drush_set_context('WF_ASSET_NAME', $article_name);
@@ -467,12 +474,18 @@ function inform_make_supplied()
 function get_db_credential($credential)
 {
     $internal_var = _get_internal_name($credential);
-    if ($cred = wf_var($internal_var)) {
+    $cred = wf_var($internal_var);
+    if ($cred && drush_get_option($credential,false)) {
+        //user specified
         return $cred;
     } elseif (($alias = wf_var('WF_ALIAS')) && isset($alias[$credential])) {
+        //use from alias configuration
         return $alias[$credential];
+    } elseif(isset($cred)){
+        //use one from external environment configuration
+        return $cred;
     } else {
-        drush_log('ERROR: db credential - ' . $credential . ' not specified', 'notice');
+        drush_log('NOTICE: db credential - ' . $credential . ' not specified', 'notice');
         return false;
     }
 }
@@ -598,15 +611,15 @@ function _override_defaults($alias)
 function setup_db($options = array()){
     try {
         $dbh = new PDO("mysql:host=".$options['host'], $options['root_usr'], $options['root_pwd']);
-
+        $dbh->exec("DROP DATABASE `".$options['db_name']."`;");
         $dbh->exec("CREATE DATABASE `".$options['db_name']."`;
                 CREATE USER '".$options['db_usr']."'@'localhost' IDENTIFIED BY '".$options['db_pwd']."';
                 GRANT ALL ON `".$options['db_name']."`.* TO '".$options['db_usr']."'@'localhost';
                 FLUSH PRIVILEGES;");
-        drush_log($dbh->errorInfo(), 'notice');
-        return true;
+        drush_log(implode($dbh->errorInfo(),' ,'), 'notice');
     } catch (PDOException $e) {
         drush_log("DB ERROR: ". $e->getMessage(),'notice');
         return false;
     }
+    return true;
 }

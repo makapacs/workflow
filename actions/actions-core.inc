@@ -301,8 +301,13 @@ function get_widget_dependencies_action($make_file)
     }
 
     $build_file_parsed = drupal_parse_info_file($make_file);
+    if (isset($build_file_parsed['widget']) && !empty($build_file_parsed['widget'])) {
+        $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
+    } else {
+        drush_log('Error: no widgets declared in the make file', 'ok');
+        $widget_modules = array();
+    }
 
-    $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
     $widget_names = get_widget_module_names($widget_modules);
     $all_dependent_modules = array();
 
@@ -412,7 +417,7 @@ function set_default_theme_action($theme_name, $alias = '@self')
 function set_action($name, $value)
 {
     variable_set($name, $value);
-    drush_log('variable "' . $name . '" was set to "' . $value . '"','ok');
+    drush_log('variable "' . $name . '" was set to "' . $value . '"', 'ok');
 //    _log('variable - ' . $name . ((drush_invoke_process("@self", "vset", array($name,$value)) ? ' WAS ' : ' WAS NOT')) . ' set to '.$value);
 }
 
@@ -429,7 +434,7 @@ function production_ready_action()
 {
     $alias = wf_var('WF_ALIAS');
     //turn off update module
-    drush_log('module - "update" ' . ((drush_invoke_process($alias, "dis", array('update')) ? ' WAS ' : ' WAS NOT')) . ' disabled','ok');
+    drush_log('module - "update" ' . ((drush_invoke_process($alias, "dis", array('update')) ? ' WAS ' : ' WAS NOT')) . ' disabled', 'ok');
 
     //turn off messages
     set_action('error_level', 0);
@@ -444,7 +449,8 @@ function production_ready_action()
  *   2. @ToDo disable editor for comments
  *   3. @ToDo enable admin menu
  */
-function tune_up_action(){
+function tune_up_action()
+{
     $alias = wf_var('WF_ALIAS');
     //disable shortcuts module
     _log('module - "shortcut" ' . ((drush_invoke_process($alias, "dis", array('shortcut')) ? ' WAS ' : ' WAS NOT')) . ' disabled');
@@ -465,7 +471,7 @@ function tune_up_action(){
  * */
 function config_jquery_action($ver = "1.10", $compression = "min")
 {
-    drush_log('configuring jquery_update...','ok');
+    drush_log('configuring jquery_update...', 'ok');
     enable_artifact_action('jquery_update');
     set_action('jquery_update_compression_type', "min");
     set_action('jquery_update_jquery_cdn', "google");
@@ -548,21 +554,59 @@ function update_work_dir_action($artifact_name, $message = 'updated work dir')
     $artifact = get_artifact_by_name($artifact_name);
     $new_ver = increment_blueprint_ver($work_dir);
     chdir($work_dir);
-    drush_shell_exec('git add .');
+    drush_shell_exec('sudo git add .');
     drush_log('OUTPUT[git add .]:' . implode(',', drush_shell_exec_output()), 'notice');
-    drush_shell_exec('git commit -m "' . $message . ' - ' . $new_ver . '"');
+    drush_shell_exec("sudo git commit -m '" . $message . " - " . $new_ver . "'");
     drush_log('OUTPUT[git commit]:' . implode(',', drush_shell_exec_output()), 'notice');
-    drush_shell_exec('git tag -a "' . $new_ver . '" -m "update ver:' . $new_ver . '"');
+    drush_shell_exec("sudo git tag -a '" . $new_ver . "' -m 'update ver:" . $new_ver . "'");
     drush_log('OUTPUT[git tag ]:' . implode(',', drush_shell_exec_output()), 'notice');
 
-    drush_log('updating repo - '.$artifact['repo'].$artifact['repo_name'],'ok');
+    drush_log('updating repo - ' . $artifact['repo'] . $artifact['repo_name'], 'ok');
     $branch = (isset($artifact['branch']) && !empty($artifact['branch'])) ? $artifact['branch'] : 'master';
-    drush_shell_exec('git push origin ' . $branch);
+    drush_shell_exec('sudo git push origin ' . $branch);
     drush_log('OUTPUT[git push origin]:' . implode(',', drush_shell_exec_output()), 'notice');
-    drush_shell_exec('git push --tags "');
+    drush_shell_exec('sudo git push --tags');
     drush_log('OUTPUT[git push tags ]:' . implode(',', drush_shell_exec_output()), 'notice');
 
     drush_log('artifact - ' . $artifact_name . ' was updated to ver: ' . $new_ver, 'ok');
+}
+
+/**
+ * removes all work directories and build new ones for each artifact listed artifacts.drushrc.php
+ */
+function flush_work_dir_action()
+{
+    $artifacts = drush_get_context('WF_ARTIFACTS');
+    if (!isset($artifacts) || empty($artifacts)) {
+        drush_die('Error: no any artifacts declared', 0);
+    }
+    //remove previous work dir
+    execute_command('sudo rm -R ' . wf_var('WF_WORK_DIR'));
+    execute_command('sudo mkdir -p ' . wf_var('WF_WORK_DIR') . '/widgets');
+    execute_command('sudo mkdir -p ' . wf_var('WF_WORK_DIR') . '/themes');
+
+    foreach ($artifacts as $key => $artifact) {
+        //build new work dir
+        build_artifact($artifact, get_artifact_work_dir($artifact['name']));
+    }
+}
+
+/**
+ * updates work directories that are missing but declared in the artifact.drushrc.php
+ */
+function update_work_structure_action()
+{
+    $artifacts = drush_get_context('WF_ARTIFACTS');
+    if (!isset($artifacts) || empty($artifacts)) {
+        drush_die('Error: no any artifacts declared', 0);
+    }
+
+    foreach ($artifacts as $key => $artifact) {
+        if (!file_exists(get_artifact_work_dir($artifact['name']))) {
+            //build new work dir
+            build_artifact($artifact, get_artifact_work_dir($artifact['name']));
+        }
+    }
 }
 
 /**
@@ -614,7 +658,7 @@ function clear_all_action()
 function create_boilerplate_action($artifact_name)
 {
     $artifact = get_artifact_by_name($artifact_name);
-    if(isset($artifact) && !empty($artifact)){
+    if (isset($artifact) && !empty($artifact)) {
         $type = $artifact['type'];
         $name = $artifact['name'];
         //create working directory for new artifact

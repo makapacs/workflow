@@ -18,10 +18,10 @@ function constructor_drush_command()
             'dest' => 'full path to destination directory. If not specified, it will use the "root" value from the site alias configurations',
         ),
         'examples' => array(
-            'drush cc @workflow' => 'creates database with name @workflow[db-name], configures virtual host for location @workflow[root],etc',
-            'drush cc @workflow --db-name' => 'creates database with user provided name - db-name, configures virtual host for location @workflow[root],etc',
+            'drush cco @workflow' => 'creates database with name @workflow[db-name], configures virtual host for location @workflow[root],etc',
+            'drush cco @workflow --db-name=test' => 'creates database with user provided name - db-name, configures virtual host for location @workflow[root],etc',
         ),
-        'aliases' => array('cc'),
+        'aliases' => array('cco'),
         'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
     );
     return $items;
@@ -48,8 +48,16 @@ function drush_constructor_construct_container($alias = '@self')
     if (!isset($site_record) || empty($site_record)) {
         drush_die('Error: the alias is not specified', 0);
     }
-    drush_log('constructing container for alias...', 'ok');
+    $db_admin = wf_var('WF_DB_USER');
+    if (!isset($db_admin) || empty($db_admin)) {
+        drush_die('Error: the DB Root User is not specified. Use --db-user or configure it in WorkFlow environment configurations', 0);
+    }
+    $db_admin_pwd = wf_var('WF_DB_PWD');
+    if (!isset($db_admin_pwd) || empty($db_admin_pwd)) {
+        drush_die('Error: the DB Root User password not specified. Use --db-pwd or configure it in WorkFlow environment configurations', 0);
+    }
 
+    drush_log('constructing container for alias...', 'ok');
     $db_name = get_db_credential('db-name');
     $db_user = get_db_credential('db-user');
     $db_pwd = get_db_credential('db-pwd');
@@ -68,8 +76,8 @@ function drush_constructor_construct_container($alias = '@self')
 
     $db_output = setup_db(array(
         'host' => $host,
-        'root_usr' => wf_var('WF_DB_USER'),
-        'root_pwd' => wf_var('WF_DB_PWD'),
+        'root_usr' => $db_admin,
+        'root_pwd' => $db_admin_pwd,
         'db_name' => $db_name,
         'db_usr' => $db_user,
         'db_pwd' => $db_pwd,
@@ -81,10 +89,20 @@ function drush_constructor_construct_container($alias = '@self')
         drush_log('Failed to create db - ' . $db_name, 'ok');
     }
 
-    //destination
+    //create destination dir
     $default_dest = get_destination();
-    chdir($default_dest);
+    drush_log('creating dir - '.$default_dest.'...','ok');
+    execute_command('sudo mkdir -p '.$default_dest);
 
-    drush_log(dt('Done constructing container for alias ', array('@location' => 'some')), 'ok');
-    drush_log(dt('try spinning new drupal "drush is @some"', array('@location' => 'some')), 'ok');
+    //prepare permissions for install
+    drush_log('set write permissions to dir - '.$default_dest.'...','ok');
+    execute_command('sudo chomod -R 777 '.$default_dest);
+//    chdir($default_dest);
+
+    //@ToDo implment vhost setup here
+
+
+
+    drush_log(dt('Done constructing container for alias @alias', array('@alias' => $alias)), 'ok');
+    drush_log(dt('try spinning new drupal "drush spin-it @some"', array('@some' => $alias)), 'ok');
 }

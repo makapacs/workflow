@@ -5,11 +5,10 @@ require_once(dirname(__FILE__) . '/../lib/workflow-lib.inc');
 function installer_drush_command()
 {
     $items = array();
-    $items['install-site'] = array(
-        'description' => "downloads and installs the drupal instance at the location of alias per blue print specified",
+    $items['spin-it'] = array(
+        'description' => "downloads and installs a drupal instance at the location of alias per blue print specified",
         'arguments' => array(
-            '@alias' => 'alias name of the instance to install. Make sure to include "@" in front',
-//            'makefile' => 'blueprint of drupal installation'
+            '@alias' => 'the alias name of the instance to install. Make sure to include "@" in front',
         ),
         'options' => array(
             'env' => 'environment of the site such as dev, stage, test, etc. By default it\'s stage',
@@ -28,16 +27,16 @@ function installer_drush_command()
 
         ),
         'examples' => array(
-            'drush is @awesomeness' => 'downloads and installs the awesomeness based on the make file declared in the alias or in the external configurations',
-            'drush is --make-file=path/to/make-file.make' => 'downloads and installs the awesomeness from make file provided'
+            'drush si @awesomeness' => 'downloads and installs the awesomeness based on the make file declared in the alias or in the external configurations',
+            'drush si --make-file=path/to/make-file.make' => 'downloads and installs the awesomeness from make file provided'
         ),
-        'aliases' => array('is'),
+        'aliases' => array('si'),
         'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
     );
     return $items;
 }
 
-function drush_install_site_init()
+function drush_spin_it_init()
 {
 //    load_workflow();
 //    read_config();
@@ -51,15 +50,13 @@ function drush_install_site_init()
     load_workflow();
 }
 
-function drush_installer_install_site($alias='@self')
+function drush_installer_spin_it($alias = '@self')
 {
     drush_log('installing drupal instance...', 'ok');
 
-    //retrieve db_user & db_password
-//    $site_record = drush_sitealias_get_record($alias);
-    $site_record = wf_var('WF_ALIAS');
-    //retrieve alias
+    //@TODO Check to see if container is setup
 
+    $site_record = wf_var('WF_ALIAS');
     $env = get_env();
     $db_name = get_db_credential('db-name');
     $db_user = get_db_credential('db-user');
@@ -83,41 +80,43 @@ function drush_installer_install_site($alias='@self')
 //    }
 
     //if db is specified by url, extract the db credentials
-    if($db_url = get_db_url()){
+    if ($db_url = get_db_url()) {
         $db_conf = drush_convert_db_from_db_url($db_url);
         $db_user = $db_conf['user'];
         $db_pwd = $db_conf['pass'];
         $db_name = $db_conf['database'];
         $address = $db_conf['host'];
+    } else {
+        $db_url = 'mysql://' . $db_user . ':' . $db_pwd . '@' . $address . '/' . $db_name;
     }
 
-    drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name, db-address=@address', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name, '@address' => $address)),'notice');
+    drush_log(dt('DB Credentials: user=@user, pass=@pwd, db-name=@name, db-address=@address', array('@user' => $db_user, '@pwd' => $db_pwd, '@name' => $db_name, '@address' => $address)), 'notice');
 
 
     # Site Configurations
 ##########################################################
 
-    if($site_user = drush_get_option('su', TRUE)){
+    if ($site_user = drush_get_option('su', TRUE)) {
         //site_user not provided...see if specified in alias configs.
-        if(isset($site_record['su']) && !empty($site_record['su'])){
+        if (isset($site_record['su']) && !empty($site_record['su'])) {
             $site_user = $site_record['su'];
-        }else{
+        } else {
             //not provided in alias...default to admin
-             $site_user = 'admin';
+            $site_user = 'admin';
         }
     }
 
-    if($site_pwd = drush_get_option('su-pw', TRUE)){
-        if(isset($site_record['su-pw']) && !empty($site_record['su-pw'])){
+    if ($site_pwd = drush_get_option('su-pw', TRUE)) {
+        if (isset($site_record['su-pw']) && !empty($site_record['su-pw'])) {
             //$site_pwd not provided ...see if specified in alias configs.
             $site_pwd = $site_record['su-pw'];
-        }else{
+        } else {
             //$site_pwd not provided in alias configs...default to 'password'
             $site_pwd = 'password';
         }
     }
 
-    drush_log(dt('SITE Credentials: user=@user, pass=@pwd ', array('@user' => $site_user, '@pwd' => $site_pwd)),'notice');
+    drush_log(dt('SITE Credentials: user=@user, pass=@pwd ', array('@user' => $site_user, '@pwd' => $site_pwd)), 'notice');
 
     $AdminUsername = $site_user;
     $AdminPassword = $site_pwd;
@@ -133,12 +132,12 @@ function drush_installer_install_site($alias='@self')
     $default_dest = get_destination();
 
 
-    if(file_exists($default_dest)){
-        drush_log(dt('destination - @dest exists. Removing for clean install', array('@dest' => $default_dest)),'ok');
+    if (file_exists($default_dest)) {
+        drush_log(dt('destination - @dest exists. Removing for clean install', array('@dest' => $default_dest)), 'ok');
         execute_command('sudo rm -R ' . $default_dest);
     }
 
-    drush_log(dt('creating destination - @dest ...', array('@dest' => $default_dest)),'ok');
+    drush_log(dt('creating destination - @dest ...', array('@dest' => $default_dest)), 'ok');
     execute_command('sudo mkdir ' . $default_dest);
     execute_command('sudo chmod -R 777 ' . $default_dest);
 
@@ -147,23 +146,29 @@ function drush_installer_install_site($alias='@self')
 
 # Install core
 ##########################################################
-// let's jump to our site directory before we do anything else, because it may be other than alias specified
-//    drush_op('chdir', $default_dest)
+    //@ToDo Refactor so no need to jump to the destinaiton dir instead execute @alias instead @self
+    // let's jump to our site directory before we do anything else, because it may be other than alias specified
     chdir($default_dest);
     //download Drupal and modules per make file
-    drush_invoke_process('@self', 'make', array($default_make), array('yes' => 1, 'no-core'=>0, 'debug'=>0));
+    drush_invoke_process('@self', 'make', array($default_make), array('yes' => 1, 'no-core' => 0, 'debug' => 0));
 
-//install
-    $status = drush_invoke_process('@self', 'site-install', array('standard'), array(
-            'account-mail'=> $adminEmail,
-            'account-name' => $AdminUsername,
-            'account-pass' => $AdminPassword,
-            'site-name' => $siteName,
-            'locale' => $siteLocale,
-            'db-url' => $db_url,
-        )
-    );
-    drush_log('Site Install - ' . (($status) ? 'SUCCESS' : 'FAILURE'), 'ok');
+    //only install if database is present and it can be connected
+//    if (shell_exec('mysql -V') != '') {
+    if ($link = mysql_connect($address, $db_user, $db_pwd)) {
+        //install
+        $status = drush_invoke_process('@self', 'site-install', array('standard'), array(
+                'account-mail' => $adminEmail,
+                'account-name' => $AdminUsername,
+                'account-pass' => $AdminPassword,
+                'site-name' => $siteName,
+                'locale' => $siteLocale,
+                'db-url' => $db_url,
+            )
+        );
+        drush_log('Site Install - ' . (($status) ? 'SUCCESS' : 'FAILURE'), 'ok');
+    } else {
+        drush_log('Download completed. Database is not present or unable to connect..NO INSTALL COMPLETE', 'ok');
+    }
 
-    drush_log(dt('Done installing drupal instance at @location', array('@location' => $default_dest)), 'ok');
+    drush_log(dt('Done spinning...the new drupal instance is available at @location', array('@location' => $default_dest)), 'ok');
 }
