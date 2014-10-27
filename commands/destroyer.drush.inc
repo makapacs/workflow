@@ -43,7 +43,7 @@ function drush_destroyer_blow_it($alias = '@self')
 
     //Retrieve DB settings
     $result_record = drush_invoke_process($site_record, 'core-status', array());
-    $stats = $result_record['object'];
+    $stats = (isset($result_record['object'])) ? $result_record['object'] : drush_die('ERROR: unable to retrieve db settings...',0);
     drush_log(dt("dropping tables for database ..."), 'ok');
     $status = drush_invoke_process($site_record, 'sql-drop', array(), array('db-url' => 'mysql://' . $stats['db-username'] . ':' . $stats['db-password'] . '@' . $stats['db-hostname'] . ':' . $stats['db-port'] . '/' . $result_record['db-name'], 'yes' => TRUE));
     drush_log((($status) ? 'Tables were dropped' : 'FAILED to drop tables'), 'ok');

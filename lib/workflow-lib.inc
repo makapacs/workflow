@@ -612,9 +612,12 @@ function setup_db($options = array()){
     try {
         $dbh = new PDO("mysql:host=".$options['host'], $options['root_usr'], $options['root_pwd']);
         $dbh->exec("DROP DATABASE `".$options['db_name']."`;");
+        drush_log("EXECUTING DB COMMAND: CREATE DATABASE `".$options['db_name']."`;",'notice');
+        drush_log("EXECUTING DB COMMAND: GRANT ALL PRIVILEGES ON `".$options['db_name']."`.* TO '".$options['db_usr']."'@'".$options['host']."' IDENTIFIED BY '".$options['db_pwd']."';",'notice');
+        drush_log("EXECUTING DB COMMAND: FLUSH PRIVILEGES;",'notice');
+
         $dbh->exec("CREATE DATABASE `".$options['db_name']."`;
-                CREATE USER '".$options['db_usr']."'@'localhost' IDENTIFIED BY '".$options['db_pwd']."';
-                GRANT ALL ON `".$options['db_name']."`.* TO '".$options['db_usr']."'@'localhost';
+                GRANT ALL PRIVILEGES ON `".$options['db_name']."`.* TO '".$options['db_usr']."'@'".$options['host']."' IDENTIFIED BY '".$options['db_pwd']."';
                 FLUSH PRIVILEGES;");
         drush_log(implode($dbh->errorInfo(),' ,'), 'notice');
     } catch (PDOException $e) {

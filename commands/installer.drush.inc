@@ -138,7 +138,7 @@ function drush_installer_spin_it($alias = '@self')
     }
 
     drush_log(dt('creating destination - @dest ...', array('@dest' => $default_dest)), 'ok');
-    execute_command('sudo mkdir ' . $default_dest);
+    execute_command('sudo mkdir -p ' . $default_dest);
     execute_command('sudo chmod -R 777 ' . $default_dest);
 
     //makefile
@@ -156,6 +156,7 @@ function drush_installer_spin_it($alias = '@self')
 //    if (shell_exec('mysql -V') != '') {
     if ($link = mysql_connect($address, $db_user, $db_pwd)) {
         //install
+
         $status = drush_invoke_process('@self', 'site-install', array('standard'), array(
                 'account-mail' => $adminEmail,
                 'account-name' => $AdminUsername,
@@ -165,6 +166,7 @@ function drush_installer_spin_it($alias = '@self')
                 'db-url' => $db_url,
             )
         );
+//        drush site-install install_configure_form.update_status_module='array(FALSE,FALSE)'
         drush_log('Site Install - ' . (($status) ? 'SUCCESS' : 'FAILURE'), 'ok');
     } else {
         drush_log('Download completed. Database is not present or unable to connect..NO INSTALL COMPLETE', 'ok');
