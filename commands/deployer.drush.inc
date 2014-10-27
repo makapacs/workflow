@@ -125,7 +125,7 @@ function drush_deployer_deploy_asset($alias_name)
 
                     //adding by copying from distribution package
                     drush_log('done removing, start building artifacts with type - ' . $artifact_type . '...', 'ok');
-                    execute_command('sudo cp -R ' . $source_dir . '/ ' . $root_dir . '/sites/all/' . $type_test . 's/');
+                    execute_command('sudo cp -R ' . $source_dir . '/* ' . $root_dir . '/sites/all/' . $type_test . 's/');
                 } else {
                     drush_log(dt('INFO: There are no artifacts of type: ' . $artifact_type . ' to build'), 'ok');
                 }
