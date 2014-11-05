@@ -344,7 +344,6 @@ function link_action($src_dir, $dest_dir)
         drush_log("ERROR: source location - " . $src_dir . " does not exist", 'notice');
     }
 
-
 //    if(file_exists($dest_dir)){
     drush_log("in case destination - " . $dest_dir . " already exist....lets try to delete", 'notice');
     execute_command('sudo rm -R ' . $dest_dir);
@@ -353,6 +352,17 @@ function link_action($src_dir, $dest_dir)
     execute_command('sudo ln -s ' . $src_dir . ' ' . $dest_dir);
 
 //    (symlink($src_dir, $dest_dir)) ? _log('linking '.$src_dir.' to  '.$dest_dir) : _log("***ERROR: didn't linked to ".$dest_dir);
+}
+
+/***created directory
+ * @param $dir
+ *      path to the directory
+ */
+function create_dir_action($dir){
+
+    $final_dir = _get_final_path($dir);
+        execute_command('sudo mkdir -P '.$final_dir);
+        drush_log('Dir '.$final_dir.' was created','ok');
 }
 
 /*
@@ -480,15 +490,23 @@ function config_jquery_action($ver = "1.10", $compression = "min")
 }
 
 /*
- * Enable permissions to the public directory
+ * Enable permissions to some directory
+ *      @$permissions
+ *          permissions formated in bits
+ *      @dir
+ *      path to the directory
  */
-function permit_public_dir_action($permissions = '777', $dir = 'sites/default/files')
+function permit_dir_action($permissions = '777', $dir = 'sites/default/files')
 {
-    $alias = drush_get_context('WF_ALIAS');
-    $pub_dir = (isset($alias) && isset($alias['root'])) ? $alias['root'] . '/sites/default/files' : '';
+    $pub_dir = _get_final_path($dir);
+    if(file_exists($pub_dir)) {
+        execute_command('sudo chmod -R ' . $permissions . ' ' . $pub_dir);
+    }else{
+        drush_log('ERROR: dir '.$pub_dir.' does not exist', 'ok');
+    }
 
-    execute_command('sudo chmod -R ' . $permissions . ' ' . $pub_dir);
 }
+
 
 /**
  * list info about each artifact
@@ -694,4 +712,18 @@ function create_artifact_action($artifact_name)
     create_boilerplate_action($artifact_name);
     //hooks git repo
     hook_git_repo($artifact_name);
+}
+
+function _get_final_path($dir){
+    $alias = drush_get_context('WF_ALIAS');
+    $pub_dir = '';
+    if(file_exists($dir)){
+        //full path
+        $pub_dir = $dir;
+    }elseif(isset($alias) && isset($alias['root'])){
+        if(file_exists($alias['root'] . '/' . $dir)){
+            $pub_dir = $alias['root'] . '/' . $dir;
+        }
+    }
+    return $pub_dir;
 }

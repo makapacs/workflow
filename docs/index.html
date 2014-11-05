@@ -183,7 +183,7 @@
 
     <p>Each asset has a blueprint or also known as make file. The blueprint specifies all the artifacts to include in
         the asset,
-        the associated actions among other things for whenever you build, deploay or configure asset. There are 3 main
+        the associated actions among other things for whenever you build, deploy or configure asset. There are 3 main
         ways to
         supply the blueprint from command line:
     <ol>
@@ -832,30 +832,143 @@
     </table>
 </section>
 <section id="deployments">
-    <h3>Deployment Cycles</h3>
+    <h3>Deployment</h3>
     <hr>
-    <h4>DEV (development)</h4>
 
-    <p>When deploying artifacts in DEV mode, it will link the artifacts to its appropriate repositories in the working
-        directory, so changes you make are updated in the
-        working directory. By convention, the location of working version of the artifact is located at
-        'work_dir'/'artifact type'/'artifact name'. This can be overwritten by 'work_dir', 'work_dir_name' attributes
-        of artifact in blueprint or artifact external configurations</p>
-    <h4>TEST</h4>
-
-    <p>When deploying artifacts in TEST mode, it will copy the artifacts from the appropriate package located in your
-        local distribution directory, so before delivering to client
-        the package is tested. The distribution dir is configured in the 'dist' variable in external tool
-        configurations. By convention, the packages are stored in 'dist'/'artifact type'/'package name'</p>
-    <h4>STAGE</h4>
-
-    <p>When deploying artifacts in STAGE mode, it will clone the artifacts from external git hub repository per
-        blueprint(i.e make file) provided. This may be alternative method to deliver your artifacts. Instead of sending
-        the package,
-        you can only provide the blueprint(i.e. make file) and your client can deploy it in STAGE mode that way
-        retrieving all of your artifacts
-        from git hub repository.
+    <p>Workflow comes with a command deploy-asset(da) that you can learn more by typing
+        <code><br>
+            drush da --help
+        </code>
     </p>
+
+    <h4>CODE, STRUCTURE and SAMPLE Deploys</h4>
+    <ol>
+        <li>
+            <h6>CODE DEPLOY</h6>
+            <p>The code deploy is the most basic deployment which is placing artifacts of the asset into proper directories in Drupal instance done as following:</p>
+            <ul>
+                <li><b>Deploy from package </b>(intended for clients that have
+                    received the deliverable and like to deploy)</i>
+                    <code><br>
+                        drush da @ALIAS --package=path/to/package.tar.gz --env=test
+                    </code>
+                </li>
+                <li><b>Deploy from make file </b>(intended for clients as well that have
+                    given access to the github accounts and are retrieving packages directly from github.com instead of package)
+                    <code><br>
+                        drush da @ALIAS --make=path/to/asset.make --env=stage
+                    </code>
+                </li>
+                <li><b>Deploy from asset local to machine per configurations </b>(intended for developers to develop. See more at <a href="#!/artifacts">Artifacts Section</a>)
+                    <code><br>
+                        drush da @ALIAS --asset=ASSET-NAME --ver=0.01 [--branch=plus] --env=dev
+                    </code>
+                </li>
+            </ul>
+            <p>While the tags '--package', '--make','--asset' specifies the location of artifacts to deploy, the --env tag specifies the method of deployment - copy, symbolic link or get request
+                from github.com to transfer the artifacts. For more info, please, see info about Development Cycles below</p>
+        </li>
+        <li>
+            <h6>STRUCTURE DEPLOY</h6>
+            <p>Most of the times deployment involves more than placing artifacts in proper directories. It also includes downloading dependencies,
+                configuring artifacts along other things all for powering the basic functionality of the asset. At the DesignsSquare.com, we refer it
+                to STRUCTURE DEPLOY because it imports data structures and configurations in database(see more at <a href="http://margotskapacs.com/2014/07/importexport-sample-data-and-assets-for-kickstart-all-via-features" target="_blank">Import Export Sample Data And Assets For Kickstart All Via Features</a>).
+            </p>
+            <code><br>
+                drush cs @ALIAS --tag=config,init,revert --make=path/to/asset.make
+            </code>
+
+            <p>Just like before, the either tag '--package', '--make' or '--asset' tags specify the location of the make file for the asset. The tag '--tag', specify the actions
+                to be executed. All assets from DesignSquare.com has the tags - "config", "init", "revert" available for STRUCTURE deployment</p>
+        </li>
+        <li>
+
+            <h6>SAMPLE DEPLOY</h6>
+            <p> Besides the CODE deploy and STRUCTURE deploy, you may like to have sample data something we refer to as the third deploy - SAMPLE DEPLOY</p>
+            <code>
+                drush cs @ALIAS --tag=kickstart --make=path/to/asset.make
+            </code>
+
+            <p>Important to note that to combine the STRUCTURE deploy with the SAMPLE DEPLOY, all you have to do is combine the tag '--tag' into one
+                '--tag=config,init,kickstart,revert'</p>
+        </li>
+    </ol>
+
+
+    <h4>PROFILE it All</h4>
+    <p>To execute all in one - CODE, STRUCTURE, SAMPLE deployments, there is profile command. There are currently two profiles - new-install and dependent-deploy.
+        As the names refer, the 'new-install' is for complety new install whereas the 'independent-install' is for upgrading already installed asset
+    </p>
+    <ul>
+    <li><b>New Install</b> - for new install
+        <ul>
+            <li>CODE deploy for upgrade
+                <code><br>
+                    drush da @ALIAS --package=path/to/package.tar.gz --env=test
+                </code>
+            </li>
+            <li>CODE,STRUCTURE deploy for new install
+                <code><br>
+                    drush pa new-install @ALIAS --package=path/to/package.tar.gz --env=test
+                </code>
+            </li>
+            <li>CODE, STRUCTURE and SAMPLE deploy for new install
+                <code><br>
+                    drush pa new-install @ALIAS --package=path/to/package.tar.gz --env=test --tag=kickstart
+                </code>
+            </li>
+        </ul>
+    </li>
+    <li><b>Upgrade</b> -  for upgrading asset that is already installed
+        <ul>
+            <li>CODE deploy for upgrade
+                <code><br>
+                    drush da @ALIAS --package=path/to/package.tar.gz --env=test
+                </code>
+            </li>
+            <li>CODE, STRUCTURE deploy for upgrade
+                <code><br>
+                    drush pa dependent-install @ALIAS --package=path/to/package.tar.gz --env=test
+                </code>
+            </li>
+            <li>CODE, STRUCTURE and SAMPLE deploy for upgrade
+                <code><br>
+                    drush pa dependent-install @ALIAS --package=path/to/package.tar.gz --env=test --tag=kickstart
+                </code>
+            </li>
+        </ul>
+    </li>
+    </ul>
+
+
+    <h4>Deployment Cycles</h4>
+    <p>There is 3 different ways to deploy:</p>
+    <ol>
+        <li>
+            <h6>DEV (development)</h6>
+            <p>When deploying artifacts in DEV mode, it will link the artifacts to its appropriate repositories in the working
+                directory, so changes you make are updated in the
+                working directory. By convention, the location of working version of the artifact is located at
+                'work_dir'/'artifact type'/'artifact name'. This can be overwritten by 'work_dir', 'work_dir_name' attributes
+                of artifact in blueprint or artifact external configurations</p>
+        </li>
+        <li><h6>TEST</h6>
+            <p>When deploying artifacts in TEST mode, it will copy the artifacts from the appropriate package located in your
+                local distribution directory, so before delivering to client
+                the package is tested. The distribution dir is configured in the 'dist' variable in external tool
+                configurations. By convention, the packages are stored in 'dist'/'artifact type'/'package name'</p>
+        </li>
+        <li>
+            <h6>STAGE</h6>
+            <p>When deploying artifacts in STAGE mode, it will clone the artifacts from external git hub repository per
+                blueprint(i.e make file) provided. This may be alternative method to deliver your artifacts. Instead of sending
+                the package,
+                you can only provide the blueprint(i.e. make file) and your client can deploy it in STAGE mode that way
+                retrieving all of your artifacts
+                from git hub repository.
+            </p>
+        </li>
+    </ol>
 </section>
 <section id="arguments_api">
     <h3>Command Arguments API</h3>
