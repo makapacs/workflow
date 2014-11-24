@@ -426,9 +426,9 @@ function set_default_theme_action($theme_name, $alias = '@self')
  */
 function set_action($name, $value)
 {
+
     variable_set($name, $value);
     drush_log('variable "' . $name . '" was set to "' . $value . '"', 'ok');
-//    _log('variable - ' . $name . ((drush_invoke_process("@self", "vset", array($name,$value)) ? ' WAS ' : ' WAS NOT')) . ' set to '.$value);
 }
 
 /*

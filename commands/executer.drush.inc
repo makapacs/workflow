@@ -31,6 +31,7 @@ function executer_drush_command()
             'ea update_all_work_dir --param="test update" --asset=espresso' => 'goes through each artifact and commits/push/increments version/adds tag if there is changes',
             'ea get_artifact_info --asset=espresso' => 'displays and compares each artifact versions between blueprint and working dir',
             'ea create_artifact --param=metronic --verbose' => 'creates boilerplate artifact work directory and adds/commits/pushes first commit',
+            'ea config_jquery --param=1.10 --alias=@ALIAS' => 'installs jQuery and configures version 1.10 at site referenced by @ALIAS'
         ),
         'aliases' => array('ea'),
         'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -38,7 +39,7 @@ function executer_drush_command()
     return $items;
 }
 
-function drush_execute_action_init()
+function drush_execute_action_init($args)
 {
 //    load_workflow();
 ////    load_slim_drupal();
@@ -53,8 +54,16 @@ function drush_execute_action_init()
     read_config();
     read_artifacts();
     init_inputs();
-    //@Todo fix implement mechanism to load full drupal when executed solo for actions that need drupal only
+
+    if(_is_full_load($args)){
+        if(!drush_has_boostrapped(DRUSH_BOOTSTRAP_DRUPAL_FULL)){
+            drush_log('Drupal not bootstrapped but is required....begin bootstrapping');
+            load_drupal();
+        }
+    }else{
         load_slim_drupal();
+    }
+    //@Todo fix implement mechanism to load full drupal when executed solo for actions that need drupal only
 //    load_drupal();
     load_workflow();
     init_artifacts();
@@ -91,4 +100,15 @@ function drush_executer_execute_action($name = 'not-found', $alias = '@self')
         drush_op('chdir',$initial_dir);
     }
     drush_log(dt("\n".'...done executing action - @action', array('@action' => $name)), 'ok');
+}
+
+function _is_full_load($action_name){
+    $response = false;
+    switch($action_name){
+        case 'config_jquery':
+            $response = true;
+            break;
+    }
+
+    return $response;
 }

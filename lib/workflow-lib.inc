@@ -202,8 +202,8 @@ function load_workflow()
 function load_slim_drupal()
 {
     //load depenedencies
-    require_once(dirname(__FILE__) . '/../drupal/includes/bootstrap.inc');
-    require_once(dirname(__FILE__) . '/../drupal/includes/common.inc');
+    include_once(dirname(__FILE__) . '/../drupal/includes/bootstrap.inc');
+    include_once(dirname(__FILE__) . '/../drupal/includes/common.inc');
 //        require(dirname(__FILE__) . '/../drupal/includes/utility.inc');
 //    require(dirname(__FILE__) . '/../drupal/modules/system/system.module');
 }
@@ -625,4 +625,30 @@ function setup_db($options = array()){
         return false;
     }
     return true;
+}
+/*
+ * checks if there is internet connection
+ *      @domain
+ *      -domain name used for testing connection
+ *      @port
+ *      - the port number used to check. You can specify more than one i.e. '[80|443]'
+ *
+ *      @return
+ *      - true for success, false for not internet connect
+ * **/
+function is_connected($domain = 'www.google.com', $port = 80)
+{
+    $connected = null;
+
+    $connected = @fsockopen($domain, $port);
+//    @system("ping -c 1 google.com", $connected);
+//    if ($connected == 0){
+    if ($connected){
+        $is_conn = true; //action when connected
+        fclose($connected);
+    }else{
+        $is_conn = false; //action in connection failure
+    }
+    return $is_conn;
+
 }

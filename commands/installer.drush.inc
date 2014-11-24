@@ -19,18 +19,17 @@ function installer_drush_command()
             'db-name' => 'the name of database',
             'db-address' => 'the address of database',
             'dest' => 'full path to destination directory. If not specified, it will use the "root" value from the site alias configurations',
-
             /*different ways to provide blueprint - make file*/
             'package' => 'full or relative path to compressed package or uncompressed package directory containing make file you like to be used in this installation. This overrides the package specified by asset.',
             'make' => 'full or relative path to make file that you want to be used for installation. This overrides the make file specified by asset.',
-            'asset' => 'name of the asset containing make file used for installing new site'
+            'asset' => 'name of the asset containing make file used for installing new site',
 
         ),
         'examples' => array(
             'drush si @awesomeness' => 'downloads and installs the awesomeness based on the make file declared in the alias or in the external configurations',
             'drush si --make-file=path/to/make-file.make' => 'downloads and installs the awesomeness from make file provided'
         ),
-        'aliases' => array('si'),
+        'aliases' => array('spi'),
         'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
     );
     return $items;
@@ -57,6 +56,9 @@ function drush_installer_spin_it($alias = '@self')
     //@TODO Check to see if container is setup
 
     $site_record = wf_var('WF_ALIAS');
+    if(empty($site_record)){
+        drush_die('ERROR: alias not specified but is required',0);
+    }
     $env = get_env();
     $db_name = get_db_credential('db-name');
     $db_user = get_db_credential('db-user');
@@ -148,16 +150,20 @@ function drush_installer_spin_it($alias = '@self')
 ##########################################################
     //@ToDo Refactor so no need to jump to the destinaiton dir instead execute @alias instead @self
     // let's jump to our site directory before we do anything else, because it may be other than alias specified
+
     chdir($default_dest);
+
     //download Drupal and modules per make file
-    drush_invoke_process('@self', 'make', array($default_make), array('yes' => 1, 'no-core' => 0, 'debug' => 0));
+    drush_invoke_process($alias, 'make', array($default_make), array('yes' => 1, 'no-core' => 0, 'debug' => 0));
+
 
     //only install if database is present and it can be connected
 //    if (shell_exec('mysql -V') != '') {
     if ($link = mysql_connect($address, $db_user, $db_pwd)) {
         //install
 
-        $status = drush_invoke_process('@self', 'site-install', array('standard'), array(
+       $status = drush_invoke_process($alias, 'site-install', array('standard'), array(
+//                    $status = drush_invoke_process('@self', 'site-install', array('standard'), array(
                 'account-mail' => $adminEmail,
                 'account-name' => $AdminUsername,
                 'account-pass' => $AdminPassword,

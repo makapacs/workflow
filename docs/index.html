@@ -158,7 +158,7 @@
     <h2>Drush Tool For Developers</h2>
     <hr>
     <ul>
-        <li>Last Updated: Oct 18, 2014</li>
+        <li>Last Updated: Nov 6, 2014</li>
         <li>Developed By: DesignsSquare.com</li>
         <li><a href="">
         </a>
@@ -941,7 +941,7 @@
     </ul>
 
 
-    <h4>Deployment Cycles</h4>
+    <h4>Deployment Modes</h4>
     <p>There is 3 different ways to deploy:</p>
     <ol>
         <li>
@@ -955,13 +955,13 @@
         <li><h6>TEST</h6>
             <p>When deploying artifacts in TEST mode, it will copy the artifacts from the appropriate package located in your
                 local distribution directory, so before delivering to client
-                the package is tested. The distribution dir is configured in the 'dist' variable in external tool
+                the package is tested. The distribution dir is configured in the 'dist' variable in external environment
                 configurations. By convention, the packages are stored in 'dist'/'artifact type'/'package name'</p>
         </li>
         <li>
             <h6>STAGE</h6>
             <p>When deploying artifacts in STAGE mode, it will clone the artifacts from external git hub repository per
-                blueprint(i.e make file) provided. This may be alternative method to deliver your artifacts. Instead of sending
+                blueprint(i.e make file) provided. This may be alternative method to deliver your assets. Instead of sending
                 the package,
                 you can only provide the blueprint(i.e. make file) and your client can deploy it in STAGE mode that way
                 retrieving all of your artifacts
@@ -1173,7 +1173,7 @@
             </td>
         </tr>
         <tr>
-            <td>construct-container @ALIAS</td>
+            <td>cco @ALIAS</td>
             <td>When you ready to deploy for the first time, run this command that will create database, configure virtual hosts, etc to make
                 it ready spin new drupal instance and deploy your assets.
             </td>

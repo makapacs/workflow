@@ -270,6 +270,11 @@ function build_artifact($artifact, $dest)
         drush_die('Artifact - ' . $artifact['name'] . ' is not complete....unable to build', 0);
     }
 
+    //check if we are connected to internet
+    if (!is_connected()) {
+        drush_die('There is no internet connection....unable to build', 0);
+    }
+
 //    if(preg_match("/wf_var('WF_DIST')/", $dest)){
 //        //keep it consistent with drupal naming and file structure
 //        $type = (isset($artifact_config['type']) && $artifact_config['type'] == 'widget') ? 'module' : $artifact_config['type'];
@@ -620,7 +625,9 @@ function get_make_file($name = '')
         return $make;
     } else {
         //make file provided via --make
-        if (!file_exists($make_file = wf_var('WF_ASSET_MAKE'))) {
+        $temp_make_file = wf_var('WF_ASSET_MAKE');
+        $make_file = (substr($temp_make_file, 1, 0) == '/') ? $temp_make_file : drush_cwd().'/'.$temp_make_file;
+        if (!file_exists($make_file)) {
             if (!file_exists($make_file = wf_var('WF_ASSET_MAKE'))) {
                 //check if relative path provided
                 $make_file = wf_var('WF_MAKE_ROOT') . '/' . wf_var('WF_ASSET_MAKE');
