@@ -171,7 +171,8 @@
     <hr>
     <h4>Overall</h4>
 
-    <p>WorkFlow is a tool used to build, deploy and configure assets(i.e themes, widgets,etc) on drupal instances among other
+    <p>WorkFlow is a tool used to build, deploy and configure assets(i.e themes, widgets,etc) on drupal instances among
+        other
         things</p>
 
     <p>Each asset contains any number of artifacts with one of the two types - widget and theme, but is not limited to
@@ -236,29 +237,36 @@
     <p>In the following are the steps to install Artifact WorkFlow Drupal tool</p>
     <ol>
         <li>
-            <b>Download</b><br>Clone the tool from github repo - <a href="https://github.com/makapacs/workflow" target="_blank">WorkFlow</a>
+            <b>Download</b><br>Clone the tool from github repo - <a href="https://github.com/makapacs/workflow"
+                                                                    target="_blank">WorkFlow</a>
             <code><br>
                 sudo git clone https://github.com/makapacs/workflow workflow-lib
             </code>
         </li>
         <li>
             <b>Incorporate With Drush</b><br>
-            In the Drush configuration file - drushrc.php (usually located in $HOME/.drush dir), update $options['include'] to point to "/dir/to/workflow-lib"(dir you cloned WorkFlow in the above) + "/commands", so it looks as following: <br>
+            In the Drush configuration file - drushrc.php (usually located in $HOME/.drush dir), update
+            $options['include'] to point to "/dir/to/workflow-lib"(dir you cloned WorkFlow in the above) + "/commands",
+            so it looks as following: <br>
             <code>
                 $options['include'] = array('/dir/to/workflow-lib/commands');
             </code>
-            <p>If 'drushrc.php' is missing, copy example - example.drushrc.php from /path/to/drush/examples directory into $HOME/.drush dir and rename it to - drushrc.php</p>
+
+            <p>If 'drushrc.php' is missing, copy example - example.drushrc.php from /path/to/drush/examples directory
+                into $HOME/.drush dir and rename it to - drushrc.php</p>
         </li>
         <b>DONE HERE IF ONLY FOR DEPLOYMENT</b>
         <li><b>Configure Environment</b>
+
             <p>Choose one of the two:
 
             <ul>
-                <li>Clone WorkFlow Sandbox from <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow Sandbox</a> into $HOME/workflow and start develop. NO OTHER
+                <li>Clone WorkFlow Sandbox from <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow
+                    Sandbox</a> into $HOME/workflow and start develop. NO OTHER
                     CONFIGURATIONS NEEDED<br>
-                   <code>
-                       git clone https://github.com/makapacs/workflow-sandbox.git workflow<br>
-                   </code>
+                    <code>
+                        git clone https://github.com/makapacs/workflow-sandbox.git workflow<br>
+                    </code>
 
                 </li>
                 <li>Specify your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place
@@ -269,12 +277,15 @@
             </p>
         </li>
         <li><b>Configure Aliases and Artifacts</b><br>
-            Add additional configurations such db user, db password,etc for alias(see <a href="#!/alias_config">Alias Configuration section</a>) and
-            set up artifacts(see <a href="#!/artifacts">Artifacts section</a>). The <a href="#!/how_to">"How To" section</a> is good place to start. The <a href="#!/kickstart">Kickstart section</a> is in progress
+            Add additional configurations such db user, db password,etc for alias(see <a href="#!/alias_config">Alias
+                Configuration section</a>) and
+            set up artifacts(see <a href="#!/artifacts">Artifacts section</a>). The <a href="#!/how_to">"How To"
+                section</a> is good place to start. The <a href="#!/kickstart">Kickstart section</a> is in progress
         </li>
     </ol>
 
-    <p>An alternative is to grab VirtualBox image with WorkFlow/WorkFlow Sandbox already installed and configured. Please, see more
+    <p>An alternative is to grab VirtualBox image with WorkFlow/WorkFlow Sandbox already installed and configured.
+        Please, see more
         info in section <a href="#!/virtualbox">"KickStart with VirtualBox"</a></p>
 </section>
 <section id="terminology">
@@ -310,7 +321,8 @@
             such as check the uncommitted changes in working directory, scrap email addresses from file,etc. Actions are
             also any Drush command. The purpose of actions is to automate repetitive tasks that can be reused by
             declaring in blueprint(make file) and executing them all at once or per requirements. Actions can also be
-            shared among assets. The actions are also imported into deliverable package as part of the blueprint(make file) at the build process.
+            shared among assets. The actions are also imported into deliverable package as part of the blueprint(make
+            file) at the build process.
             See "Actions" section for more details
         </li>
         <li><b>Package</b><br>
@@ -383,16 +395,17 @@
         </li>
     </ul>
     <p>Here is an example for an alias:<br>
-    <code>
-        $aliases['stage-metronic'] = array(<br>
-        'root' => '/path/to/drupal/instance',<br>
-        'uri' => 'domain/name',<br>
-        'db-user' => 'some_user',<br>
-        'db-pwd' => 'password1',<br>
-        'db-name' => 'some_db',<br>
-        );<br>
-    </code>
+        <code>
+            $aliases['stage-metronic'] = array(<br>
+            'root' => '/path/to/drupal/instance',<br>
+            'uri' => 'domain/name',<br>
+            'db-user' => 'some_user',<br>
+            'db-pwd' => 'password1',<br>
+            'db-name' => 'some_db',<br>
+            );<br>
+        </code>
     </p>
+
     <p>Important to note, that alias configurations - db-name, db-user, db-pwd will be overritten with ones user
         specifies at the time of execution if any</p>
 
@@ -402,7 +415,7 @@
     <hr>
     <h4>About Artifacts</h4>
 
-    <p>The artifacts is what this is about. The WorkFlow tool builds packages from artifacts, deploys them, configures
+    <p>The artifacts is what this is about. The WorkFlow tool builds packages from artifacts, Deployments them, configures
         artifacts on instances and more.
         By default, there are two artifacts - widget and theme, but is not limited to only two. You can declare
         others(see Configurations section)</p>
@@ -513,9 +526,12 @@
     <hr>
     <h4>Location of Configurations</h4>
 
-    <p>The configurations are externalized into workflow.drushrc.php in DRUSH_ROOT dir($HOME/.drush/ dir) or any location
-        DRUSH searches. If using <a href="#!/artifacts">WorkFlow Sandbox</a> thdn configurations(i.e. workflow.drushrc.php)
-        is read from $HOME/workflow directory as well(if co-exist with ones $HOME/.drush/ directory, then priority given to
+    <p>The configurations are externalized into workflow.drushrc.php in DRUSH_ROOT dir($HOME/.drush/ dir) or any
+        location
+        DRUSH searches. If using <a href="#!/artifacts">WorkFlow Sandbox</a> thdn configurations(i.e.
+        workflow.drushrc.php)
+        is read from $HOME/workflow directory as well(if co-exist with ones $HOME/.drush/ directory, then priority given
+        to
         ones in $HOME/.drush/ directory)</p>
     <h4>Available Environment Configurations</h4>
     <ol>
@@ -713,10 +729,10 @@
             <th>Description</th>
         </tr>
         <tr>
-            <td>install-site</td>
+            <td>spin-it</td>
             <td>alias</td>
             <td>install Drupal instance per make file provided in the destination of the alias or at the
-                root/deploys/env_alias
+                root/deployments/env_alias
             </td>
         </tr>
         <tr>@ToDo...needs update</tr>
@@ -770,12 +786,12 @@
             <th>Description</th>
         </tr>
         <tr>
-            <td>install-site</td>
-            <td>is</td>
+            <td>spin-it</td>
+            <td>sit</td>
             <td>alias</td>
             <td>env,su,su-pw,db-user,db-pwd,db-name,make-file, dest</td>
-            <td>installes Drupal instance per make file provided in the destination of the alias or at the
-                root/deploys/env_alias
+            <td>downloads and installs Drupal instance per make file provided in the destination of the alias or at the
+                root/deployments/env_alias
             </td>
         </tr>
         <tr>
@@ -829,6 +845,17 @@
                 configured for artifact(--asset).
             </td>
         </tr>
+        <tr>
+            <td>construct-container</td>
+            </td>
+            <td>cco</td>
+            <td>alias</td>
+            <td>db-address,db-name,db-user,db-pwd,dest</td>
+            <td>From ALIAS configurations(i.e. aliases.drushrc.php), this command creates a database, db_user; creates
+                directory structure at
+                the root and sets up virtual host at url, so all that is left is to spin new Drupal instance()
+            </td>
+        </tr>
     </table>
 </section>
 <section id="deployments">
@@ -841,127 +868,154 @@
         </code>
     </p>
 
-    <h4>CODE, STRUCTURE and SAMPLE Deploys</h4>
+    <h4>CODE, STRUCTURE and SAMPLE Deployments</h4>
     <ol>
         <li>
-            <h6>CODE DEPLOY</h6>
-            <p>The code deploy is the most basic deployment which is placing artifacts of the asset into proper directories in Drupal instance done as following:</p>
+            <h6>CODE DEPLOYMENT</h6>
+
+            <p>The code deployment is the most basic deployment which is placing artifacts of the asset into proper
+                directories in Drupal instance done as following:</p>
             <ul>
-                <li><b>Deploy from package </b>(intended for clients that have
+                <li><b>Deployment from package </b>(intended for clients that have
                     received the deliverable and like to deploy)</i>
                     <code><br>
                         drush da @ALIAS --package=path/to/package.tar.gz --env=test
                     </code>
                 </li>
-                <li><b>Deploy from make file </b>(intended for clients as well that have
-                    given access to the github accounts and are retrieving packages directly from github.com instead of package)
+                <li><b>Deployment from make file </b>(intended for clients as well that have
+                    given access to the github accounts and are retrieving packages directly from github.com instead of
+                    package)
                     <code><br>
                         drush da @ALIAS --make=path/to/asset.make --env=stage
                     </code>
                 </li>
-                <li><b>Deploy from asset local to machine per configurations </b>(intended for developers to develop. See more at <a href="#!/artifacts">Artifacts Section</a>)
+                <li><b>Deploy from asset local to machine per configurations </b>(intended for developers to develop.
+                    See more at <a href="#!/artifacts">Artifacts Section</a>)
                     <code><br>
                         drush da @ALIAS --asset=ASSET-NAME --ver=0.01 [--branch=plus] --env=dev
                     </code>
                 </li>
             </ul>
-            <p>While the tags '--package', '--make','--asset' specifies the location of artifacts to deploy, the --env tag specifies the method of deployment - copy, symbolic link or get request
-                from github.com to transfer the artifacts. For more info, please, see info about Development Cycles below</p>
+            <p>While the tags '--package', '--make','--asset' specifies the location of artifacts to deploy, the --env
+                tag specifies the method of deployment - copy, symbolic link or get request
+                from github.com to transfer the artifacts. For more info, please, see info about Development Cycles
+                below</p>
         </li>
         <li>
-            <h6>STRUCTURE DEPLOY</h6>
-            <p>Most of the times deployment involves more than placing artifacts in proper directories. It also includes downloading dependencies,
-                configuring artifacts along other things all for powering the basic functionality of the asset. At the DesignsSquare.com, we refer it
-                to STRUCTURE DEPLOY because it imports data structures and configurations in database(see more at <a href="http://margotskapacs.com/2014/07/importexport-sample-data-and-assets-for-kickstart-all-via-features" target="_blank">Import Export Sample Data And Assets For Kickstart All Via Features</a>).
+            <h6>STRUCTURE DEPLOYMENT</h6>
+
+            <p>Most of the times deployment involves more than placing artifacts in proper directories. It also includes
+                downloading dependencies,
+                configuring artifacts along other things all for powering the basic functionality of the asset. At the
+                DesignsSquare.com, we refer it
+                to STRUCTURE DEPLOYMENT because it imports data structures and configurations in database(see more at <a
+                        href="http://margotskapacs.com/2014/07/importexport-sample-data-and-assets-for-kickstart-all-via-features"
+                        target="_blank">Import Export Sample Data And Assets For Kickstart All Via Features</a>).
             </p>
             <code><br>
                 drush cs @ALIAS --tag=config,init,revert --make=path/to/asset.make
             </code>
 
-            <p>Just like before, the either tag '--package', '--make' or '--asset' tags specify the location of the make file for the asset. The tag '--tag', specify the actions
-                to be executed. All assets from DesignSquare.com has the tags - "config", "init", "revert" available for STRUCTURE deployment</p>
+            <p>Just like before, the either tag '--package', '--make' or '--asset' tags specify the location of the make
+                file for the asset. The tag '--tag', specify the actions
+                to be executed. All assets from DesignSquare.com has the tags - "config", "init", "revert" available for
+                STRUCTURE deployment</p>
         </li>
         <li>
 
-            <h6>SAMPLE DEPLOY</h6>
-            <p> Besides the CODE deploy and STRUCTURE deploy, you may like to have sample data something we refer to as the third deploy - SAMPLE DEPLOY</p>
+            <h6>SAMPLE DEPLOYMENT</h6>
+
+            <p> Besides the CODE DEPLOYMENT and STRUCTURE DEPLOYMENT, you may like to have sample data something we refer to as
+                the third deployment - SAMPLE DEPLOYMENT</p>
             <code>
                 drush cs @ALIAS --tag=kickstart --make=path/to/asset.make
             </code>
 
-            <p>Important to note that to combine the STRUCTURE deploy with the SAMPLE DEPLOY, all you have to do is combine the tag '--tag' into one
+            <p>Important to note that to combine the STRUCTURE DEPLOYMENT with the SAMPLE DEPLOYMENT, all you have to do is
+                combine the tag '--tag' into one
                 '--tag=config,init,kickstart,revert'</p>
         </li>
     </ol>
 
 
     <h4>PROFILE it All</h4>
-    <p>To execute all in one - CODE, STRUCTURE, SAMPLE deployments, there is profile command. There are currently two profiles - new-install and dependent-deploy.
-        As the names refer, the 'new-install' is for complety new install whereas the 'independent-install' is for upgrading already installed asset
+
+    <p>To execute all in one - CODE, STRUCTURE, SAMPLE deployments, there is profile command. There are currently two
+        profiles - new-install and dependent-deploy.
+        As the names refer, the 'new-install' is for complety new install whereas the 'independent-install' is for
+        upgrading already installed asset
     </p>
     <ul>
-    <li><b>New Install</b> - for new install
-        <ul>
-            <li>CODE deploy for upgrade
-                <code><br>
-                    drush da @ALIAS --package=path/to/package.tar.gz --env=test
-                </code>
-            </li>
-            <li>CODE,STRUCTURE deploy for new install
-                <code><br>
-                    drush pa new-install @ALIAS --package=path/to/package.tar.gz --env=test
-                </code>
-            </li>
-            <li>CODE, STRUCTURE and SAMPLE deploy for new install
-                <code><br>
-                    drush pa new-install @ALIAS --package=path/to/package.tar.gz --env=test --tag=kickstart
-                </code>
-            </li>
-        </ul>
-    </li>
-    <li><b>Upgrade</b> -  for upgrading asset that is already installed
-        <ul>
-            <li>CODE deploy for upgrade
-                <code><br>
-                    drush da @ALIAS --package=path/to/package.tar.gz --env=test
-                </code>
-            </li>
-            <li>CODE, STRUCTURE deploy for upgrade
-                <code><br>
-                    drush pa dependent-install @ALIAS --package=path/to/package.tar.gz --env=test
-                </code>
-            </li>
-            <li>CODE, STRUCTURE and SAMPLE deploy for upgrade
-                <code><br>
-                    drush pa dependent-install @ALIAS --package=path/to/package.tar.gz --env=test --tag=kickstart
-                </code>
-            </li>
-        </ul>
-    </li>
+        <li><b>New Install</b> - for new install
+            <ul>
+                <li>CODE deployment for upgrade
+                    <code><br>
+                        drush da @ALIAS --package=path/to/package.tar.gz --env=test
+                    </code>
+                </li>
+                <li>CODE,STRUCTURE deployment for new install
+                    <code><br>
+                        drush pa new-install @ALIAS --package=path/to/package.tar.gz --env=test
+                    </code>
+                </li>
+                <li>CODE, STRUCTURE and SAMPLE deployment for new install
+                    <code><br>
+                        drush pa new-install @ALIAS --package=path/to/package.tar.gz --env=test --tag=kickstart
+                    </code>
+                </li>
+            </ul>
+        </li>
+        <li><b>Upgrade</b> - for upgrading asset that is already installed
+            <ul>
+                <li>CODE deployment for upgrade
+                    <code><br>
+                        drush da @ALIAS --package=path/to/package.tar.gz --env=test
+                    </code>
+                </li>
+                <li>CODE, STRUCTURE deployment for upgrade
+                    <code><br>
+                        drush pa dependent-install @ALIAS --package=path/to/package.tar.gz --env=test
+                    </code>
+                </li>
+                <li>CODE, STRUCTURE and SAMPLE deployment for upgrade
+                    <code><br>
+                        drush pa dependent-install @ALIAS --package=path/to/package.tar.gz --env=test --tag=kickstart
+                    </code>
+                </li>
+            </ul>
+        </li>
     </ul>
 
 
     <h4>Deployment Modes</h4>
+
     <p>There is 3 different ways to deploy:</p>
     <ol>
         <li>
             <h6>DEV (development)</h6>
-            <p>When deploying artifacts in DEV mode, it will link the artifacts to its appropriate repositories in the working
+
+            <p>When deploying artifacts in DEV mode, it will link the artifacts to its appropriate repositories in the
+                working
                 directory, so changes you make are updated in the
                 working directory. By convention, the location of working version of the artifact is located at
-                'work_dir'/'artifact type'/'artifact name'. This can be overwritten by 'work_dir', 'work_dir_name' attributes
+                'work_dir'/'artifact type'/'artifact name'. This can be overwritten by 'work_dir', 'work_dir_name'
+                attributes
                 of artifact in blueprint or artifact external configurations</p>
         </li>
         <li><h6>TEST</h6>
-            <p>When deploying artifacts in TEST mode, it will copy the artifacts from the appropriate package located in your
+
+            <p>When deploying artifacts in TEST mode, it will copy the artifacts from the appropriate package located in
+                your
                 local distribution directory, so before delivering to client
                 the package is tested. The distribution dir is configured in the 'dist' variable in external environment
                 configurations. By convention, the packages are stored in 'dist'/'artifact type'/'package name'</p>
         </li>
         <li>
             <h6>STAGE</h6>
+
             <p>When deploying artifacts in STAGE mode, it will clone the artifacts from external git hub repository per
-                blueprint(i.e make file) provided. This may be alternative method to deliver your assets. Instead of sending
+                blueprint(i.e make file) provided. This may be alternative method to deliver your assets. Instead of
+                sending
                 the package,
                 you can only provide the blueprint(i.e. make file) and your client can deploy it in STAGE mode that way
                 retrieving all of your artifacts
@@ -1110,13 +1164,18 @@
         </tr>
         <tr>
             <td>tune_up</td>
-            <td>tune up the drupal instances by disabling shortcuts modul, enabling admin_menu,module_filter,coffee,etc</td>
+            <td>tune up the drupal instances by disabling shortcuts modul, enabling
+                admin_menu,module_filter,coffee,etc
+            </td>
         </tr>
         <tr>
             <td>hosty</td>
-            <td>turns on virtual host directory support so the path to images and JS doesn't break if site run from subdirectory
-                instead root directory. We recommend to have hosty disabled whenever possible for performance reasons. If you have to
-                run the site in sub-directory in production, we would recommend considering alternative than using hosty solution
+            <td>turns on virtual host directory support so the path to images and JS doesn't break if site run from
+                subdirectory
+                instead root directory. We recommend to have hosty disabled whenever possible for performance reasons.
+                If you have to
+                run the site in sub-directory in production, we would recommend considering alternative than using hosty
+                solution
             </td>
         </tr>
     </table>
@@ -1156,25 +1215,31 @@
         </tr>
         <tr>
             <td> ea create_boilerplate --param=ARTIFACT-NAME</td>
-            <td>When you are ready to develop new artifact, then declare it in the artifacts.drushr.php first and then execute this command to
-                create the boilerplate files/directories and hook it with github.com. Currently it supports two types - the theme and widget(that is Drupal Module boilerplate)
+            <td>When you are ready to develop new artifact, then declare it in the artifacts.drushr.php first and then
+                execute this command to
+                create the boilerplate files/directories and hook it with github.com. Currently it supports two types -
+                the theme and widget(that is Drupal Module boilerplate)
             </td>
         </tr>
         <tr>
             <td>ea flush_work_dir</td>
-            <td>removes working directory and recreates new based on the artifacts.drushrc.php configurations in $HOME/.drush dir.
-                This is useful when starting up, you can just declare artifacts and it will create your work directories for you.
+            <td>removes working directory and recreates new based on the artifacts.drushrc.php configurations in
+                $HOME/.drush dir.
+                This is useful when starting up, you can just declare artifacts and it will create your work directories
+                for you.
             </td>
         </tr>
         <tr>
-        <td>﻿ea update_work_structure</td>
-            <td>goes through each artifact declared in the artifact.drushrc.php configuration and creates work directory for those missing.
-            this is handy when you add new artifacts for quick way to build working directories.
+            <td>﻿ea update_work_structure</td>
+            <td>goes through each artifact declared in the artifact.drushrc.php configuration and creates work directory
+                for those missing.
+                this is handy when you add new artifacts for quick way to build working directories.
             </td>
         </tr>
         <tr>
             <td>cco @ALIAS</td>
-            <td>When you ready to deploy for the first time, run this command that will create database, configure virtual hosts, etc to make
+            <td>When you ready to deploy for the first time, run this command that will create database, configure
+                virtual hosts, etc to make
                 it ready spin new drupal instance and deploy your assets.
             </td>
         </tr>
@@ -1184,6 +1249,11 @@
 <h3>How To</h3>
 <hr>
 <h4>How To Install Workflow?</h4>
+
+<p>The installation can be avoided if you grab the VirtualBox image(see section <a href="#!/virtualbox">KickStart with
+    VirtualBox</a>).
+    If VirtualBox image is not applicable for you then in the following are steps
+    to install workflow:</p>
 <ol>
     <li>
         <b>Download</b><br>
@@ -1197,13 +1267,16 @@
             $options['include'] = array('/path/to/Artifact Workflow tool/commands');
         </code>
     </li>
-    <li><p>choose one of the two:</p>
+    <li><b>Configure WorkFlow</b><br>
+        There are two possible ways to configure Workflow:
         <ul>
-            <li>Grab WorkFlow Sandbox from https://github.com/makapacs/workflow-sandbox and start develop. NO
-                CONFIGURATION NEEDED
+            <li><b>From Sandbox</b><br>
+                Grab <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow Sandbox</a> and
+                start develop. NO
+                CONFIGURATION NEEDED (for more details, see <a href="#!/sandbox">'SandBox' section</a>)
             </li>
-            <li><b>Configure Your Environment</b><br>
-                Specify your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place
+            <li><b>Configure Manually</b><br>
+                Configure your Environment(working dir, distribution dir, etc.) in the workflow.drushrc.php and place
                 it in to DRUSH_ROOT dir as
                 described in <a href="#!/configurations">'Configuration' section</a></li>
         </ul>
@@ -1215,35 +1288,64 @@
         Configuration section</a>
     </li>
 </ol>
-<h4><a href="#" name="how_to_sandbox">How to setup Workflow?</a></h4>
 
-<p>You can manually set up environment as specified at <a href="#!/configurations">'Environment Configuration'</a>
-    section <b>OR</b>
-    clone <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow Sandbox</a> that comes
-    with default environment setup.</p>
+<h4>How To Spin New Drupal Instance?</h4>
 
-<p>Note: when cloning WorkFlow Sandbox, make sure it's cloned into your $HOME/workflow dir to work</p>
-<p>After cloning WorkFlow Sandbox, make user you create DB super user with the following cridentials:
-    <code><br>
-        grant all privileges on *.* to 'workflow_root'@'%' identified by 'password1' with grant option;
-    </code>
-    <p>--OR--</p>
-    specify them in the $HOME/workflow/﻿workflow.drushrc.php as following:
+In the following are steps, to spin new Drupal instance for the first time:
+<ol>
+    <li><b>Configure Alias Settings</b><br>
+        The first step is to declare the ALIAS for your new project/instance as it is typically done in Drush Alias
+        Configuration setup in
+        file - $HOME/.drush/aliases.drushrc.php. It includes all the Drush native configurations:<br>
+        <code><br>
+            $aliases['ALIAS-NAME'] = array (<br>
+            &nbsp;&nbsp;'uri' = 'bazar.test',<br>
+            &nbsp;&nbsp;'root' = '/path/to/root/dir',<br>
+            &nbsp;&nbsp;...(Workflow settings)<br>
+            }<br>
+        </code><br>
 
-<code><br>
-    ...<br>
-    ﻿$workflow_config['db-user'] = 'workflow_user';/br>
-    ﻿$workflow_config['db-pwd'] = 'password1';<br>
-</code>
-</p>
+        <p>Besides the native Drush $alias settings, there are additional from Workflow needed:
 
-<p>Another alternative is taking VirtualBox image installed and configured with WorkFlow/WorkFlow Sandbox ready to build, deploy,
-    configure. For more info, please, see section <a href="#!/virtualbox">KickStart with VirtualBox</a></p>
+        <ul>
+            <li><b>Db User(db-user)</b><Br>
+                <code>'db-user' => 'DB-USER',</code></li>
+            <li><b>Db Password(db-pwd)</b><Br>
+                <code>'db-pwd' => 'DB-USER-PASSWORD',</code></li>
+            <li><b>Db Name(db-name)</b><Br>
+                <code>'db-name' => 'DB-NAME',</code></li>
+            <li><b>[OPTIONAL]Default Make File(make-file)</b><br>
+                <code>'make-file' => 'path/to/default/build-drupal-core.make',</code></li>
+        </ul>
+        For more info, please, see section on <a href="#!/alias_config">Alias Configurations</a>
+        </p>
+    </li>
+
+    <li><b>Construct Container</b><br>
+        Run command Construct-Container(CCO) as following:<br>
+        <code>
+            drush cco @ALIAS
+        </code>
+
+        <p>The command - construct container does the following:
+        <ol>
+            <li>Creates the File Directories</li>
+            <li>Sets up Virtual Host</li>
+            <li>Creates Database</li>
+        </ol>
+        </p>
+    </li>
+    <li><b>Spin It</b><br>
+        At last, spin new Drupal instance:<br>
+        <code>drush is @ALIAS-NAME</code>
+    </li>
+</ol>
+<p>Afterwards, go to the URL specified in the ALIAS configuration and you should see drupal installed as specified in
+    the default make file</p>
 
 <h4>How to add new Artifact(i.e. widget,theme,etc)?</h4>
 
-<p>In the following are steps on configuring new widget(i.e. map widget)
-
+<p>In the following are steps on configuring new widget(i.e. map widget)</p>
 <ol>
     <li>Create repository in Github.com for the new artifact</li>
     <li>Declare artifact in the artifact configuration file located at $HOME/.drush/artifact.drushrc.php or
@@ -1269,72 +1371,13 @@
             <li>
                 <p>Call action to create boilerplate and hook the git repo automatically for you</p><br>
                 <code>drush ea create_artifact --param=ARTIFACT-NAME</code>
+
                 <p>The ARTIFACT-NAME is the article name in Artifact configuraiton file artifact.drushrc.php</p>
             </li>
         </ol>
     </li>
 </ol>
-</p>
-<h4>How to spin new Drupal instance?</h4>
-<ol>
-    <li>
-        <b>Configure Virtual Host</b>
 
-        <p>Virtual host needs to be configured to service the new Drupal Instance. On how to configuring Virtual
-            Host, it is out of scope for this documentation.
-            Please, see post <a href="http://margotskapacs.com/2013/09/installing-apache-on-mac/"> Installing Apache
-                On Mac</a> in section on "Virtual Host" or refer
-            any other resources on how to configure virtual host</p>
-    </li>
-    <li>
-        <b>Configure Database</b>
-
-        <p>
-            You have to create new Database name, perhaps DB Username and Password as well.
-        <ol>
-            <li><b>Login in your mysql</b><br>
-                <code>mysql -u root -p </code>
-            </li>
-            <li><b>Create Database</b><br>
-                <code>create database DB-NAME;</code>
-            </li>
-            <li><b>Create User and Password</b>
-                <code>grant all privileges on DB-NAME.* to USER-NaME@'localhost' identified by 'USER-PASS';</code>
-            </li>
-            <li><b>Flush It</b>
-                <code>flush privileges;</code>
-            </li>
-        </ol>
-        </p>
-    </li>
-    <li><b>Configure Alias Settings</b><br>
-
-        <p>Besides default Drush $alias settings, here the addition needed:
-
-        <ul>
-            <li><b>Db User(db-user)</b>
-                <code>'db-user' => 'dev_metronic',</code></li>
-            <li><b>Db Password(db-pwd)</b>
-                <code>'db-pwd' => 'pass',</code></li>
-            <li><b>Db Name(db-name)</b>
-                <code>'db-name' => 'dev_metronic_db',</code></li>
-            <li><b>[OPTIONAL]Default Make File(make-file)</b>
-                <code>'make-file' => 'path/to/default/build-drupal-core.make',</code></li>
-        </ul>
-        For more info, please, see section on <a href="#!/alias_config">Alias Configurations</a>
-        </p>
-    </li>
-    <li><b>Configure Local Lookup Table</b>
-
-        <p>To ensure the request to the new instance are routed correctly, update your local look up table(ie. for mac
-            /etc/hosts)
-            <code>127.0.0.1 URI</code>
-        </p>
-    </li>
-    <li><b>Spin It</b><br>
-        <code>drush is @ALIAS-NAME</code>
-    </li>
-</ol>
 <h4>How to Build Asset For First Time</h4>
 <ol>
     <li><b>Create Asset Blueprint</b><br>
@@ -1345,7 +1388,7 @@
             $BLUEPRINT/type(s)/PRE-FEX-TYPE-NAME-VER.make (see more in <a href="#!/asset_naming">Asset Naming
                 section)</a></p>
 
-        <p>In the make file, declare the artifacts you like to be included. In the following is make file for asset -
+        <p>In the make file, declare the artifacts you like to include. In the following is make file for asset -
             Drupal Metronic Theme that will help you start</p>
         <code>
             ...<br>
@@ -1422,7 +1465,8 @@
 <h4>How to deploy asset?</h4>
 
 <p>Once you have the package built, spin up Drupal instance and lets deploy. There are three possible ways
-    to deploy based on the method you provide the make file. In the following are listed all the 3 different methods:</p>
+    to deploy based on the method you provide the make file. In the following are listed all the 3 different
+    methods:</p>
 <ul>
     <li><b>By Directly Providing Blueprint via "--make"</b><br>
         <code>
@@ -1436,18 +1480,24 @@
             drush da @dev-metronic
             --package=themes/designssquare-com-theme-metronic/designssquare-com-theme-metronic-0.1 --env=test
         </code>
+
         <p>--OR--</p>
         <code>
-            drush da @dev-metronic --package=themes/designssquare-com-theme-metronic/designssquare-com-theme-metronic-0.1.tar.gz --env=test
+            drush da @dev-metronic
+            --package=themes/designssquare-com-theme-metronic/designssquare-com-theme-metronic-0.1.tar.gz --env=test
         </code>
-        <p>Here again, we specify path to package direcotry or compressed package relative to distribution directory as specified in WorkFlow evironment variable "dist"  </p>
+
+        <p>Here again, we specify path to package direcotry or compressed package relative to distribution directory as
+            specified in WorkFlow evironment variable "dist" </p>
     </li>
     <li><b>By Specifying Asset via "--asset" & "--ver" & "--branch"</b><br>
         <code>
             drush da @dev-metronic --asset=metronic --ver=0.1 --env=stage
         </code>
 
-        <p>this will use the artifact configurations(see <a href="#!/artifacts">Artifacts Configurations</a>) with conventions(see <a href="#!/configurations">Conventions</a>) to locate make file for the particular asset.</p>
+        <p>this will use the artifact configurations(see <a href="#!/artifacts">Artifacts Configurations</a>) with
+            conventions(see <a href="#!/configurations">Conventions</a>) to locate make file for the particular asset.
+        </p>
     </li>
     <p>From the above, you can see the "env" was provided as well. Please, see section <a href="#!/deployments">"Deployments"</a>
         about three different ways to deploy based on "env"</p>
@@ -1457,52 +1507,90 @@
 <section id="sandbox">
     <h3>Kickstart with WorkFlow Sandbox</h3>
     <hr>
-    <p>The WorkFlow Sandbox was created to demonstrate quickley the power of WorkFlow. To do so, we have included three assets - theme Espresso, widget Blog
+    <p>The <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow Sandbox</a> was created to
+        quickly demonstrate
+        the power of WorkFlow. To do so, we have included three assets - theme Espresso, widget Blog
         and widget Portfolio</p>
-    <p>Please, see section <a href="index.html#how_to_sandbox">"How To Install Sandbox"</a> in How-To section for installing WorkFlow Sandbox</p>
-    <p>There is also VirtualBox Image with Workflow/Workflow Sandbox installed and configured. For more info, please, see section <a href="#!/virtualbox">"KickStart with VirtualBox"</a></p>
+    <h4>SandBox Setup</h4>
+    There are 3 steps to setup SandBox:
+    <ol>
+        <li><b>Clone <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">WorkFlow Sandbox</a></b><br>
+            into your $HOME/workflow
+        </li>
+        <li><b>Create or Specify DB Super User</b>
+            After cloning WorkFlow Sandbox, create DB super user with the following credentials:
+            <code><br>
+                grant all privileges on *.* to 'workflow_root'@'%' identified by 'password1' with grant option;
+            </code>
+
+            <p>--OR--</p>
+            Specify your custom in the $HOME/workflow/﻿workflow.drushrc.php as following:
+            <code><br>
+                ...<br>
+                $workflow_config['db-user'] = 'DB_SUPER_USER';<br>
+                $workflow_config['db-pwd'] = 'password1';<br>
+            </code>
+        </li>
+    </ol>
+    <p>There is also VirtualBox Image with Workflow/Workflow Sandbox installed and configured. For more info,
+        please, see section <a href="#!/virtualbox">"KickStart with VirtualBox"</a></p>
     <!--<p>By cloning <a href="https://github.com/makapacs/workflow-sandbox" target="_blank">workflow sandbox</a> into-->
-        <!--$HOME/workflow dir, the environment configurations are already pre-configured</p>-->
+    <!--$HOME/workflow dir, the environment configurations are already pre-configured</p>-->
 
     <h4>DEPLOYMENT</h4>
-    <p>In the following is a sample of deploying assets - Espresso, Blog and Profile that comes with workflow sandbox:</p>
+
+    <p>In the following is a sample of deploying assets - Theme Espresso, Widget Blog and Widget Profile that comes with
+        workflow SandBox:</p>
     <ol>
         <li><h6><i>Spin Drupal</i></h6>
-            <p>We start by spinning new drupal instance that we going to use to deploy assets - Espresso, Blog, Portfolio</p></li>
-        <li> <h6><i>Deploy and Configure Theme - Espresso</i></h6>
+
+            <p>We start by spinning new drupal instance that we going to use to deploy assets - Espresso, Blog,
+                Portfolio</p></li>
+        <li><h6><i>Deploy and Configure Theme - Espresso</i></h6>
+
             <p>@ToDo</p></li>
-        <li> <h6><i>Deploy and Configure Widget - Blog</i></h6>
+        <li><h6><i>Deploy and Configure Widget - Blog</i></h6>
+
             <p>@ToDo</p></li>
         <li>
             <h6><i>Deploy and Configure Widget - Portfolio</i></h6>
+
             <p>@ToDo</p>
         </li>
         <li><h6><i>Blow It</i></h6>
+
             <p>@ToDo</p>
         </li>
         <li>
             <h6><i>Profile All</i></h6>
+
             <p>@ToDo</p>
         </li>
     </ol>
 
     <h4>DEVELOPMENT</h4>
-    <p>In the following is sample of developing with workflow. Here we will create widget from scratch, package and build deliverable and test it at our new test site</p>
+
+    <p>In the following is sample of developing with workflow. Here we will create widget from scratch, package and
+        build deliverable and test it at our new test site</p>
+
     <p>@ToDo</p>
 
 </section>
 <section id="virtualbox">
     <h3>Kickstart With VirtualBox</h3>
     <hr>
-    <p>There is VirtualBox image of xUbuntu with Workflow/WorkFlow Sandbox installed/configured available <a href="#">here</a></p>
-    <p>The workflow library is installed at $HOME/tools/workflow-lib. The WorkFlow Sandbox is located at $HOME/workflow. Make sure
-    you go to those directories and pulling the newest as following
-    <code>
-        cd workflow<br>
-        git pull<br>
-        cd ../tools/workflow-lib<br>
-        git pull</br>
-    </code>
+    <p>There is VirtualBox image of xUbuntu with Workflow/WorkFlow Sandbox installed/configured available <a href="#">here</a>(email
+        us for access contact@designssquare.com)</p>
+
+    <p>The workflow library is installed at $HOME/tools/workflow-lib. The WorkFlow Sandbox is located at $HOME/workflow.
+        Make sure
+        you go to those directories and pulling the newest as following
+        <code>
+            cd workflow<br>
+            git pull<br>
+            cd ../tools/workflow-lib<br>
+            git pull</br>
+        </code>
     </p>
 
     @ToDo add all other specifications
@@ -1524,18 +1612,25 @@
     </ul>
 
     <h6>MYSQL locks</h6>
-    <p>Since mysql shares one lock between all database, it happens often that one thread locks another when executing multiple WorkFlow commands at
-     once. To resolve, look what thread is currently running and kill it as following
-    <code><br>
-     mysql -u root -p //to login mysql<br>
-     show engine innodb status;//lists current threads active<br>
-     kill TREAD-ID;//kill the thread in lock state<br>
-    </code>
+
+    <p>Since mysql shares one lock between all database, it happens often that one thread locks another when executing
+        multiple WorkFlow commands at
+        once. To resolve, look what thread is currently running and kill it as following
+        <code><br>
+            mysql -u root -p //to login mysql<br>
+            show engine innodb status;//lists current threads active<br>
+            kill TREAD-ID;//kill the thread in lock state<br>
+        </code>
     </p>
 
-    <h6>SQLSTATE[HY000] [2013] Lost connection to MySQL server at &#039;reading initial communication packet&#039;, system error: 111. Is the database server running?</h6>
-    <p> Ensure that MySQL address(localhost, 127.0.0.1,etc) is configured the correct one in the alias configuration(please, see <a href="#!/alias_config">alias configurations</a>). You may also find
-    useful tips on how to determine your MySQL address in post - <a href="http://margotskapacs.com/2013/01/installing-mysql-on-mac" target="_blank"> Install MySQL On MAC </a> (see Troubleshooting section)</p>
+    <h6>SQLSTATE[HY000] [2013] Lost connection to MySQL server at &#039;reading initial communication packet&#039;,
+        system error: 111. Is the database server running?</h6>
+
+    <p> Ensure that MySQL address(localhost, 127.0.0.1,etc) is configured the correct one in the alias
+        configuration(please, see <a href="#!/alias_config">alias configurations</a>). You may also find
+        useful tips on how to determine your MySQL address in post - <a
+                href="http://margotskapacs.com/2013/01/installing-mysql-on-mac" target="_blank"> Install MySQL On
+            MAC </a> (see Troubleshooting section)</p>
 
 </section>
 <section id="backlog">
@@ -1557,9 +1652,6 @@
         <li>make it possible to store general configurations in shell env variables to mask out ones from
             workflow.drushrc.php
         </li>
-        <li>Make support for remote alias to work</li>
-        <li>add additional command for new instance setup(copy alias,create database,setup apache,etc)</li>
-        <li>implement virtual host setup part of the construct-container command</li>
     </ul>
 </section>
 <section id="releases">
@@ -1572,7 +1664,7 @@
     <h5>Release 0.3</h5>
     <ul>
         <li>add boilerplate generator for new artifact creation</li>
-        <li>add command construct-container to setup database, virtual hosts, etc all need to spin drupal instance </li>
+        <li>add command construct-container to setup database, virtual hosts, etc all need to spin drupal instance</li>
     </ul>
 </section>
 </div>

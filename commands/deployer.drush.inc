@@ -23,7 +23,7 @@ function deployer_drush_command()
         ),
         'examples' => array(
             'drush da @workflow --asset=espresso' => 'downloads and installs the asset theme - espresso for site with alias @workflow and branch - master in STAGE format',
-            'drush da @workflow --asset=espresso --ver=0.5 --env=dev ' => 'downloads and installs the asset theme - espresso and branch - plus for site with alias @workflow in DEV format',
+            'drush da @workflow --asset=espresso --ver=0.5 --env=dev' => 'downloads and installs the asset theme - espresso and branch - basic for site with alias @workflow in DEV format',
             'drush da @workflow --asset=espresso --branch=plus --ver=0.0 --env=test ' => 'downloads and installs the asset theme - espresso and branch - plus for site with alias @workflow in TEST format',
             'drush da @workflow --package=path/to/package.zip' => 'deploys from the package as specified by flag --package in TEST env',
             'drush da @workflow --make=path/to/some.make' => 'deploys from github in STAGE env',
