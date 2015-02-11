@@ -913,7 +913,7 @@
                         target="_blank">Import Export Sample Data And Assets For Kickstart All Via Features</a>).
             </p>
             <code><br>
-                drush cs @ALIAS --tag=config,init,revert --make=path/to/asset.make
+                drush ca @ALIAS --tag=config,init,revert --make=path/to/asset.make
             </code>
 
             <p>Just like before, the either tag '--package', '--make' or '--asset' tags specify the location of the make
@@ -928,7 +928,7 @@
             <p> Besides the CODE DEPLOYMENT and STRUCTURE DEPLOYMENT, you may like to have sample data something we refer to as
                 the third deployment - SAMPLE DEPLOYMENT</p>
             <code>
-                drush cs @ALIAS --tag=kickstart --make=path/to/asset.make
+                drush ca @ALIAS --tag=kickstart --make=path/to/asset.make
             </code>
 
             <p>Important to note that to combine the STRUCTURE DEPLOYMENT with the SAMPLE DEPLOYMENT, all you have to do is
