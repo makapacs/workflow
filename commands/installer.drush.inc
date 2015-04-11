@@ -26,10 +26,10 @@ function installer_drush_command()
 
         ),
         'examples' => array(
-            'drush si @awesomeness' => 'downloads and installs the awesomeness based on the make file declared in the alias or in the external configurations',
-            'drush si --make-file=path/to/make-file.make' => 'downloads and installs the awesomeness from make file provided'
+            'drush spin @awesomeness' => 'downloads and installs the awesomeness based on the make file declared in the alias or in the external configurations',
+            'drush spin --make-file=path/to/make-file.make' => 'downloads and installs the awesomeness from make file provided'
         ),
-        'aliases' => array('spi'),
+        'aliases' => array('spin'),
         'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
     );
     return $items;
