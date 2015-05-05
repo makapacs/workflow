@@ -528,7 +528,7 @@
 
     <p>The configurations are externalized into workflow.drushrc.php in DRUSH_ROOT dir($HOME/.drush/ dir) or any
         location
-        DRUSH searches. If using <a href="#!/artifacts">WorkFlow Sandbox</a> thdn configurations(i.e.
+        DRUSH searches. If using <a href="#!/artifacts">WorkFlow Sandbox</a> than configurations(i.e.
         workflow.drushrc.php)
         is read from $HOME/workflow directory as well(if co-exist with ones $HOME/.drush/ directory, then priority given
         to
@@ -574,6 +574,12 @@
         <li><b>db-address</b><br>
             the address of database used for site installation, etc if not specified at site alias configurations or
             at the time of execution
+        </li>
+        <li><b>db-super-user</b><br>
+            the database super user with all DB permissions including creating new DB used at Construct Container command
+        </li>
+        <li><b>db-super-pwd</b><br>
+            the password of database super user with all DB permissions including creating new DB used at Construct Container command
         </li>
         <li><b>make_file</b><br>
             the default make file for site installations, for shared actions,etc. If not specified in environment
@@ -1051,6 +1057,8 @@
         <li>WF_DB_NAME:the name of database to install site(only used at the time of site install)</li>
         <li>WF_DB_USER:the the username for database used to install site</li>
         <li>WF_DB_PWD:the the password for database user used to install site</li>
+        <li>WF_DB_SUPER_USER:the name of user with all DB permissions used in construct container command to create new DBs</li>
+        <li>WF_DB_SUPER_PWD:the password of super user with database permissions used in construct container command to create new DB </li>
         <li>WF_DEST:the destination of the drupal instance being installed, deployed or configured</li>
     </ul>
 
@@ -1575,6 +1583,7 @@ In the following are steps, to spin new Drupal instance for the first time:
 
     <p>@ToDo</p>
 
+
 </section>
 <section id="virtualbox">
     <h3>Kickstart With VirtualBox</h3>
@@ -1593,6 +1602,27 @@ In the following are steps, to spin new Drupal instance for the first time:
         </code>
     </p>
 
+
+    <h4>Troubleshooting</h4>
+    <ol>
+        <li><b>Drush Execution Slow or Doesn't Run</b><br>
+           After booting the new virtual box instance, any of the drush commands doesn't execute or does it very slow.
+           Try to execute with "sudo" in front.
+        </li>
+        <li><b>No Connection To Internet or The Host Machine</b>
+            This may happen because the clone VBox image doesn't save network adapter configurations. So, in order to have the connection to internet,
+            you have to reconfigure. The steps to do so are listed in blog post <a href="http://margotskapacs.com/2014/10/virtualbox-gotchas/" target="_blank">Virtualbox Gotchas</a>
+        </li>
+        <li><b>Sharing Files Not Working</b>
+            Just like with network adapter configurations, the files share configurations are also not saved. So you have to
+            reconfigure.
+        </li>
+        <li><b>How To Share Code For Easy Development</b>
+            A common setup is to have the code editor located on the host machine while the web server instance(dev,test) on the guest virtual box.
+            The artifacts(themes, modules) are shared between the host and guest to make develpment waster and debuging easer. To help set up file shares,
+            please, see blog post <a href="http://margotskapacs.com/2014/12/sharing-via-samba-instead-virtualbox-shares/" target="_blank">"Sharing Via Samba Instead Virtualbox Shares"</a>
+        </li>
+    </ol>
     @ToDo add all other specifications
 </section>
 <section id="troubleshooting">
@@ -1665,6 +1695,11 @@ In the following are steps, to spin new Drupal instance for the first time:
     <ul>
         <li>add boilerplate generator for new artifact creation</li>
         <li>add command construct-container to setup database, virtual hosts, etc all need to spin drupal instance</li>
+    </ul>
+    <h5>Release 0.4</h5>
+    <ul>
+        <li>added extra Config Variables - WF_DB_SUPER_USER,WF_DB_SUPER_PWD to hold DB root </li>
+        <li>added samples for alias, artifact and workflow configurtion files in 'examples' dir</li>
     </ul>
 </section>
 </div>

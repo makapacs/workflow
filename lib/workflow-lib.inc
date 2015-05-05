@@ -150,7 +150,7 @@ function read_config()
         drush_set_context('WF_DB_USER', $workflow_config['db-user']);
         drush_log(dt('WF_DB_USER set to @name', array('@name' => $workflow_config['db-user'])), 'notice');
     } else {
-        drush_set_context('WF_DB_USER', false);
+        drush_set_context('WF_DB_USER', 'root');
         drush_log(dt('WF_DB_USER are not set in external env configuration. Using "root"'), 'notice');
     }
 
@@ -160,6 +160,22 @@ function read_config()
     } else {
         drush_set_context('WF_DB_PWD', false);
         drush_log(dt('WF_DB_PWD are not set in external env configuration'), 'notice');
+    }
+
+    if (isset($workflow_config['db-super-user']) && !empty($workflow_config['db-super-user'])) {
+        drush_set_context('WF_DB_SUPER_USER', $workflow_config['db-super-user']);
+        drush_log(dt('WF_DB_SUPER_USER set to @name', array('@name' => $workflow_config['db-super-user'])), 'notice');
+    } else {
+        drush_set_context('WF_DB_SUPER_USER', 'root');
+        drush_log(dt('WF_DB_SUPER_USER are not set in external env configuration. Using "root"'), 'notice');
+    }
+
+    if (isset($workflow_config['db-super-pwd']) && !empty($workflow_config['db-super-pwd'])) {
+        drush_set_context('WF_DB_SUPER_PWD', $workflow_config['db-super-pwd']);
+        drush_log(dt('WF_DB_SUPER_PWD set to @name', array('@name' => $workflow_config['db-super-pwd'])), 'notice');
+    } else {
+        drush_set_context('WF_DB_SUPER_PWD', false);
+        drush_log(dt('WF_DB_SUPER_PWD are not set in external env configuration'), 'notice');
     }
 
     if (isset($workflow_config['db-name']) && !empty($workflow_config['db-name'])) {
@@ -317,6 +333,18 @@ function init_inputs()
         drush_set_context('WF_DB_ADDRESS', $db_host);
         drush_log(dt('WF_DB_ADDRESS set to @name', array('@name' => $db_host)), 'notice');
     }
+
+    //db super user with all rights of db read from external configurations
+    if(!wf_var('WF_DB_SUPER_USER')) {
+        drush_set_context('WF_DB_SUPER_USER', 'root');
+        drush_log(dt('WF_DB_SUPER_USER set to @name', array('@name' => 'root')), 'notice');
+    }
+    if(!wf_var('WF_DB_SUPER_PWD')) {
+        drush_set_context('WF_DB_SUPER_PWD', false);
+        drush_log(dt('WF_DB_SUPER_PWD set to @name', array('@name' => 'false')), 'notice');
+    }
+
+
     //--asset
     if ($article_name = drush_get_option('asset', FALSE)) {
         drush_set_context('WF_ASSET_NAME', $article_name);

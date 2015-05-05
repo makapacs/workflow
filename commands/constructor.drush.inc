@@ -48,13 +48,13 @@ function drush_constructor_construct_container($alias = '@self')
     if (!isset($site_record) || empty($site_record)) {
         drush_die('Error: the alias is not specified', 0);
     }
-    $db_admin = wf_var('WF_DB_USER');
+    $db_admin = wf_var('WF_DB_SUPER_USER');
     if (!isset($db_admin) || empty($db_admin)) {
-        drush_die('Error: the DB Root User is not specified. Use --db-user or configure it in WorkFlow environment configurations', 0);
+        drush_die('Error: the DB SUPER User is not specified. To Set up, use variable "db-super-user" in the WorkFlow external configurations', 0);
     }
-    $db_admin_pwd = wf_var('WF_DB_PWD');
+    $db_admin_pwd = wf_var('WF_DB_SUPER_PWD');
     if (!isset($db_admin_pwd) || empty($db_admin_pwd)) {
-        drush_die('Error: the DB Root User password not specified. Use --db-pwd or configure it in WorkFlow environment configurations', 0);
+        drush_die('Error: the DB SUPER User password not specified. To Set up, use "db-super-pwd" in WorkFlow external configurations', 0);
     }
 
     drush_log('constructing container for alias...', 'ok');
